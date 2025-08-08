@@ -1,5 +1,5 @@
-import sys
 import re
+import string
 from nltk.corpus import wordnet
 from nltk.corpus import gutenberg
 from nltk import word_tokenize, pos_tag
@@ -39,7 +39,7 @@ min_frequency = 4
 min_noun_to_verb_ratio = 0.55
 min_length = 3
 
-# Only lowercase words
+# Only alphabetic words without hyphens or periods
 pattern = re.compile(r"^[a-zA-Z]+$")
 
 nouns = []
@@ -64,12 +64,15 @@ def is_noun_allowed(noun):
 def process_corpus(text):
 	words = word_tokenize(text)
 	tagged = pos_tag(words)
+	prev_word = ""
 	for word, tag in tagged:
 		if tag in ('NN', 'NNS'):
+			if word[0].isupper() and not prev_word.endswith(tuple(string.punctuation)):
+				continue
 			lemma = lemmatizer.lemmatize(word.lower(), wordnet.NOUN)
-			# Must be lowercase, concrete, and somewhat common
 			if is_noun_allowed(lemma):
 				nouns.append(lemma)
+		prev_word = word
 
 for fileid in gutenberg_texts:
 	process_corpus(gutenberg.raw(fileid))
