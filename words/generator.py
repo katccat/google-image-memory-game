@@ -9,34 +9,48 @@ from collections import Counter
 output_file = "dictionary.txt"#sys.argv[1]
 
 # Acceptable WordNet categories
-allowed_categories = {
+required_categories = {
 	'noun.animal',
 	'noun.artifact',
 	'noun.food',
-	'noun.person',
 	'noun.plant',
 	'noun.body',
 	'noun.object',
-	#'noun.location',
 	'noun.shape',
 	'noun.substance',
+}
+disallowed_categories = {
+	'noun.cognition',
+	'noun.communication',
+	'noun.feeling',
+	'noun.location',
+	'noun.event',
+	'noun.act',
+	'noun.person',
 }
 
 gutenberg_texts = [
     'carroll-alice.txt',
     'burgess-busterbrown.txt',
-    'bryant-stories.txt',
-    'edgeworth-parents.txt',
-	'austen-emma.txt',
-	'austen-sense.txt',
+    #'bryant-stories.txt',
+    #'edgeworth-parents.txt',
+	#'austen-emma.txt',
+	#'austen-sense.txt',
 ]
 
 texts = [
 	'texts/doawk.txt',
+	'texts/giantpeach.txt',
+	'texts/chocolatefactory.txt',
+	'texts/fastfood.txt',
+	'texts/toys.txt',
+	'texts/pets.txt',
+	'texts/dessert.txt',
 ]
 
-min_frequency = 4
-min_noun_to_verb_ratio = 0.55
+min_frequency = 2
+min_noun_to_verb_ratio = 0.25
+min_noun_to_adj_ratio = 0.35
 min_length = 3
 
 # Only alphabetic words without hyphens or periods
@@ -44,21 +58,33 @@ pattern = re.compile(r"^[a-zA-Z]+$")
 
 nouns = []
 lemmatizer = WordNetLemmatizer()
-
+rejected_words = ['pyjama', 'feces', 'savory']
 def is_noun_allowed(noun):
+	if noun in rejected_words:
+		return False
 	if not pattern.fullmatch(noun) or len(noun) <= min_length:
 		return False
 	noun_synsets = wordnet.synsets(noun, wordnet.NOUN)
 	noun_synset_count = len(noun_synsets)
-	if not any(synset.lexname() in allowed_categories for synset in noun_synsets):
+	if not any(synset.lexname() in required_categories for synset in noun_synsets):
 		return False
-	verb_synsets = wordnet.synsets(noun, wordnet.VERB)
-	verb_synset_count = len(verb_synsets)
-	if (verb_synset_count > 0):
-		ratio = noun_synset_count / verb_synset_count
-		if ratio < min_noun_to_verb_ratio:
-			#print(f"Excluded because mostly verb: {noun} ({ratio})")
-			return False
+	if any(synset.lexname() in disallowed_categories for synset in noun_synsets):
+		return False
+	return (
+		pos_test(noun, noun_synset_count, wordnet.VERB, min_noun_to_verb_ratio) and 
+		pos_test(noun, noun_synset_count, wordnet.ADJ, min_noun_to_adj_ratio) 
+	)
+
+def pos_test(test_noun, noun_synset_count, pos, min_ratio_to_pos):
+	if (min_ratio_to_pos > 0):
+		pos_synsets = wordnet.synsets(test_noun, pos)
+		pos_synset_count = len(pos_synsets)
+		if (pos_synset_count > 0):
+			ratio = noun_synset_count / pos_synset_count
+			if ratio < min_ratio_to_pos:
+				print(f"Possible {pos} rejected: {test_noun} ({ratio})")
+				rejected_words.append(test_noun)
+				return False
 	return True
 
 def process_corpus(text):
@@ -78,24 +104,23 @@ for fileid in gutenberg_texts:
 	process_corpus(gutenberg.raw(fileid))
 
 for file in texts:
-	with open(file, "r", encoding="utf-8") as f:
-		text = f.read()
+	with open(file, "r", encoding="utf-8", errors="ignore") as io:
+		text = io.read()
 		process_corpus(text)
 
 # Count and keep most common
 noun_counts = Counter(nouns)
 
-word_freq_pairs = [
-    (word, freq)                # take the "word"
-    for word, freq              # loop over each key/value pair
-    in noun_counts.items()      # from the dictionary noun_counts
-    if freq >= min_frequency    # but only keep it if the frequency is high enough
-]
+# Filter words by minimum frequency
+filtered_words = [(word, freq) for word, freq in noun_counts.items() if freq >= min_frequency]
 
-word_freq_pairs = sorted(word_freq_pairs, key=lambda x: x[1], reverse=True)
+# Sort the filtered words by frequency in descending order
+sorted_words = sorted(filtered_words, key=lambda pair: pair[1], reverse=True)
 
-top_nouns = [word for word, freq in word_freq_pairs]
+# Extract just the words from the sorted list
+top_nouns = [word for word, freq in sorted_words]
 
-with open(output_file, "w", encoding="utf-8") as f:
-	print(*top_nouns, sep="\n", file=f)
+with open(output_file, "w", encoding="utf-8", errors="ignore") as io:
+    io.write("\n".join(top_nouns))
+
 print(f"Found {len(top_nouns)} simple nouns.")

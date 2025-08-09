@@ -2,16 +2,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<title>Memory Match!</title>
-	<link rel="icon" type="image/ico" href="/favicon.ico">
+	<title>I'm Not A Robot</title>
+	<link rel="icon" type="image/png" href="/frozen_page2.png">
 	<link rel="stylesheet" href="/css/reset.css">
 	<link rel="stylesheet" href="/css/style.css">
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta name="description" content="A memory match game featuring random images from the web for the tiles!">
 	<style>
 		body {
 			align-content: center;
+			user-select: none;
 		}
 		#grid {
 			display: grid;
@@ -19,12 +20,47 @@
 			height: auto;
 			max-width: 100%;
 			max-height: 100%;
-			aspect-ratio: 1 / 1;
 			margin: auto;
 		}
 		.cell {
-			background-color: #4caf50;
+			z-index: 1;
+			position: relative;
+			background-color: #f1f1f1;
 			border: var(--global-padding) solid white;
+			overflow: hidden;
+			display: flex;
+			align-items: flex-end; /* vertical */
+			justify-content: center;
+			background-size: cover;
+			background-position: center;
+  			background-repeat: no-repeat;
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+		.cell.active {
+			opacity: 1;
+		}
+		.cell .mask {
+			z-index: 3;
+			width: 100%;
+			height: 100%;
+			background-color: #ededed;
+			transition: opacity 0.3s ease;
+		}
+		.cell .mask.fade-out {
+			opacity: 0;
+		}
+		.overlay-text {
+			z-index: 2;
+			margin-bottom: 5px;
+			position: absolute;
+			color: white;
+			font-size: 1.5em;
+			width: 100%;
+			text-align: center;
+			text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+			background-color: rgba(0,0,0,0.4);
+			pointer-events: none; /* so clicks pass through to cell if needed */
 		}
 	</style>
 </head>
