@@ -18,12 +18,12 @@ required_categories = {
 	'noun.object',
 	'noun.shape',
 	'noun.substance',
+	'noun.location',
 }
 disallowed_categories = {
 	'noun.cognition',
 	'noun.communication',
 	'noun.feeling',
-	'noun.location',
 	'noun.event',
 	'noun.act',
 	'noun.person',
@@ -46,6 +46,7 @@ texts = [
 	'texts/toys.txt',
 	'texts/pets.txt',
 	'texts/dessert.txt',
+	'texts/sports.txt',
 ]
 
 min_frequency = 2
