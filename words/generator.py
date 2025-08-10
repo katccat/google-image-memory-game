@@ -47,6 +47,7 @@ texts = [
 	'texts/pets.txt',
 	'texts/dessert.txt',
 	'texts/sports.txt',
+	'texts/vehicles.txt',
 ]
 
 min_frequency = 2

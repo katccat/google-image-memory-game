@@ -3,9 +3,9 @@
 <html lang="en">
 <head>
 	<title>I'm Not A Robot</title>
-	<link rel="icon" type="image/png" href="/frozen_page.png">
-	<link rel="stylesheet" href="/css/reset.css">
-	<link rel="stylesheet" href="/css/style.css">
+	<link rel="icon" type="image/png" href="frozen_page.png">
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/style.css">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta name="description" content="A memory match game featuring random images from the web for the tiles!">
@@ -26,7 +26,6 @@
 			z-index: 1;
 			position: relative;
 			margin: var(--global-padding);
-			box-shadow: 0px 4px 13px 0px rgba(0,0,0,0.15);
 			overflow: hidden;
 			display: flex;
 			align-items: flex-end; /* vertical */
@@ -36,11 +35,14 @@
   			background-repeat: no-repeat;
 			opacity: 0;
 			transition: opacity 0.3s ease;
-			cursor: pointer;
+			box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.15);
 		}
-		.cell:hover {
+		.cell.active:hover {
 			z-index: 4;
-			box-shadow: 0px 9px 18px 4px rgba(0,0,0,0.12);
+			box-shadow: 0px 0px 18px 4px rgba(0,0,0,0.12);
+			.overlay-text {
+				opacity: 1 !important;
+			}
 		}
 		.cell.active {
 			opacity: 1;
@@ -57,12 +59,12 @@
 		.cell .overlay-text.fade-out {
 			opacity: 0;
 		}
-		.overlay-text {
+		.cell .overlay-text {
 			z-index: 2;
-			margin-bottom: 0.5em;
+			margin-bottom: 1cqh;
 			position: absolute;
 			color: white;
-			font-size: 1.5em;
+			font-size: min(3cqw, 20px);
 			width: 100%;
 			text-align: center;
 			text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
@@ -74,7 +76,7 @@
 </head>
 <body>
 	<div id="grid"></div>
-	<script src="/images.js"></script>
-	<script src="/script.js"></script>
+	<script src="images.js"></script>
+	<script src="script.js"></script>
 </body>
 </html>

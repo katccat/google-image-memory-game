@@ -6,7 +6,14 @@ let coolDown = false;
 let level = 0;
 
 const FADE_DELAY = 1000;
-const squares = [4, 16, 20, 24, 24, 36];
+const squares = [
+	{ cellCount: 4, factors: [2] }, 
+	{ cellCount: 16, factors: [4] },
+	{ cellCount: 20, factors: [4, 5] },
+	{ cellCount: 24, factors: [3, 4, 6, 8] },
+	{ cellCount: 24, factors: [3, 4, 6, 8] },
+	{ cellCount: 36, factors: [3, 4, 6, 9, 12] },
+];
 const FUN_COLOR_CHANCE_CHANCE = 0.2;
 const colors = {
 	red: '#f07f75',
@@ -18,13 +25,13 @@ const colors = {
 const gridLayout = new function() {
 	let grid, cellCount, suitableFactors;
 
-	this.initialize = function(gridElement, numCells) {
+	this.initialize = function(gridElement, board) {
 		grid = gridElement;
-		cellCount = numCells;
-		suitableFactors = [];
-		for (let i = 2; i < cellCount; i++) {
+		cellCount = board.cellCount;
+		suitableFactors = board.factors;
+		/*for (let i = 2; i < cellCount; i++) {
 			if (cellCount % i == 0) suitableFactors.push(i);
-		}
+		}*/
 		this.resizeGrid();
 	}
 	this.findBestDimensions = function(viewportAspectRatio) {
@@ -118,7 +125,7 @@ function Cell() {
 function createCells(gridElement, numCells) {
 	cells.length = 0;
 	unsolvedCells = 0;
-	remainingMistakes = numCells / 2 - 1;
+	remainingMistakes = Math.max(numCells / 2 - 1, 2);
 	const titleText = ['images/im.png', 'images/not.png', 'images/a.png', 'images/robot.png'];
 	for (let i = 0; i < numCells; i++) {
 		const cell = new Cell();
@@ -215,10 +222,10 @@ async function endGame(grid) {
 	newGame(squares[level]);
 }
 
-async function newGame(numCells) {
+async function newGame(board) {
 	const grid = document.getElementById('grid');
-	createCells(grid, numCells);
-	gridLayout.initialize(grid, numCells);
+	createCells(grid, board.cellCount);
+	gridLayout.initialize(grid, board);
 	window.addEventListener('resize', gridLayout.resizeGrid);
 	grid.addEventListener('click', handleClick);
 }
