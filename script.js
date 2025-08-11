@@ -6,21 +6,56 @@ let coolDown = false;
 let level = 0;
 
 const FADE_DELAY = 1000;
-const squares = [
-	{ cellCount: 4, factors: [2] }, 
-	{ cellCount: 16, factors: [4] },
-	{ cellCount: 20, factors: [4, 5] },
-	{ cellCount: 24, factors: [3, 4, 6, 8] },
-	{ cellCount: 24, factors: [3, 4, 6, 8] },
-	{ cellCount: 36, factors: [3, 4, 6, 9, 12] },
+const boards = [
+	new Board(4),
+	new Board(16),
+	new Board(20),
+	new Board(24),
+	new Board(24),
+	new Board(36),
 ];
 const FUN_COLOR_CHANCE_CHANCE = 0.2;
+const FUN_GLYPH_CHANCE = 0.6;
 const colors = {
-	red: '#f07f75',
+	red: '#ed6a5e',
 	blue: '#86b2f9',
 	yellow: '#fdd868',
 	green: '#76d590',
-}
+};
+const messages = {
+	intro: [
+		"Don't be evil",
+		"I'm feeling lucky",
+	],
+	victory: [
+		"I'm not a robot",
+		"reCAPTCHA'd",
+		"200 OK",
+		"Solved",
+		"I'm feeling lucky",
+	],
+	failure: [
+		"Aw, snap!",
+		"404",
+		"That's an error.",
+		"Please try again",
+	]
+};
+const glyphs = [
+	"images/download_arrow.png",
+	"images/mandarin.png",
+	"images/puzzle.png",
+	"images/share.png",
+	"images/office.png",
+	"images/cog.png",
+	"images/search.png",
+];
+const introImages = [
+	'images/im.png', 
+	'images/not.png', 
+	'images/a.png', 
+	'images/robot.png'
+];
 
 const gridLayout = new function() {
 	let grid, cellCount, suitableFactors;
@@ -28,10 +63,14 @@ const gridLayout = new function() {
 	this.initialize = function(gridElement, board) {
 		grid = gridElement;
 		cellCount = board.cellCount;
-		suitableFactors = board.factors;
-		/*for (let i = 2; i < cellCount; i++) {
-			if (cellCount % i == 0) suitableFactors.push(i);
-		}*/
+		suitableFactors = [];
+
+		if (cellCount == 4) suitableFactors = [2];
+		else {
+			for (let i = 3; i < cellCount; i++) {
+				if (cellCount % i == 0 && cellCount / i != 2) suitableFactors.push(i);
+			}
+		}
 		this.resizeGrid();
 	}
 	this.findBestDimensions = function(viewportAspectRatio) {
@@ -58,6 +97,10 @@ const gridLayout = new function() {
 	}
 };
 
+function Board(cellCount) {
+	this.cellCount = cellCount;
+}
+
 function Cell() {
 	const cellState = {
 		DEFAULT: 'default',
@@ -77,21 +120,16 @@ function Cell() {
 
 	const mask = document.createElement('div');
 	mask.className = 'mask';
-	if (Math.random() < FUN_COLOR_CHANCE_CHANCE) {
-		const colorKeys = Object.keys(colors);
-		const randomColor = colors[colorKeys[Math.floor(Math.random() * colorKeys.length)]];
-		mask.style.backgroundColor = randomColor;
-	}
 
 	container.appendChild(mask);
 
-	this.getElement = function() {
+	this.getElement = () => {
 		return container;
 	}
-	this.getName = function () {
+	this.getName = () => {
 		return id;
 	}
-	this.activate = function(word, src) {
+	this.activate = (word, src) => {
 		id = word;
 		text.textContent = word;
 		container.style.backgroundImage = `url(${src})`;
@@ -99,11 +137,11 @@ function Cell() {
 		state = cellState.DEFAULT;
 		unsolvedCells += 1;
 	}
-	this.deactivate = function () {
+	this.deactivate = () => {
 		state = cellState.INACTIVE;
 		container.classList.remove("active");
 	}
-	this.hide = function() {
+	this.hide = () => {
 		state = cellState.DEFAULT;
 		mask.classList.remove('fade-out');
 	}
@@ -113,24 +151,54 @@ function Cell() {
 		mask.classList.add('fade-out');
 		revealedCells.push(this);
 	};
-	this.solve = function() {
+	this.solve = () => {
 		state = cellState.SOLVED;
 		text.classList.add('fade-out');
 	}
-	this.setMaskImage = function(src) {
+	this.setMaskImage = (src) => {
 		mask.style.backgroundImage = `url(${src})`;
 	}
+	this.setColor = (color) => {
+		mask.style.backgroundColor = color;
+	}
+}
+
+function splashText(text) {
+	const target = document.getElementById("splash-text");
+	//const target2 = document.getElementById("splash-image");
+	target.textContent = text;
+	target.classList.add("expand");
+	//target2.classList.add("expand");
+	target.addEventListener('transitionend', () => {
+		target.classList.remove("expand");
+	});
+	/*target2.addEventListener('transitionend', () => {
+		target2.classList.remove("expand");
+	});*/
+}
+
+function randomItem(list) {
+	return list[Math.floor(Math.random() * list.length)];
 }
 
 function createCells(gridElement, numCells) {
 	cells.length = 0;
 	unsolvedCells = 0;
 	remainingMistakes = Math.max(numCells / 2 - 1, 2);
-	const titleText = ['images/im.png', 'images/not.png', 'images/a.png', 'images/robot.png'];
+	
 	for (let i = 0; i < numCells; i++) {
 		const cell = new Cell();
-		if (numCells == titleText.length) {
-			cell.setMaskImage(titleText[i]);
+		const fun_color = Math.random() < FUN_COLOR_CHANCE_CHANCE;
+		if (fun_color) {
+			const colorKeys = Object.keys(colors);
+			const randomColor = colors[randomItem(colorKeys)];
+			cell.setColor(randomColor);
+		}
+		if (numCells == introImages.length) {
+			cell.setMaskImage(introImages[i]);
+		}
+		else if (fun_color && Math.random() < FUN_GLYPH_CHANCE) {
+			cell.setMaskImage(randomItem(glyphs));
 		}
 		const cellElement = cell.getElement();
 		cellElement.addEventListener('click', cell.unhide);
@@ -153,7 +221,7 @@ async function assignValuesToCells(cells, wordList) {
 		let max_tries = 5;
 		while (!imageURL && max_tries > 0) {
 			do {
-				word = wordList[Math.floor(Math.random() * wordList.length)];
+				word = randomItem(wordList);
 			} while (usedWords.includes(word));
 
 			usedWords.push(word);
@@ -187,7 +255,8 @@ async function handleClick() {
 			cell2.solve();
 			unsolvedCells -= 2;
 			if (unsolvedCells <= 0) {
-				level = Math.min(level + 1, squares.length - 1);
+				level = Math.min(level + 1, boards.length - 1);
+				splashText(randomItem(level <= 1 ? messages.intro : messages.victory));
 				endGame(this);
 			}
 		}
@@ -200,7 +269,10 @@ async function handleClick() {
 			coolDown = false;
 			cell1.hide();
 			cell2.hide();
-			if (remainingMistakes <= 0) endGame(this);
+			if (remainingMistakes <= 0) {
+				splashText(randomItem(messages.failure));
+				endGame(this);
+			}
 		}
 	}
 }
@@ -211,22 +283,27 @@ async function endGame(grid) {
 		cell.getElement().removeEventListener('click', cell.unhide);
 	}
 	let delay = 100;
+	const delayStep = 80 / cells.length;
 	for (const cell of cells) {
 		cell.deactivate();
 		await new Promise(resolve => setTimeout(resolve, delay));
-		delay += 20;
+		delay += delayStep;
 	}
 	for (const cell of cells) {
 		cell.getElement().remove();
 	}
-	newGame(squares[level]);
+	newGame(boards[level]);
 }
 
 async function newGame(board) {
+	if (board.cellCount < 4 || board.cellCount % 2 != 0) {
+		console.error("Please provide an even cell count greater than or equal to 4.");
+		return;
+	}
 	const grid = document.getElementById('grid');
 	createCells(grid, board.cellCount);
 	gridLayout.initialize(grid, board);
 	window.addEventListener('resize', gridLayout.resizeGrid);
 	grid.addEventListener('click', handleClick);
 }
-newGame(squares[level]);
+newGame(boards[level]);

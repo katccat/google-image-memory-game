@@ -3,9 +3,12 @@
 <html lang="en">
 <head>
 	<title>I'm Not A Robot</title>
-	<link rel="icon" type="image/png" href="frozen_page.png">
+	<link rel="icon" type="image/png" href="icon.png">
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Coral+Pixels&display=swap" rel="stylesheet">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta name="description" content="A memory match game featuring random images from the web for the tiles!">
@@ -37,27 +40,12 @@
 			transition: opacity 0.3s ease;
 			box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.15);
 		}
-		.cell.active:hover {
+		.cell:hover {
 			z-index: 4;
 			box-shadow: 0px 0px 18px 4px rgba(0,0,0,0.12);
-			.overlay-text {
-				/*opacity: 1 !important;*/
-			}
 		}
 		.cell.active {
 			opacity: 1;
-		}
-		.cell .mask {
-			background-size: cover;
-			z-index: 3;
-			width: 100%;
-			height: 100%;
-			background-color: #ededed;
-			transition: opacity 0.3s ease;
-		}
-		.cell .mask.fade-out, 
-		.cell .overlay-text.fade-out {
-			opacity: 0;
 		}
 		.cell .overlay-text {
 			z-index: 2;
@@ -72,9 +60,67 @@
 			pointer-events: none; /* so clicks pass through to cell if needed */
 			transition: opacity 0.3s ease;
 		}
+		.cell .mask {
+			background-size: cover;
+			z-index: 3;
+			width: 100%;
+			height: 100%;
+			background-color: #ededed;
+			transition: opacity 0.3s ease;
+		}
+		.cell .mask.fade-out, 
+		.cell .overlay-text.fade-out {
+			opacity: 0;
+		}
+		#splash-text {
+			color: #262626;
+			text-wrap: nowrap;
+			font-size: 6px;
+			font-weight: bold;
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 5;
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			visibility: hidden;
+			/* Initial state */
+			opacity: 1;
+			transform: scale(1);
+			transition:
+				transform 1.8s cubic-bezier(0.25, 1, 0.5, 1),
+				opacity 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+		}
+		#splash-image {
+			visibility: hidden;
+			z-index: 6;
+			width: 100%;
+			opacity: 1;
+			transform: scale(1);
+			transition:
+				transform 1.8s cubic-bezier(0.25, 1, 0.5, 1),
+				opacity 1.8s cubic-bezier(0.25, 1, 0.5, 1);;
+		}
+		#splash-text.expand,
+		#splash-image.expand {
+			visibility: visible;
+			opacity: 0;
+			transform: scale(15);
+			@media (max-width: 600px) {
+				transform: scale(10);
+			}
+		}
+
 	</style>
 </head>
 <body>
+	<div id="splash-text" class="coral-pixels-regular">
+		<!--<img id="splash-image" src="images/frozen.png">-->
+	</div>
 	<div id="grid"></div>
 	<script src="images.js"></script>
 	<script src="script.js"></script>
