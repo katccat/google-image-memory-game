@@ -355,6 +355,7 @@ const boards = [
 	new Board(8),
 	new Board(16),
 	new Board(20),
+	new Board(20, Game.config.category.dogs),
 	new Board(24),
 	new Board(24),
 	new Board(36),
