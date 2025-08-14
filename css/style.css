@@ -1,6 +1,7 @@
 :root {
-	--theme-blue: #0071db;
-	--global-padding: 3px;
+	--theme-blue: #4990e2;
+	--global-padding: 8px;
+	--gap: 8px;
 }
 /* Typography */
 * {

@@ -180,7 +180,6 @@ buttercup
 hookah
 knuckle
 stool
-waist
 turtle
 teacup
 barn

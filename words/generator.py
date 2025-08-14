@@ -60,7 +60,7 @@ pattern = re.compile(r"^[a-zA-Z]+$")
 
 nouns = []
 lemmatizer = WordNetLemmatizer()
-rejected_words = ['pyjama', 'feces', 'savory']
+rejected_words = ['pyjama', 'feces', 'savory', 'waist']
 def is_noun_allowed(noun):
 	if noun in rejected_words:
 		return False
