@@ -8,7 +8,8 @@ def filter_brackets(input_file, output_file):
 		for line in fin:
 			# Remove all bracket pairs
 			filtered_line = re.sub(pattern, '', line)
-			fout.write(filtered_line)
+			if len(filtered_line) < 18:
+				fout.write(filtered_line)
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:

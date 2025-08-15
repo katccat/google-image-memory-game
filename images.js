@@ -1,3 +1,10 @@
+async function getImage(word) {
+	let images = await fetch('words/images.json').then(res => res.json());
+	return images[word];
+}
+async function getImageOnDemand(word) {
+	return await getWikipediaImage(word);
+}
 async function getWikipediaImage(title) {
 	const params = {
 		action: 'query',

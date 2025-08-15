@@ -1,6 +1,7 @@
 /assets/
 /old/
 /words/texts/
+/words/image-indexer.py
 .DS_Store
 ._*
 .localized

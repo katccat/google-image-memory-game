@@ -16,6 +16,8 @@
 		body {
 			align-content: center;
 			user-select: none;
+			background-image: url("/images/bg.gif");
+			background-size: cover;
 		}
 		.fade-out {
 			opacity: 0 !important;
@@ -27,18 +29,28 @@
 			transition: background-color 300ms linear, opacity 0.3s ease;
 			opacity: 1;
 			color: white;
-			height: fit-content;
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
-
+			box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.15);
 			/* Flex layout */
 			display: flex;
+			flex-shrink: 0;
 			justify-content: space-between;
 			align-items: center;
 		}
 		#tooltip.fail {
 			background-color: #ed6a5e;
+		}
+		#tooltip-right {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		#tooltip-right img {
+			height: 60px;
+			image-rendering: pixelated;
+			cursor: pointer;
 		}
 		#grid-container {
 			margin: auto;
@@ -51,6 +63,7 @@
 			row-gap: var(--gap);
 		}
 		#grid {
+			aspect-ratio: 1 / 1;
 			gap: var(--gap);
 			display: grid;
 			width: auto;
@@ -82,7 +95,7 @@
 			background-position: center;
   			background-repeat: no-repeat;
 			transition: opacity 0.3s ease;
-			/*box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.15);*/
+			box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.15);
 		}
 		.cell:hover {
 			box-shadow: 0px 0px 18px 4px rgba(0,0,0,0.16);
@@ -155,9 +168,10 @@
 			<span class="tooltip-text">
 				Find all pairs that are <h1>matching</h1>
 			</span>
-			<span id="level-counter">
-				Level 0
-			</span>
+			<div id="tooltip-right">
+				<img src="images/faces/1.png" id="face" onclick='game.newGame(false);' title="click to reload">
+				<span id="level-counter">Dataset 00</span>
+			</div>
 		</div>
 		<div id="grid"></div>
 	</div>

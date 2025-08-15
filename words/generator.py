@@ -9,14 +9,11 @@ from collections import Counter
 output_file = "dictionary.txt"#sys.argv[1]
 
 # Acceptable WordNet categories
-required_categories = {
+whitelist = {
 	'noun.animal',
-	'noun.artifact',
 	'noun.food',
 	'noun.plant',
-	'noun.body',
 	'noun.object',
-	'noun.shape',
 	'noun.substance',
 	'noun.location',
 }
@@ -27,6 +24,18 @@ disallowed_categories = {
 	'noun.event',
 	'noun.act',
 	'noun.person',
+	'noun.body',
+	'noun.attribute',
+	'noun.act',
+	'noun.shape',
+	'noun.quantity',
+	'noun.state',
+	'noun.time',
+	'noun.relation',
+	'noun.group',
+	'noun.Tops',
+	'noun.phenomenon',
+	'noun.process',
 }
 
 gutenberg_texts = [
@@ -48,9 +57,11 @@ texts = [
 	'texts/dessert.txt',
 	'texts/sports.txt',
 	'texts/vehicles.txt',
+	'texts/rye.txt',
+	'texts/wonder.txt',
 ]
 
-min_frequency = 2
+min_frequency = 3
 min_noun_to_verb_ratio = 0.25
 min_noun_to_adj_ratio = 0.35
 min_length = 3
@@ -60,7 +71,7 @@ pattern = re.compile(r"^[a-zA-Z]+$")
 
 nouns = []
 lemmatizer = WordNetLemmatizer()
-rejected_words = ['pyjama', 'feces', 'savory', 'waist']
+rejected_words = ['pyjama', 'feces', 'savory', 'waist', 'virgin', 'face']
 def is_noun_allowed(noun):
 	if noun in rejected_words:
 		return False
@@ -68,8 +79,10 @@ def is_noun_allowed(noun):
 		return False
 	noun_synsets = wordnet.synsets(noun, wordnet.NOUN)
 	noun_synset_count = len(noun_synsets)
-	if not any(synset.lexname() in required_categories for synset in noun_synsets):
+	if noun_synset_count < 1:
 		return False
+	if any(synset.lexname() in whitelist for synset in noun_synsets):
+		return True
 	if any(synset.lexname() in disallowed_categories for synset in noun_synsets):
 		return False
 	return (

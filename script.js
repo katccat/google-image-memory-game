@@ -1,9 +1,10 @@
 class Game {
 	static config = {
-		fadeDelay: 1000,
+		fadeDelay: 700,
 		category: {
-			all: 'words/dictionary.txt',
-			dogs: 'words/dog-breeds.txt',
+			all: 'words/images.json',
+			dogs: 'words/dogs.json',
+			foods: 'words/foods.json',
 		},
 		funColorChance: 0.2,
 		funGlyphChance: 0.6,
@@ -15,8 +16,8 @@ class Game {
 		},
 		messages: {
 			intro: ["Don't be evil", "I'm feeling lucky"],
-			victory: ["I'm not a robot", "reCAPTCHA'd", "200 OK", "Great!", "I'm feeling lucky"],
-			failure: ["Aw, snap!", "404", "That's an error.", "Please try again"]
+			victory: ["I'm not a robot", "reCAPTCHA'd", "200 OK", "Great!", "I'm feeling lucky", "Everything's Computer"],
+			failure: ["Aw, snap!", "That's an error.", "Please try again", "404"],
 		},
 		glyphs: [
 			"images/download_arrow.png",
@@ -33,7 +34,18 @@ class Game {
 			'images/not.png',
 			'images/a.png',
 			'images/robot.png',
-		]
+		],
+		faceImages: {
+			sequence: [
+				'images/faces/1.png',
+				'images/faces/2.png',
+				'images/faces/3.png',
+				'images/faces/4b.png',
+				'images/faces/5b.png',
+				'images/faces/6.png',
+			],
+			special: 'images/faces/sophisticated.png',
+		}
 	};
 	static element = {
 		grid: document.getElementById('grid'),
@@ -41,6 +53,7 @@ class Game {
 		tooltip: document.getElementById('tooltip'),
 		levelDisplay: document.getElementById('level-counter'),
 		splashText: document.getElementById('splash-text'),
+		faceDisplay: document.getElementById('face'),
 	};
 
 	constructor(boards) {
@@ -50,6 +63,7 @@ class Game {
 			unsolvedCells: 0,
 			remainingMistakes: 0,
 			coolDown: false,
+			firstRun: true,
 			level: 0,
 			showLoading: false,
 		};
@@ -70,7 +84,6 @@ class Game {
 		const numCells = board.cellCount;
 		this.state.cells = [];
 		this.state.unsolvedCells = 0;
-		this.state.remainingMistakes = numCells / 2 - 1;
 
 		for (let i = 0; i < numCells; i++) {
 			const cell = new Cell(this);
@@ -90,42 +103,48 @@ class Game {
 			this.state.cells.push(cell);
 		}
 
-		const wordList = await fetch(board.words)
-		.then(data => data.text())
-		.then(text => text.split(/\r?\n/));
-
-		await this.assignValuesToCells(wordList);
+		const imageList = await fetch(board.images).then(res => res.json());
+		await this.assignValuesToCells(imageList);
 	}
-
-	async assignValuesToCells(wordList) {
+	async assignValuesToCells(image_json) {
 		const cellsCopy = [...this.state.cells];
 		const usedWords = [];
-
+		const usedImages = [];
+		let activeCellCount = 0;
+		let wordList = Object.keys(image_json);
 		for (let i = 0; i < this.state.cells.length / 2; i++) {
-			let word, imageURL;
-			let maxTries = 5;
-
-			while (!imageURL && maxTries > 0) {
-				do {
-					word = randomItem(wordList);
-				} while (usedWords.includes(word));
-
-				usedWords.push(word);
-				imageURL = await getImage(word);
-				maxTries--;
-			}
+			let word, imageURL, imageLoaded, tries = 0, maxTries = 10;
+			do {
+				word = randomItem(wordList);
+				imageURL = image_json[word];
+				tries++;
+				// Try to load the image to check if it exists
+				if (imageURL) {
+					const img = document.createElement('img');
+					img.src = imageURL;
+					imageLoaded = await new Promise(resolve => {
+						img.onload = () => resolve(true);
+						img.onerror = () => resolve(false);
+					});
+				}
+			} while ((usedWords.includes(word) || usedImages.includes(imageURL) || !imageLoaded) && tries < maxTries);
+			usedWords.push(word);
+			usedImages.push(imageURL);
 
 			for (let j = 0; j < 2; j++) {
 				const index = Math.floor(Math.random() * cellsCopy.length);
 				const cell = cellsCopy[index];
 				if (imageURL) {
 					cell.activate(word, imageURL);
-				} 
+					activeCellCount++;
+				}
 				else {
 					console.log("No word with picture found.");
 				}
 				cellsCopy.splice(index, 1);
 			}
+			this.state.remainingMistakes = activeCellCount / 2 - 1;
+			this.state.unsolvedCells = activeCellCount;
 		}
 	}
 
@@ -139,14 +158,12 @@ class Game {
 				cell2.solve();
 				this.state.unsolvedCells -= 2;
 				if (this.state.unsolvedCells <= 0) {
-					Game.splashText(
-						randomItem(this.state.level <= 1 ? Game.config.messages.intro : Game.config.messages.victory)
-					);
 					this.newGame(true);
 				}
 			}
 			else {
 				this.state.remainingMistakes--;
+				faceChanger.changeFace(this.state.remainingMistakes);
 				this.state.coolDown = true;
 
 				await new Promise(resolve => setTimeout(resolve, Game.config.fadeDelay));
@@ -155,8 +172,7 @@ class Game {
 				cell1.hide();
 				cell2.hide();
 				if (this.state.remainingMistakes < 0) {
-					Game.splashText(randomItem(Game.config.messages.failure));
-					Game.element.tooltip.classList.toggle('fail', true);
+					//Game.element.tooltip.classList.toggle('fail', true);
 					this.newGame(false);
 				}
 			}
@@ -166,7 +182,7 @@ class Game {
 	async deleteCells() {
 		let delay = 100;
 		const delayStep = 80 / this.state.cells.length;
-
+		this.state.coolDown = true;
 		for (const cell of this.state.cells) {
 			cell.deactivate();
 			await new Promise(resolve => setTimeout(resolve, delay));
@@ -175,6 +191,7 @@ class Game {
 		for (const cell of this.state.cells) {
 			cell.getElement().remove();
 		}
+		this.state.coolDown = false;
 	}
 
 	async newGame(advanceStage) {
@@ -182,7 +199,7 @@ class Game {
 			this.state.level++;
 			this.state.showLoading = false;
 		}
-		else {
+		else if (!this.state.firstRun) {
 			this.state.showLoading = true;
 		}
 		const board = this.boards[Math.min(this.state.level, this.boards.length - 1)];
@@ -193,17 +210,59 @@ class Game {
 		if (advanceStage) {
 			Game.element.tooltip.classList.toggle('fade-out', true);
 			Game.element.tooltip.addEventListener('transitionend', () => {
-				Game.element.levelDisplay.innerText = `Level ${this.state.level}`;
+				Game.element.levelDisplay.innerText = `Dataset ${this.state.level.toString().padStart(2, '0')}`;
+				faceChanger.resetFace(
+					this.state.level > 4 ? Game.config.faceImages.special : undefined
+				);
 			});
 		}
 		await this.deleteCells();
-		
+		if (!this.state.firstRun) {
+			let messageList;
+			if (advanceStage) {
+				if (this.state.level <= 1) messageList = Game.config.messages.intro;
+				else messageList = Game.config.messages.victory;
+			}
+			else {
+				messageList = Game.config.messages.failure;
+			}
+			Game.splashText(randomItem(messageList));
+		}
 		gridLayout.update(board.cellCount);
-		Game.element.tooltip.classList.toggle('fail', false);
 		Game.element.tooltip.classList.toggle('fade-out', false);
 		await this.createCells(board);
+		if (!advanceStage) faceChanger.resetFace();
+		faceChanger.setMaxMistakes(this.state.remainingMistakes);
+		
 		window.addEventListener('resize', () => gridLayout.resizeGrid());
 		Game.element.grid.addEventListener('click', () => this.handleClick());
+		this.state.firstRun = false;
+	}
+}
+
+const faceChanger = new function() {
+	let maxMistakes;
+	const faceSequence = Game.config.faceImages.sequence;
+	const faceDisplay = Game.element.faceDisplay;
+	const defaultFace = faceSequence[0];
+
+	this.setMaxMistakes = function(mistakes) {
+		maxMistakes = mistakes;
+	}
+	this.changeFace = function(remainingMistakes) {
+		let progress = maxMistakes - Math.max(remainingMistakes, 0);
+
+		let index = Math.floor(
+			(progress / maxMistakes) * (faceSequence.length - 1)
+		);
+
+		// clamp to valid range
+		index = Math.min(index, faceSequence.length - 1);
+
+		faceDisplay.src = faceSequence[index];
+	}
+	this.resetFace = function(face = defaultFace) {
+		faceDisplay.src = face;
 	}
 }
 
@@ -254,8 +313,7 @@ const gridLayout = new function() {
 			// Viewport is wider than grid: set height to 100%, width auto
 			grid.style.height = "100%";
 			grid.style.width = "auto";
-			
-		} 
+		}
 		else {
 			// Viewport is taller than grid: set width to 100%, height auto
 			grid.style.width = "100%";
@@ -309,7 +367,6 @@ class Cell {
 		this.container.classList.toggle('show-loading', game.state.showLoading);
 		this.image.classList.add("active");
 		this.state = Cell.State.DEFAULT;
-		this.game.state.unsolvedCells++;
 	}
 	deactivate() {
 		this.state = Cell.State.INACTIVE;
@@ -341,13 +398,10 @@ function randomItem(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
 
-async function getImage(word) {
-	return await getWikipediaImage(word);
-}
 class Board {
-	constructor(cellCount, words = Game.config.category.all) {
+	constructor(cellCount, images = Game.config.category.all) {
 		this.cellCount = cellCount;
-		this.words = words;
+		this.images = images;
 	}
 }
 const boards = [
@@ -355,6 +409,7 @@ const boards = [
 	new Board(8),
 	new Board(16),
 	new Board(20),
+	new Board(20, Game.config.category.foods),
 	new Board(20, Game.config.category.dogs),
 	new Board(24),
 	new Board(24),
