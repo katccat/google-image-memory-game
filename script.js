@@ -84,7 +84,7 @@ class Game {
 		const numCells = board.cellCount;
 		this.state.cells = [];
 		this.state.unsolvedCells = 0;
-
+		const fragment = document.createDocumentFragment();
 		for (let i = 0; i < numCells; i++) {
 			const cell = new Cell(this);
 			const funColor = Math.random() < Game.config.funColorChance;
@@ -99,9 +99,10 @@ class Game {
 			else if (funColor && Math.random() < Game.config.funGlyphChance) {
 				cell.setOverlayImage(randomItem(Game.config.glyphs));
 			}
-			Game.element.grid.appendChild(cell.getElement());
+			fragment.appendChild(cell.getElement());
 			this.state.cells.push(cell);
 		}
+		Game.element.grid.appendChild(fragment);
 
 		const imageList = await fetch(board.images).then(res => res.json());
 		await this.assignValuesToCells(imageList);
@@ -113,21 +114,12 @@ class Game {
 		let activeCellCount = 0;
 		let wordList = Object.keys(image_json);
 		for (let i = 0; i < this.state.cells.length / 2; i++) {
-			let word, imageURL, imageLoaded, tries = 0, maxTries = 10;
+			let word, imageURL, tries = 0, maxTries = 10;
 			do {
 				word = randomItem(wordList);
 				imageURL = image_json[word];
 				tries++;
-				// Try to load the image to check if it exists
-				if (imageURL) {
-					const img = document.createElement('img');
-					img.src = imageURL;
-					imageLoaded = await new Promise(resolve => {
-						img.onload = () => resolve(true);
-						img.onerror = () => resolve(false);
-					});
-				}
-			} while ((usedWords.includes(word) || usedImages.includes(imageURL) || !imageLoaded) && tries < maxTries);
+			} while ((usedWords.includes(word) || usedImages.includes(imageURL) || !(await validateImage(imageURL))) && tries < maxTries);
 			usedWords.push(word);
 			usedImages.push(imageURL);
 
@@ -207,10 +199,11 @@ class Game {
 			console.error("Please provide an even cell count greater than or equal to 4.");
 			return;
 		}
+		this.state.revealedCells.length = 0;
 		if (advanceStage) {
 			Game.element.tooltip.classList.toggle('fade-out', true);
 			Game.element.tooltip.addEventListener('transitionend', () => {
-				Game.element.levelDisplay.innerText = `Dataset ${this.state.level.toString().padStart(2, '0')}`;
+				Game.element.levelDisplay.innerText = `Level ${this.state.level}`;
 				faceChanger.resetFace(
 					this.state.level > 4 ? Game.config.faceImages.special : undefined
 				);
@@ -234,8 +227,6 @@ class Game {
 		if (!advanceStage) faceChanger.resetFace();
 		faceChanger.setMaxMistakes(this.state.remainingMistakes);
 		
-		window.addEventListener('resize', () => gridLayout.resizeGrid());
-		Game.element.grid.addEventListener('click', () => this.handleClick());
 		this.state.firstRun = false;
 	}
 }
@@ -337,22 +328,17 @@ class Cell {
 		this.id = null;
 
 		this.container = document.createElement('div');
-		this.container.className = 'cell-container';
-		this.container.classList.toggle('show-loading', game.state.showLoading);
-
-		this.image = document.createElement('div');
-		this.image.className = 'cell';
-		this.container.appendChild(this.image);
+		this.container.className = 'cell';
 
 		this.textDisplay = document.createElement('div');
 		this.textDisplay.className = 'overlay-text';
-		this.image.appendChild(this.textDisplay);
+		this.container.appendChild(this.textDisplay);
 
 		this.overlay = document.createElement('div');
 		this.overlay.className = 'mask';
-		this.image.appendChild(this.overlay);
+		this.container.appendChild(this.overlay);
 
-		this.image.addEventListener('click', () => this.unhide());
+		this.container.addEventListener('click', () => this.unhide());
 	}
 	getElement() {
 		return this.container;
@@ -363,15 +349,13 @@ class Cell {
 	activate(word, src) {
 		this.id = word;
 		this.textDisplay.textContent = word;
-		this.image.style.backgroundImage = `url(${src})`;
-		this.container.classList.toggle('show-loading', game.state.showLoading);
-		this.image.classList.add("active");
+		this.container.style.backgroundImage = `url(${src})`;
+		this.container.classList.add("active");
 		this.state = Cell.State.DEFAULT;
 	}
 	deactivate() {
 		this.state = Cell.State.INACTIVE;
-		this.container.classList.toggle('show-loading', game.state.showLoading);
-		this.image.classList.remove("active");
+		this.container.classList.remove("active");
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
@@ -397,6 +381,15 @@ class Cell {
 function randomItem(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
+function validateImage(url) {
+	return new Promise((resolve) => {
+		const img = new Image();
+		img.src = url;
+		img.onload = () => resolve(true);   // valid image
+		img.onerror = () => resolve(false); // broken image
+	});
+}
+
 
 class Board {
 	constructor(cellCount, images = Game.config.category.all) {
@@ -410,10 +403,13 @@ const boards = [
 	new Board(16),
 	new Board(20),
 	new Board(20, Game.config.category.foods),
-	new Board(20, Game.config.category.dogs),
 	new Board(24),
-	new Board(24),
-	new Board(36),
+	new Board(16),
+	new Board(16),
+	new Board(20, Game.config.category.foods),
+	new Board(20),
 ];
 const game = new Game(boards);
 game.newGame(false);
+window.addEventListener('resize', () => gridLayout.resizeGrid());
+Game.element.grid.addEventListener('click', () => game.handleClick());

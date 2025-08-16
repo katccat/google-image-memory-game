@@ -14,8 +14,6 @@ whitelist = {
 	'noun.food',
 	'noun.plant',
 	'noun.object',
-	'noun.substance',
-	'noun.location',
 }
 disallowed_categories = {
 	'noun.cognition',
@@ -27,7 +25,6 @@ disallowed_categories = {
 	'noun.body',
 	'noun.attribute',
 	'noun.act',
-	'noun.shape',
 	'noun.quantity',
 	'noun.state',
 	'noun.time',
@@ -61,8 +58,8 @@ texts = [
 	'texts/wonder.txt',
 ]
 
-min_frequency = 3
-min_noun_to_verb_ratio = 0.25
+min_frequency = 2
+min_noun_to_verb_ratio = 0.15
 min_noun_to_adj_ratio = 0.35
 min_length = 3
 
@@ -71,7 +68,7 @@ pattern = re.compile(r"^[a-zA-Z]+$")
 
 nouns = []
 lemmatizer = WordNetLemmatizer()
-rejected_words = ['pyjama', 'feces', 'savory', 'waist', 'virgin', 'face']
+rejected_words = ['pyjama', 'feces', 'savory', 'waist', 'virgin', 'face', 'plaything', 'eats', 'Hokey Pokey']
 def is_noun_allowed(noun):
 	if noun in rejected_words:
 		return False
@@ -81,10 +78,10 @@ def is_noun_allowed(noun):
 	noun_synset_count = len(noun_synsets)
 	if noun_synset_count < 1:
 		return False
-	if any(synset.lexname() in whitelist for synset in noun_synsets):
-		return True
 	if any(synset.lexname() in disallowed_categories for synset in noun_synsets):
 		return False
+	if any(synset.lexname() in whitelist for synset in noun_synsets):
+		return True
 	return (
 		pos_test(noun, noun_synset_count, wordnet.VERB, min_noun_to_verb_ratio) and 
 		pos_test(noun, noun_synset_count, wordnet.ADJ, min_noun_to_adj_ratio) 
@@ -105,15 +102,11 @@ def pos_test(test_noun, noun_synset_count, pos, min_ratio_to_pos):
 def process_corpus(text):
 	words = word_tokenize(text)
 	tagged = pos_tag(words)
-	prev_word = ""
 	for word, tag in tagged:
-		if tag in ('NN', 'NNS'):
-			if word[0].isupper() and not prev_word.endswith(tuple(string.punctuation)):
-				continue
+		if tag in ('NN', 'NNS') and not(tag in ('NNP', 'NNPS')):
 			lemma = lemmatizer.lemmatize(word.lower(), wordnet.NOUN)
 			if is_noun_allowed(lemma):
 				nouns.append(lemma)
-		prev_word = word
 
 for fileid in gutenberg_texts:
 	process_corpus(gutenberg.raw(fileid))

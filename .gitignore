@@ -1,7 +1,7 @@
 /assets/
 /old/
 /words/texts/
-/words/image-indexer.py
+/words/google-key.txt
 .DS_Store
 ._*
 .localized

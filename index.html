@@ -70,23 +70,18 @@
 			height: auto;
 			max-width: 100%;
 			max-height: 100%;
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
 		}
-		.cell-container {
-			/*aspect-ratio: 1 / 1;*/
-			z-index: 0;
+		.cell {
+			overflow: hidden;
+			background-color: white;
 			position: relative;
 			display: flex;
 			align-items: flex-end; /* vertical */
 			justify-content: center;
 			background-size: cover;
-		}
-		.cell-container.show-loading {
-			background-image: url("images/loading-gray.gif");
-		}
-		.cell {
-			overflow: hidden;
-			background-color: white;
-			position: absolute;
 			opacity: 0;
 			z-index: 1;
 			width: 100%;
@@ -115,6 +110,9 @@
 			background-color: rgba(0,0,0,0.4);
 			pointer-events: none; /* so clicks pass through to cell if needed */
 			transition: opacity 0.3s ease;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 		.cell .mask {
 			background-size: cover;
@@ -126,9 +124,7 @@
 			transition: opacity 0.3s ease;
 		}
 		#splash-text {
-			color: black;
 			text-wrap: nowrap;
-			font-size: 6px;
 			font-weight: bold;
 			position: absolute;
 			top: 0;
@@ -141,9 +137,10 @@
 			align-items: center;
 			justify-content: center;
 			visibility: hidden;
+			will-change: transform, opacity;
 			/* Initial state */
 			opacity: 1;
-			transform: scale(1);
+			transform: scale(0.1);
 			transition:
 				transform 1.8s cubic-bezier(0.25, 1, 0.5, 1),
 				opacity 1.8s cubic-bezier(0.25, 1, 0.5, 1);
@@ -151,10 +148,7 @@
 		#splash-text.expand {
 			visibility: visible;
 			opacity: 0;
-			transform: scale(15);
-			@media (max-width: 600px) {
-				transform: scale(10);
-			}
+			transform: scale(5);
 		}
 
 	</style>
@@ -170,7 +164,7 @@
 			</span>
 			<div id="tooltip-right">
 				<img src="images/faces/1.png" id="face" onclick='game.newGame(false);' title="click to reload">
-				<span id="level-counter">Dataset 00</span>
+				<span id="level-counter">Level 0</span>
 			</div>
 		</div>
 		<div id="grid"></div>
