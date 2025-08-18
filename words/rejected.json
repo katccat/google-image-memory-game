@@ -1,0 +1,592 @@
+{
+  "doNotRetry": [
+    "pyjama",
+    "feces",
+    "savory",
+    "waist",
+    "virgin",
+    "face",
+    "plaything",
+    "eats",
+    "hokey pokey",
+    "headband",
+    "highball",
+    "chiffonier",
+    "duffel",
+    "podium",
+    "wallpaper",
+    "ornithopter",
+    "subway",
+    "housing",
+    "clothes",
+    "pajama",
+    "specie",
+    "inside",
+    "sofa",
+    "whiting",
+    "bike",
+    "corridor",
+    "robe",
+    "homeroom",
+    "skate",
+    "equipment",
+    "chalkboard",
+    "wrapper",
+    "backstage",
+    "royal",
+    "forth",
+    "checkroom",
+    "vest",
+    "entremets",
+    "airspace",
+    "trouser",
+    "pullman",
+    "locale",
+    "hind",
+    "paste",
+    "venue",
+    "subcontinent",
+    "davenport",
+    "fluid",
+    "rail",
+    "merchandise",
+    "lunchroom",
+    "comfit",
+    "atom",
+    "getup",
+    "pillowcase",
+    "premium",
+    "parchment",
+    "sixpence",
+    "furniture",
+    "bittersweet",
+    "cure",
+    "sill",
+    "incinerator",
+    "foodstuff",
+    "banister",
+    "linoleum",
+    "continent",
+    "revenue",
+    "sherry",
+    "maltose",
+    "taxicab",
+    "antler",
+    "tuba",
+    "pocketbook",
+    "earlap",
+    "airliner",
+    "propellant",
+    "fritter",
+    "parlor",
+    "backboard",
+    "cootie",
+    "lebkuchen",
+    "aachener printen",
+    "cornstalk",
+    "compartment",
+    "tubing",
+    "baguette",
+    "hardtack",
+    "cabbage roll",
+    "buttered bread",
+    "cheese stick",
+    "fruits",
+    "blue cheese",
+    "banana cake",
+    "red velvet cake",
+    "chocolate cake",
+    "panini",
+    "popcorn"
+  ],
+  "retry": [
+    "water",
+    "squirrel",
+    "silk",
+    "blanket",
+    "sleeve",
+    "iron",
+    "fuel",
+    "violin",
+    "coconut",
+    "telescope",
+    "gear",
+    "dairy",
+    "bathrobe",
+    "cemetery",
+    "sugarcane",
+    "mammal",
+    "centipede",
+    "deer",
+    "fountain",
+    "razor",
+    "liqueur",
+    "photograph",
+    "cereal",
+    "cooler",
+    "sailboat",
+    "liquor",
+    "lipstick",
+    "ferret",
+    "trumpet",
+    "barbell",
+    "loudspeaker",
+    "leather",
+    "porcupine",
+    "sausage",
+    "parakeet",
+    "hyena",
+    "dress",
+    "lunch",
+    "soda",
+    "motor",
+    "cane",
+    "tombstone",
+    "buttercup",
+    "chemical",
+    "automobile",
+    "hoop",
+    "doorway",
+    "miniature",
+    "fairground",
+    "sharpener",
+    "pigeon",
+    "diamond",
+    "sword",
+    "shield",
+    "fridge",
+    "bandage",
+    "seesaw",
+    "rhinoceros",
+    "statue",
+    "purse",
+    "furnace",
+    "staircase",
+    "sliver",
+    "acid",
+    "passerine",
+    "dime",
+    "jail",
+    "clarinet",
+    "campus",
+    "poncho",
+    "lightbulb",
+    "sprinkles",
+    "jam",
+    "hot dog",
+    "soup",
+    "fish",
+    "shark",
+    "salmon",
+    "bacon",
+    "peach",
+    "rice"
+  ],
+  "rejectedImages": {
+    "water": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/H2O_2D_labelled.svg/800px-H2O_2D_labelled.svg.png"
+      ]
+    },
+    "squirrel": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/6/68/Sciuridae.jpg"
+      ]
+    },
+    "silk": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/8/8f/Meyers_b14_s0826a.jpg"
+      ]
+    },
+    "blanket": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Lautrec_in_bed_1893.jpg/960px-Lautrec_in_bed_1893.jpg"
+      ]
+    },
+    "sleeve": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Mabel_Love_with_a_bicycle.jpg/960px-Mabel_Love_with_a_bicycle.jpg"
+      ]
+    },
+    "iron": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Iron_electrolytic_and_1cm3_cube.jpg/960px-Iron_electrolytic_and_1cm3_cube.jpg"
+      ]
+    },
+    "fuel": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Heinrich_Zille_Herbst.jpg/800px-Heinrich_Zille_Herbst.jpg"
+      ]
+    },
+    "violin": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/1/1b/Violin_VL100.png"
+      ]
+    },
+    "coconut": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Cocos_nucifera_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-187.jpg/960px-Cocos_nucifera_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-187.jpg"
+      ]
+    },
+    "telescope": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/a/ac/100inchHooker.jpg"
+      ]
+    },
+    "gear": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Animated_two_spur_gears_1_2.gif/960px-Animated_two_spur_gears_1_2.gif"
+      ]
+    },
+    "dairy": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Alte_Batzenalpe_2014_Interior_06.jpg/960px-Alte_Batzenalpe_2014_Interior_06.jpg"
+      ]
+    },
+    "bathrobe": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Lastminute.com_hotel_room_photo_shoot_-_51_Buckingham_Gate%2C_London.jpg/960px-Lastminute.com_hotel_room_photo_shoot_-_51_Buckingham_Gate%2C_London.jpg"
+      ]
+    },
+    "cemetery": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Kerepesi_temet%C5%91_Budapest.jpg/960px-Kerepesi_temet%C5%91_Budapest.jpg"
+      ]
+    },
+    "sugarcane": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/7/74/Saccharum_officinarum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-125.jpg"
+      ]
+    },
+    "mammal": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Mammal_collage.png/960px-Mammal_collage.png"
+      ]
+    },
+    "centipede": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/c/c1/Chilopoda_collage.png"
+      ]
+    },
+    "deer": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/d/d9/Family_Cervidae_five_species.jpg"
+      ]
+    },
+    "fountain": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Fountains_Collage.jpg/960px-Fountains_Collage.jpg"
+      ]
+    },
+    "razor": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/9/9b/Quattro_Titanium_Energy.jpg"
+      ]
+    },
+    "liqueur": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/9/92/Licor-Beir%C3%A3o-%26-Orus_-_Orus_Clothing_%28cropped%29.png"
+      ]
+    },
+    "photograph": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Nic%C3%A9phore_Ni%C3%A9pce_Oldest_Photograph_1825.jpg/960px-Nic%C3%A9phore_Ni%C3%A9pce_Oldest_Photograph_1825.jpg"
+      ]
+    },
+    "cereal": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/f/fa/Les_Plantes_Cultivades._Cereals._Imatge_119.jpg"
+      ]
+    },
+    "cooler": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/6/6d/PortableIceChestPatent1955.jpg"
+      ]
+    },
+    "sailboat": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Sloop_Example.svg/800px-Sloop_Example.svg.png"
+      ]
+    },
+    "liquor": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Liquor_Still_Frankfort_489226997.jpg/960px-Liquor_Still_Frankfort_489226997.jpg"
+      ]
+    },
+    "lipstick": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Applying_red_lipstick_-_model_Eve_Casini.jpg/960px-Applying_red_lipstick_-_model_Eve_Casini.jpg"
+      ]
+    },
+    "ferret": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Ferret_2008.png/960px-Ferret_2008.png"
+      ]
+    },
+    "trumpet": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Yamaha_Trumpet_YTR-8335LA_crop.jpg/960px-Yamaha_Trumpet_YTR-8335LA_crop.jpg"
+      ]
+    },
+    "barbell": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Man_lifting_a_heavy_barbell.jpg/960px-Man_lifting_a_heavy_barbell.jpg"
+      ]
+    },
+    "loudspeaker": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/0/0e/Electrodynamic-loudspeaker.png"
+      ]
+    },
+    "leather": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Leathertools.jpg/960px-Leathertools.jpg"
+      ]
+    },
+    "porcupine": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Erethizon_dorsatum_-_Prince_Rupert.jpg/960px-Erethizon_dorsatum_-_Prince_Rupert.jpg"
+      ]
+    },
+    "sausage": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Wurstplatte.jpg/960px-Wurstplatte.jpg"
+      ]
+    },
+    "parakeet": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Male_and_female_parakeet_1.jpg/960px-Male_and_female_parakeet_1.jpg"
+      ]
+    },
+    "hyena": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Hyaenidae_Diversity.jpg/960px-Hyaenidae_Diversity.jpg"
+      ]
+    },
+    "dress": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Afternoon_ensemble_MET_63.212a-b_CP4.jpg/960px-Afternoon_ensemble_MET_63.212a-b_CP4.jpg"
+      ]
+    },
+    "lunch": {
+      "url": [
+        "https://www.yummytoddlerfood.com/wp-content/uploads/2022/04/Homemade-Lunch-1-horiz-500x500.jpg"
+      ]
+    },
+    "soda": {
+      "url": [
+        "https://i5.walmartimages.com/seo/Pack-22-Soda-Variety-Pack-8-Multi-Flavors-Soft-Drink-Bundle-Assortments-Cola-Pepsi-Sprite-Mountain-Dew-Dr-Pepper-Sunkist-Canada-Dry-Ginger-Ale-Brisk_bba96e0f-0444-4b2b-8e55-d90edf928e00.cf87606a804ac13e7807cd48dbd53792.jpeg"
+      ]
+    },
+    "motor": {
+      "url": [
+        "https://www.iqsdirectory.com/articles/electric-motor/dc-motor-diagram.jpg"
+      ]
+    },
+    "cane": {
+      "url": [
+        "https://m.media-amazon.com/images/I/61GzjmHFoaL._UF1000,1000_QL80_.jpg"
+      ]
+    },
+    "tombstone": {
+      "url": [
+        "https://www.thehorrordome.com/cdn/shop/products/rip-tombstone-15586931277872.jpg"
+      ]
+    },
+    "buttercup": {
+      "url": [
+        "https://preview.redd.it/does-buttercup-often-get-unfairly-treated-just-because-she-v0-vn6dx6133j6a1.png"
+      ]
+    },
+    "chemical": {
+      "url": [
+        "https://www.thoughtco.com/thmb/S43kFVYXoxi3gjY6guOrtb6Oe8g=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/chemistry-glassware-56a12a083df78cf772680235.jpg"
+      ]
+    },
+    "automobile": {
+      "url": [
+        "https://cdn.britannica.com/84/91384-050-3FEC6DB7/components-automobile.jpg"
+      ]
+    },
+    "hoop": {
+      "url": [
+        "https://i5.walmartimages.com/seo/Over-the-Door-Basketball-Hoop-Indoor-Sports-Game-Battery-powered-for-All-Ages-by-MinnARK_29ea95b1-fea6-4bcb-872b-36458dc70c57.1dcf060ba51b9f0edd1635ae33563c16.png"
+      ]
+    },
+    "doorway": {
+      "url": [
+        "https://bower-studios.com/media/regular/bower-studios-doorway-mirror-14.jpg"
+      ]
+    },
+    "miniature": {
+      "url": [
+        "https://admin.itsnicethat.com/images/7NOP0KUARtm1wxDoKV9oqRux84U=/234070/format-webp%7Cwidth-1440/three_colour_studies_group_2.JPG"
+      ]
+    },
+    "fairground": {
+      "url": [
+        "https://eide.net/wp-content/uploads/2025/04/fairground.jpeg"
+      ]
+    },
+    "sharpener": {
+      "url": [
+        "https://m.media-amazon.com/images/I/71OzWNb99gL.jpg"
+      ]
+    },
+    "pigeon": {
+      "url": [
+        "https://celebrateurbanbirds.org/wp-content/uploads/2016/08/rock-pigeon.png"
+      ]
+    },
+    "diamond": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Rough_Diamond.jpg/960px-Rough_Diamond.jpg"
+      ]
+    },
+    "sword": {
+      "url": [
+        "https://www.darksword-armory.com/wp-content/uploads/2025/04/combat-ready-medieval-bastard-sword-hand-and-a-half-sword-1537.jpg"
+      ]
+    },
+    "shield": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/The_uncivilized_races_of_men_in_all_countries_of_the_world%3B_being_a_comprehensive_account_of_their_manners_and_customs%2C_and_of_their_physical%2C_social%2C_mental%2C_moral_and_religious_characteristics._By_%2814762645001%29.jpg/960px-thumbnail.jpg"
+      ]
+    },
+    "fridge": {
+      "url": [
+        "https://target.scene7.com/is/image/Target/GUEST_94e6b7b7-b0ae-4c42-9600-c658b509e6f2"
+      ]
+    },
+    "bandage": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Akhilleus_Patroklos_Antikensammlung_Berlin_F2278.jpg/960px-Akhilleus_Patroklos_Antikensammlung_Berlin_F2278.jpg"
+      ]
+    },
+    "seesaw": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Francisco_de_Goya_-_El_Balanc%C3%ADn_%28Philadelphia_Museum_of_Art%29.jpg/960px-Francisco_de_Goya_-_El_Balanc%C3%ADn_%28Philadelphia_Museum_of_Art%29.jpg"
+      ]
+    },
+    "rhinoceros": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Rhino_collage.png/960px-Rhino_collage.png"
+      ]
+    },
+    "statue": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Statue_of_Unity.jpg/960px-Statue_of_Unity.jpg"
+      ]
+    },
+    "purse": {
+      "url": [
+        "https://cdn11.bigcommerce.com/s-uiywfsyvbe/images/stencil/1280x1280/products/2458/12418/leather-purse-handbag-saddleback-tumbled-lifestyle-gladstone__57318.1740506895.jpg"
+      ]
+    },
+    "furnace": {
+      "url": [
+        "https://media.angi.com/s3fs-public/furnace-illustration.png"
+      ]
+    },
+    "staircase": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Skylight%2C_chandelier_and_stairs%2C_Ashmolean_Museum%2C_Oxford.jpg/960px-Skylight%2C_chandelier_and_stairs%2C_Ashmolean_Museum%2C_Oxford.jpg"
+      ]
+    },
+    "sliver": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/en/7/79/Sliver_poster.jpg"
+      ]
+    },
+    "acid": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Zn_reaction_with_HCl.JPG/960px-Zn_reaction_with_HCl.JPG"
+      ]
+    },
+    "passerine": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Passeriformes-01v01.jpg/960px-Passeriformes-01v01.jpg"
+      ]
+    },
+    "dime": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Dime_Obverse_13.png/1200px-Dime_Obverse_13.png"
+      ]
+    },
+    "jail": {
+      "url": [
+        "https://www.prisonfellowship.org/wp-content/uploads/2017/02/jail-prison-1.jpg"
+      ]
+    },
+    "clarinet": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Leitner%2BKraus_410_320.png/960px-Leitner%2BKraus_410_320.png"
+      ]
+    },
+    "campus": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/2/2a/Joseph_Ram%C3%A9e_Union_College_USA.jpg"
+      ]
+    },
+    "poncho": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Trajes_chilenos_-Geschichte_des_kost%C3%BCms_in_chronologischer_entwicklung_1888-_A._Racinet.jpg/800px-Trajes_chilenos_-Geschichte_des_kost%C3%BCms_in_chronologischer_entwicklung_1888-_A._Racinet.jpg"
+      ]
+    },
+    "lightbulb": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Gluehlampe_01_KMJ.jpg"
+      ]
+    },
+    "sprinkles": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Sprinkles2.jpg/960px-Sprinkles2.jpg"
+      ]
+    },
+    "jam": {
+      "url": [
+        "https://shop.smucker.com/cdn/shop/files/wtkt0y6xkg4xfp5zmeiq.jpg"
+      ]
+    },
+    "hot dog": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Hot_dog_with_mustard.png/960px-Hot_dog_with_mustard.png"
+      ]
+    },
+    "soup": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Asparagus_soup_%28spargelsuppe%29.jpg/960px-Asparagus_soup_%28spargelsuppe%29.jpg"
+      ]
+    },
+    "fish": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Balantiocheilos_melanopterus_-_Karlsruhe_Zoo_02_%28cropped%29.jpg/960px-Balantiocheilos_melanopterus_-_Karlsruhe_Zoo_02_%28cropped%29.jpg"
+      ]
+    },
+    "shark": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Corl0207_%2828225976491%29.jpg/960px-Corl0207_%2828225976491%29.jpg"
+      ]
+    },
+    "salmon": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Salmo_salar.jpg/960px-Salmo_salar.jpg"
+      ]
+    },
+    "bacon": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/31/Made20bacon.png"
+      ]
+    },
+    "peach": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Illustration_Prunus_persica_clean_no_descr.jpg/960px-Illustration_Prunus_persica_clean_no_descr.jpg"
+      ]
+    },
+    "rice": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg/960px-20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg"
+      ]
+    }
+  }
+}

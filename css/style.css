@@ -27,7 +27,191 @@ body {
 	text-rendering: optimizeLegibility;
 	-webkit-tap-highlight-color: transparent;
 	padding: var(--global-padding);
+	align-content: center;
+	user-select: none;
+	background-image: url("/images/bg.gif");
+	background-size: cover;
 }
+
+.fade-out {
+	opacity: 0 !important;
+}
+
+#tooltip {
+	width: 100%;
+	padding: 15px;
+	background-color: #86b2f9;
+	transition: background-color 300ms linear, opacity 0.3s ease;
+	opacity: 1;
+	color: white;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.15);
+	/* Flex layout */
+	display: flex;
+	flex-shrink: 0;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#tooltip.fail {
+	background-color: #ed6a5e;
+}
+
+#tooltip-right {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#tooltip-right img {
+	height: 60px;
+	image-rendering: pixelated;
+	cursor: pointer;
+}
+
+#grid-container {
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: min(100%, 700px);
+	height: 100%;
+	row-gap: var(--gap);
+}
+
+#grid {
+	aspect-ratio: 1 / 1;
+	gap: var(--gap);
+	display: grid;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.cell {
+	overflow: hidden;
+	background-color: white;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	/* vertical */
+	justify-content: center;
+	background-size: cover;
+	opacity: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	transition: opacity 0.3s ease;
+	box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.15);
+}
+
+.cell:hover {
+	box-shadow: 0px 0px 18px 4px rgba(0, 0, 0, 0.16);
+}
+
+.cell.active {
+	opacity: 1 !important;
+}
+
+.cell .overlay-text {
+	z-index: 2;
+	bottom: 0;
+	position: absolute;
+	color: white;
+	font-size: min(3cqw, 20px);
+	width: 100%;
+	text-align: center;
+	text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+	background-color: rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+	/* so clicks pass through to cell if needed */
+	transition: opacity 0.3s ease;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.cell .controls {
+	width: 100%;
+	height: 100%;
+	flex-direction: row;
+	opacity: 0;
+	display: flex;
+	cursor: pointer;
+	gap: 2px;
+}
+.cell .controls:hover {
+	opacity: 0.6;
+}
+.cell.active .controls {
+	cursor: pointer;
+}
+.cell .controls .approve, .cell .controls .reject{
+	height: 100%;
+	flex: 1;
+}
+.cell .controls .approve {
+	background-color: green;
+}
+.cell .controls .reject {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+.cell .controls .reject .word, .cell .controls .reject .image {
+	flex: 1;
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.cell .controls .approve:hover,  .cell .controls .reject .word:hover, .cell .controls .reject .image:hover {
+	border: 3px solid white;
+}
+.cell .mask {
+	background-size: cover;
+	z-index: 3;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: #ededed;
+	transition: opacity 0.3s ease;
+}
+
+#splash-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    transform: translate(-50%, -50%) scale(0.1);
+    font-weight: bold;
+    white-space: nowrap;
+    text-align: center;
+    opacity: 1;
+    visibility: hidden;
+    will-change: transform, opacity;
+    transition:
+        transform 1.6s cubic-bezier(0.25, 1, 0.5, 1),
+        opacity 1.3s linear;
+}
+
+#splash-text.expand {
+    visibility: visible;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(5);
+}
+
 /* Buttons */
 .button {
 	display: inline-block;

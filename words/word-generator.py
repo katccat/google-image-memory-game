@@ -1,5 +1,5 @@
 import re
-import string
+import json
 from nltk.corpus import wordnet
 from nltk.corpus import gutenberg
 from nltk import word_tokenize, pos_tag
@@ -36,39 +36,47 @@ disallowed_categories = {
 }
 
 gutenberg_texts = [
-    'carroll-alice.txt',
-    'burgess-busterbrown.txt',
+    #'carroll-alice.txt',
+    #'burgess-busterbrown.txt',
     #'bryant-stories.txt',
     #'edgeworth-parents.txt',
 	#'austen-emma.txt',
 	#'austen-sense.txt',
 ]
 
-texts = [
-	'texts/doawk.txt',
-	'texts/giantpeach.txt',
-	'texts/chocolatefactory.txt',
-	'texts/fastfood.txt',
-	'texts/toys.txt',
-	'texts/pets.txt',
-	'texts/dessert.txt',
-	'texts/sports.txt',
-	'texts/vehicles.txt',
-	'texts/rye.txt',
-	'texts/wonder.txt',
+corpora = [
+	'corpora/doawk.txt',
+	'corpora/giantpeach.txt',
+	'corpora/chocolatefactory.txt',
+	'corpora/fastfood.txt',
+	'corpora/toys.txt',
+	'corpora/pets.txt',
+	'corpora/dessert.txt',
+	'corpora/sports.txt',
+	'corpora/vehicles.txt',
+	'corpora/rye.txt',
+]
+
+word_lists = [
+	'word-lists/foods.txt',
 ]
 
 min_frequency = 2
 min_noun_to_verb_ratio = 0.15
 min_noun_to_adj_ratio = 0.35
 min_length = 3
+max_words_in_compound = 2
 
 # Only alphabetic words without hyphens or periods
 pattern = re.compile(r"^[a-zA-Z]+$")
 
 nouns = []
 lemmatizer = WordNetLemmatizer()
-rejected_words = ['pyjama', 'feces', 'savory', 'waist', 'virgin', 'face', 'plaything', 'eats', 'Hokey Pokey']
+rejected_words = []
+with open('rejected.json', 'r', encoding='utf-8') as file:
+	rejected_words_json = json.load(file)
+	rejected_words = rejected_words_json['rejectedWords']
+
 def is_noun_allowed(noun):
 	if noun in rejected_words:
 		return False
@@ -108,13 +116,22 @@ def process_corpus(text):
 			if is_noun_allowed(lemma):
 				nouns.append(lemma)
 
+def process_word_list(text):
+	words = text.splitlines()
+	for word in words:
+		if len(word_tokenize(word)) <= max_words_in_compound:
+			nouns.append(word.lower())
+
 for fileid in gutenberg_texts:
 	process_corpus(gutenberg.raw(fileid))
 
-for file in texts:
-	with open(file, "r", encoding="utf-8", errors="ignore") as io:
-		text = io.read()
-		process_corpus(text)
+for file in corpora:
+	with open(file, "r", encoding="utf-8", errors="ignore") as f:
+		process_corpus(f.read())
+
+for file in word_lists:
+	with open(file, "r", encoding="utf-8", errors="ignore") as f:
+		process_word_list(f.read())
 
 # Count and keep most common
 noun_counts = Counter(nouns)
