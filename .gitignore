@@ -4,8 +4,8 @@ server.py
 /words/texts/
 /words/corpora/
 /words/word-lists/
-/words/__pycache__/
-/words/google-key.txt
+__pycache__/
+google-key.txt
 .DS_Store
 ._*
 .localized

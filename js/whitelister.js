@@ -1,4 +1,4 @@
-import { GridLayout } from '/js/gridlayout.js';
+import { GridLayout } from './gridlayout.js';
 
 class Game {
 	static config = {
@@ -254,7 +254,7 @@ function createDownload(file, name) {
 	a.click();
 }
 
-const imageJSON = await fetch('/words/images.json').then(res => res.json());
+const imageJSON = await fetch('./words/images.json').then(res => res.json());
 
 const gridLayout = new GridLayout(Game.elements);
 gridLayout.update(Game.config.cellsPerGrid);

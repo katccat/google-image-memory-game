@@ -1,10 +1,10 @@
-import { GridLayout } from '/js/gridlayout.js';
+import { GridLayout } from './gridlayout.js';
 
 class Game {
 	static config = {
 		fadeDelay: 700,
 		category: {
-			all: '/words/images.json',
+			all: './words/images.json',
 		},
 		funColorChance: 0.2,
 		funGlyphChance: 0.6,
@@ -18,23 +18,23 @@ class Game {
 			intro: ["Don't be evil", "I'm feeling lucky"],
 			victory: ["I'm not a robot", "reCAPTCHA'd", "200 OK", "Great!"],
 			perfect: ['Perfect!', "I'm feeling lucky"],
-			failure: ["Aw, snap!", "That's an error.", "Please try again", "404", "Only human"],
+			failure: ["Aw, snap!", "That's an error.", "Please try again", "404", "Only human!"],
 		},
 		glyphs: [
-			"/images/download_arrow.png",
-			"/images/mandarin.png",
-			"/images/puzzle.png",
-			"/images/share.png",
-			"/images/office.png",
-			"/images/cog.png",
-			"/images/search.png",
-			"/images/contact.png",
+			"images/download_arrow.png",
+			"images/mandarin.png",
+			"images/puzzle.png",
+			"images/share.png",
+			"images/office.png",
+			"images/cog.png",
+			"images/search.png",
+			"images/contact.png",
 		],
 		introImages: [
-			'/images/im.png',
-			'/images/not.png',
-			'/images/a.png',
-			'/images/robot.png',
+			'images/im.png',
+			'images/not.png',
+			'images/a.png',
+			'images/robot.png',
 		],
 	};
 	static elements = {
@@ -80,7 +80,7 @@ class Game {
 		this.state.cells.length = 0;
 	}
 
-	async createCells(board) {
+	createCells(board) {
 		const numCells = board.cellCount;
 		
 		const fragment = document.createDocumentFragment();
@@ -94,10 +94,10 @@ class Game {
 		}
 		Game.elements.grid.appendChild(fragment);
 
-		const imageList = await fetch(board.images).then(res => res.json());
-		await this.assignValuesToCells(imageList);
+		//const imageList = await fetch(board.images).then(res => res.json());
+		//await this.activateCells(imageList);
 	}
-	async assignValuesToCells(imageJSON) {
+	async activateCells(imageJSON) {
 		const cellsCopy = [...this.state.cells];
 		const usedWords = [];
 		const usedImages = [];
@@ -192,18 +192,15 @@ class Game {
 			console.error("Please provide an even cell count greater than or equal to 4.");
 			return;
 		}
+		this.visual.showLoading = !advanceStage;
 		let messageList;
 		if (!this.state.firstRun) {
 			if (advanceStage) {
-				this.visual.showLoading = false;
 				if (this.state.level <= 1) messageList = Game.config.messages.intro;
 				else if (this.state.avoidableMistakesMade == 0) messageList = Game.config.messages.perfect;
 				else messageList = Game.config.messages.victory;
 			}
-			else {
-				this.visual.showLoading = true;
-				messageList = Game.config.messages.failure;
-			}
+			else messageList = Game.config.messages.failure;
 		}
 		
 
@@ -216,53 +213,57 @@ class Game {
 			Game.elements.tooltip.addEventListener('transitionend', () => {
 				Game.elements.levelDisplay.innerText = `Level ${this.state.level}`;
 				this.faceChanger.resetFace(this.state.level > 4);
-			});
+			}, { once: true });
+
 		}
 		await this.deleteCells();
-		if (messageList) Game.splashText(randomItem(messageList));
 		gridLayout.update(board.cellCount);
+		this.createCells(board);
+		if (messageList) await Game.splashText(randomItem(messageList));
 		Game.elements.tooltip.classList.toggle('fade-out', false);
-		await this.createCells(board);
 		if (!advanceStage) this.faceChanger.resetFace();
-		this.state.coolDown = false;
+		const imageList = await fetch(board.images).then(res => res.json());
+		await this.activateCells(imageList);
 		this.faceChanger.setMaxMistakes(this.state.remainingMistakes);
-		
+		this.state.coolDown = false;
 		this.state.firstRun = false;
 	}
 }
 
-Game.splashText = function(text) {
+Game.splashText = async function(text) {
 	const splashText = Game.elements.splashText;
 	splashText.textContent = text;
 	splashText.classList.add("expand");
-	splashText.addEventListener('transitionend', () => {
-		splashText.classList.remove("expand");
+	return new Promise(resolve => {
+		const handler = () => {
+			splashText.classList.remove("expand");
+			resolve(); // <-- now awaited properly
+		};
+		splashText.addEventListener('transitionend', handler, {once: true});
 	});
-}
+};
 
 function faceChanger(game) {
 	this.game = game;
 	const faceImages = {
 		mistake1: [
-			'/images/faces/2.png',
-			'/images/faces/3a.png',
-			'/images/faces/4a.png',
-			'/images/faces/5a.png',
-			'/images/faces/6a.png',
+			'images/faces/2.png',
+			'images/faces/3a.png',
+			'images/faces/4a.png',
+			'images/faces/5a.png',
 		],
 		mistake2: [
-			'/images/faces/2.png',
-			'/images/faces/3b.png',
-			'/images/faces/4b.png',
-			'/images/faces/5b.png',
-			'/images/faces/6b.png',
+			'images/faces/2.png',
+			'images/faces/3b.png',
+			'images/faces/4b.png',
+			'images/faces/5b.png',
 		],
-		length: 5,
-		default: '/images/faces/1.png',
-		diedImmediately: '/images/faces/6c.png',
-		died1: '/images/faces/6a.png',
-		died2: '/images/faces/6b.png',
-		special: '/images/faces/sophisticated.png',
+		length: 4,
+		default: 'images/faces/1.png',
+		diedImmediately: 'images/faces/6c.png',
+		died1: 'images/faces/6a.png',
+		died2: 'images/faces/6b.png',
+		special: 'images/faces/sophisticated.png',
 	};
 
 	let maxMistakes;
@@ -274,7 +275,6 @@ function faceChanger(game) {
 		maxMistakes = mistakes;
 	}
 	this.changeFace = function() {
-		console.log(this.game.state.avoidableMistakesMade);
 		if (dead) return;
 		if (this.game.state.remainingMistakes <= 0) {
 			if (this.game.state.avoidableMistakesMade == 1) {
@@ -291,7 +291,7 @@ function faceChanger(game) {
 		}
 
 		let progress = maxMistakes - Math.max(this.game.state.remainingMistakes, 0);
-		let index = Math.min(Math.round(
+		let index = Math.min(Math.ceil(
 			(progress / maxMistakes) * (faceImages.length - 1)
 		), faceImages.length - 1);
 
@@ -327,18 +327,19 @@ class Cell {
 			container: document.createElement('div'),
 			image: document.createElement('div'),
 			text: document.createElement('div'),
-			tileMask: document.createElement('div'),
+			mask: document.createElement('div'),
 		}
-		this.elements.container = document.createElement('div');
-		this.elements.container.className = 'cell';
+		this.elements.container.className = 'cell-container';
+		this.elements.container.classList.toggle('show-loading', this.game.visual.showLoading);
 
-		this.elements.text = document.createElement('div');
+		this.elements.image.className = 'cell'
+		this.elements.container.appendChild(this.elements.image);
+
 		this.elements.text.className = 'overlay-text';
-		this.elements.container.appendChild(this.elements.text);
+		this.elements.image.appendChild(this.elements.text);
 
-		this.elements.mask = document.createElement('div');
 		this.elements.mask.className = 'mask';
-		this.elements.container.appendChild(this.elements.mask);
+		this.elements.image.appendChild(this.elements.mask);
 
 		this.elements.container.addEventListener('click', () => this.unhide());
 	}
@@ -351,7 +352,7 @@ class Cell {
 	activate(word, src) {
 		this.id = word;
 		this.elements.text.textContent = word;
-		this.elements.container.style.backgroundImage = `url(${src})`;
+		this.elements.image.style.backgroundImage = `url(${src})`;
 		if (Math.random() < Game.config.funColorChance) {
 			const randomColor = Game.config.colors[randomItem(Object.keys(Game.config.colors))];
 			this.setColor(randomColor);
@@ -362,13 +363,13 @@ class Cell {
 		if (this.img) {
 			this.setOverlayImage(this.img);
 		}
-		this.elements.container.classList.add("active");
+		this.elements.image.classList.add("active");
 		this.state = Cell.State.DEFAULT;
-		this.elements.container.classList.toggle('show-loading', game.state.showLoading);
 	}
 	deactivate() {
 		this.state = Cell.State.INACTIVE;
-		this.elements.container.classList.remove("active");
+		this.elements.container.classList.toggle('show-loading', this.game.visual.showLoading);
+		this.elements.image.classList.remove("active");
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
@@ -400,10 +401,13 @@ async function validateImage(url) {
 	return new Promise((resolve) => {
 		const img = new Image();
 		img.src = url;
-		img.onload = () => resolve(true);   // valid image
-		img.onerror = () => resolve(false); // broken image
+		img.onload = () => { resolve(true); cleanup(); };
+		img.onerror = () => { resolve(false); cleanup(); };
+		function cleanup() {
+			img.onload = null;
+			img.onerror = null;
+		}
 	});
-
 }
 
 class Board {
@@ -426,6 +430,7 @@ const boards = [
 ];
 const gridLayout = new GridLayout(Game.elements);
 const game = new Game(boards);
+globalThis.game = game;
 game.newGame(false);
 window.addEventListener('resize', () => gridLayout.resizeGrid());
 Game.elements.grid.addEventListener('click', () => game.handleClick());
