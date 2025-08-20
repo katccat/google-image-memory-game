@@ -40,7 +40,9 @@ body {
 #tooltip {
 	width: 100%;
 	padding: 15px;
-	background-color: #86b2f9;
+	background-color: #4d91ff;
+	border: var(--gap) solid white;
+	border-bottom: 0;
 	transition: 
 		background-color 300ms linear, 
 		opacity 0.3s ease;
@@ -57,12 +59,9 @@ body {
 	align-items: center;
 }
 
-#tooltip.fail {
-	background-color: #ed6a5e;
-}
-
 #tooltip-right {
 	display: flex;
+	flex-shrink: 1;
 	flex-direction: column;
 	align-items: center;
 }
@@ -81,10 +80,11 @@ body {
 	justify-content: center;
 	width: min(100%, 700px);
 	height: 100%;
-	row-gap: var(--gap);
+	/*row-gap: var(--gap);*/
 }
 
 #grid {
+	border: var(--gap) solid transparent;
 	aspect-ratio: 1 / 1;
 	gap: var(--gap);
 	display: grid;
@@ -92,9 +92,11 @@ body {
 	height: auto;
 	max-width: 100%;
 	max-height: 100%;
-	background-size: contain;
-	background-position: center;
-	background-repeat: no-repeat;
+}
+
+#grid.active {
+	background-color: white;
+	border: var(--gap) solid white;
 }
 
 .cell-container {
@@ -128,7 +130,7 @@ body {
 	background-repeat: no-repeat;
 	transition: opacity 0.3s ease;
 	will-change: opacity;
-	box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.15);
+	/*box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.15);*/
 }
 
 .cell:hover {
@@ -205,14 +207,12 @@ body {
 	transition: opacity 0.3s linear;
 }
 
-#splash-text {
+#splash-container {
     position: absolute;
     top: 50%;
     left: 50%;
     z-index: 5;
     transform: translate(-50%, -50%) scale(0.1);
-    font-weight: bold;
-    white-space: nowrap;
     text-align: center;
     opacity: 1;
     visibility: hidden;
@@ -221,14 +221,22 @@ body {
         transform 1.6s cubic-bezier(0.25, 1, 0.5, 1),
         opacity 1.6s ease-out;
 }
+#splash-text {
+	display: inline-block;
+	text-align: center;
+	font-weight: bold;
+}
 
-#splash-text.expand {
+#splash-container.expand {
     visibility: visible;
     opacity: 0;
     transform: translate(-50%, -50%) scale(5);
 }
-@media (max-width) {
-	#splash-text.expand {
+@media (max-width: 600px) {
+	#splash-container {
+		width: 6em;
+	}
+	#splash-container.expand {
 		transform: translate(-50%, -50%) scale(3);
 	}
 }

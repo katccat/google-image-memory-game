@@ -4,6 +4,7 @@ import json
 import sys
 from pathlib import Path
 from wikipedia_api import wikipedia_api_search
+from wikipedia_api import wikipedia_batch_search
 from google_scraper import scrape_images_async
 
 async def main(input_file, output_file):
@@ -22,7 +23,7 @@ async def main(input_file, output_file):
 
     results = {}
     async with aiohttp.ClientSession() as session:
-        
+        wikipedia_batch_search(session, wordlist);
         for word in wordList:
             if word in results:
                  continue

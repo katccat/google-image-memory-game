@@ -15,10 +15,10 @@ class Game {
 			'#76d590', // green
 		],
 		messages: {
-			intro: ["Don't be evil", "I'm feeling lucky"],
-			victory: ["I'm not a robot", "reCAPTCHA'd", "200 OK", "Great!"],
+			intro: ["I'm feeling lucky"],
+			victory: ["I'm not a robot", "reCAPTCHA'd", "Great!"],
 			perfect: ['Perfect!', "I'm feeling lucky"],
-			failure: ["Aw, snap!", "That's an error.", "Please try again", "404", "Only human!"],
+			failure: ["Aw, snap!", "That's an error.", "Please try again", "Only human!"],
 		},
 		glyphs: [
 			"images/download_arrow.png",
@@ -43,6 +43,7 @@ class Game {
 		tooltip: document.getElementById('tooltip'),
 		levelDisplay: document.getElementById('level-counter'),
 		splashText: document.getElementById('splash-text'),
+		splashContainer: document.getElementById('splash-container'),
 		faceDisplay: document.getElementById('face'),
 	};
 
@@ -51,6 +52,7 @@ class Game {
 			cells: [],
 			revealedCells: [],
 			viewedCells: [],
+			usedGlyphs: [],
 			unsolvedCells: 0,
 			remainingMistakes: 0,
 			coolDown: false,
@@ -80,9 +82,7 @@ class Game {
 		this.state.cells.length = 0;
 	}
 
-	createCells(board) {
-		const numCells = board.cellCount;
-		
+	createCells(numCells) {		
 		const fragment = document.createDocumentFragment();
 		for (let i = 0; i < numCells; i++) {
 			const cell = new Cell(this);
@@ -93,11 +93,8 @@ class Game {
 			this.state.cells.push(cell);
 		}
 		Game.elements.grid.appendChild(fragment);
-
-		//const imageList = await fetch(board.images).then(res => res.json());
-		//await this.activateCells(imageList);
 	}
-	async activateCells(imageJSON) {
+	async activateCells(imageJSON, additionalMistakes) {
 		const cellsCopy = [...this.state.cells];
 		const usedWords = [];
 		const usedImages = [];
@@ -111,7 +108,7 @@ class Game {
 				tries++;
 				word = randomItem(wordList);
 				imageURL = imageJSON[word].url;
-				if (usedWords.includes(word) || usedImages.includes(imageURL)) {
+				if (usedWords.includes(word) || usedImages.includes(imageURL) || !imageJSON[word].whitelisted) {
 					continue;
 				}
 				imageValid = await validateImage(imageURL)
@@ -132,9 +129,9 @@ class Game {
 				activeCellCount++;
 				cellsCopy.splice(index, 1);
 			}
-			this.state.remainingMistakes = activeCellCount / 2 - 1;
-			this.state.unsolvedCells = activeCellCount;
 		}
+		this.state.unsolvedCells = activeCellCount;
+		this.state.remainingMistakes = activeCellCount / 2 - 1 + additionalMistakes;
 	}
 
 	async handleClick() {
@@ -152,10 +149,12 @@ class Game {
 			}
 			else {
 				this.state.remainingMistakes--;
+				// if either of these cells have already been viewed, this could have been avoided
 				if (this.state.viewedCells.includes(cell1) || this.state.viewedCells.includes(cell2)) {
 					this.state.avoidableMistakesMade++;
 				}
 				else {
+					// if the player turned over the first cell which they have previously seen a match to but didn't make the match
 					const word1 = cell1.getName();
 					for (const cell of this.state.viewedCells) {
 						if (cell.getName() == word1) this.state.avoidableMistakesMade++;
@@ -208,8 +207,10 @@ class Game {
 		this.state.revealedCells.length = 0;
 		this.state.viewedCells.length = 0;
 		this.state.avoidableMistakesMade = 0;
+		this.state.usedGlyphs.length = 0;
 		if (advanceStage) {
 			Game.elements.tooltip.classList.toggle('fade-out', true);
+			Game.elements.grid.classList.toggle('active', false);
 			Game.elements.tooltip.addEventListener('transitionend', () => {
 				Game.elements.levelDisplay.innerText = `Level ${this.state.level}`;
 				this.faceChanger.resetFace(this.state.level > 4);
@@ -218,12 +219,13 @@ class Game {
 		}
 		await this.deleteCells();
 		gridLayout.update(board.cellCount);
-		this.createCells(board);
+		this.createCells(board.cellCount);
 		if (messageList) await Game.splashText(randomItem(messageList));
 		Game.elements.tooltip.classList.toggle('fade-out', false);
+		Game.elements.grid.classList.toggle('active', true);
 		if (!advanceStage) this.faceChanger.resetFace();
 		const imageList = await fetch(board.images).then(res => res.json());
-		await this.activateCells(imageList);
+		await this.activateCells(imageList, board.additionalMistakes);
 		this.faceChanger.setMaxMistakes(this.state.remainingMistakes);
 		this.state.coolDown = false;
 		this.state.firstRun = false;
@@ -232,14 +234,15 @@ class Game {
 
 Game.splashText = async function(text) {
 	const splashText = Game.elements.splashText;
+	const splashContainer = Game.elements.splashContainer;
 	splashText.textContent = text;
-	splashText.classList.add("expand");
+	splashContainer.classList.add("expand");
 	return new Promise(resolve => {
 		const handler = () => {
-			splashText.classList.remove("expand");
+			splashContainer.classList.remove("expand");
 			resolve(); // <-- now awaited properly
 		};
-		splashText.addEventListener('transitionend', handler, {once: true});
+		splashContainer.addEventListener('transitionend', handler, {once: true});
 	});
 };
 
@@ -356,8 +359,13 @@ class Cell {
 		if (Math.random() < Game.config.funColorChance) {
 			const randomColor = Game.config.colors[randomItem(Object.keys(Game.config.colors))];
 			this.setColor(randomColor);
-			if (!this.img && Math.random() < Game.config.funGlyphChance) {
-				this.setOverlayImage(randomItem(Game.config.glyphs));
+			if (!this.img && Math.random() < Game.config.funGlyphChance && this.game.state.usedGlyphs.length < Game.config.glyphs.length) {
+				let glyph;
+				do {
+					glyph = randomItem(Game.config.glyphs);
+				} while (this.game.state.usedGlyphs.includes(glyph));
+				this.setOverlayImage(glyph);
+				this.game.state.usedGlyphs.push(glyph);
 			}
 		}
 		if (this.img) {
@@ -411,22 +419,23 @@ async function validateImage(url) {
 }
 
 class Board {
-	constructor(cellCount, images = Game.config.category.all) {
+	constructor(cellCount, additionalMistakes = 0, images = Game.config.category.all) {
 		this.cellCount = cellCount;
+		this.additionalMistakes = additionalMistakes;
 		this.images = images;
 	}
 }
 const boards = [
-	new Board(4),
-	new Board(8),
-	new Board(16),
-	new Board(20),
-	new Board(20), // foods
-	new Board(24),
-	new Board(16),
-	new Board(16),
-	new Board(20), // foods
-	new Board(20),
+	new Board(4, 0),
+	new Board(8, 1),
+	new Board(16, 2),
+	new Board(20, 1),
+	new Board(20, 0), // foods
+	new Board(24, 0),
+	new Board(16, 0),
+	new Board(16, 0),
+	new Board(20, 0), // foods
+	new Board(20, 0),
 ];
 const gridLayout = new GridLayout(Game.elements);
 const game = new Game(boards);

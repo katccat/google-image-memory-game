@@ -1610,5 +1610,9 @@
   "cherry": {
     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Cherry_season_%2848216568227%29.jpg/960px-Cherry_season_%2848216568227%29.jpg",
     "whitelisted": true
+  },
+  "lanternfly": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Spotted_lanternfly_in_BBG_%2842972%29.jpg",
+    "whitelisted": true
   }
 }
