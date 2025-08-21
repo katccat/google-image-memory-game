@@ -1614,5 +1614,221 @@
   "lanternfly": {
     "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Spotted_lanternfly_in_BBG_%2842972%29.jpg",
     "whitelisted": true
+  },
+  "water": {
+    "url": "https://img.waterworld.com/files/base/ebm/ww/image/2024/03/65e724a21f04ab001e1d8534-dreamstime_xl_32360015.png",
+    "whitelisted": true
+  },
+  "squirrel": {
+    "url": "https://owl-online.org/wp-content/uploads/2020/09/pexels-pixabay-47359-1024x768.jpg",
+    "whitelisted": true
+  },
+  "silk": {
+    "url": "https://orange-lingerie.com/cdn/shop/articles/Blo_55_-_Silk_shopping_-_blog_featured_imageb_2048x.jpg",
+    "whitelisted": true
+  },
+  "coconut": {
+    "url": "https://www.dole.com/sites/default/files/styles/1024w768h-80/public/media/2025-01/coconut.png",
+    "whitelisted": true
+  },
+  "centipede": {
+    "url": "https://cdn.britannica.com/67/7267-050-C08FB3CB/Centipede-scolopendra.jpg",
+    "whitelisted": true
+  },
+  "sugarcane": {
+    "url": "https://www.saveur.com/uploads/2022/03/05/sugarcane-linda-xiao.jpg",
+    "whitelisted": true
+  },
+  "cemetery": {
+    "url": "https://th-thumbnailer.cdn-si-edu.com/4ev2Dda8BL7IVywr2xm5IRjZy6Y=/450x300/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer_public/96/50/96500b86-3dd8-4ca0-b411-8a7499e529b1/bridge-street-cemetery.jpg",
+    "whitelisted": true
+  },
+  "deer": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Mule_buck_elk_creek_m_myatt_%285489214303%29.jpg",
+    "whitelisted": true
+  },
+  "fountain": {
+    "url": "https://www.thegardengates.com/cdn/shop/products/FT-184-parisienne-two-tier-fountain-cast-stone-fountains-as.jpg",
+    "whitelisted": true
+  },
+  "razor": {
+    "url": "https://www.schick.com/cdn/shop/products/Schick-Hydro-Ultimate-Comfort-02_800x.jpg",
+    "whitelisted": true
+  },
+  "sailboat": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Segelboot_Bodensee_Mainau_%28Foto_Hilarmont%29.JPG/250px-Segelboot_Bodensee_Mainau_%28Foto_Hilarmont%29.JPG",
+    "whitelisted": true
+  },
+  "photograph": {
+    "url": "https://imgv3.fotor.com/images/blog-cover-image/a-shadow-of-a-boy-carrying-the-camera-with-red-sky-behind.jpg",
+    "whitelisted": true
+  },
+  "barbell": {
+    "url": "https://titan.fitness/cdn/shop/files/420052_01.jpg",
+    "whitelisted": true
+  },
+  "loudspeaker": {
+    "url": "https://m.media-amazon.com/images/I/41dcG6lnswL.jpg",
+    "whitelisted": true
+  },
+  "leather": {
+    "url": "https://www.weaverleathersupply.com/cdn/shop/products/091030W_L1_main.jpg",
+    "whitelisted": true
+  },
+  "sausage": {
+    "url": "https://www.beyondthechickencoop.com/wp-content/uploads/2024/02/Baked-Italian-Sausage.jpg",
+    "whitelisted": true
+  },
+  "hyena": {
+    "url": "https://i.natgeofe.com/n/dd8843a2-8ec3-4357-9a76-6d20d876209a/01-hyenas-nationalgeographic_1742911.jpg",
+    "whitelisted": true
+  },
+  "automobile": {
+    "url": "https://images.nationalgeographic.org/image/upload/v1638892232/EducationHub/photos/packard-model-b-automobile.jpg",
+    "whitelisted": true
+  },
+  "sharpener": {
+    "url": "https://cdn.schoolspecialty.com/e1fe1de2-2eda-4d4a-b4a8-b2a000be149c/1439410_JPG%20Output.jpg",
+    "whitelisted": true
+  },
+  "pigeon": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/0/05/Wild_rock_dove_at_Raikot%2C_Diamer%2C_Gilgit-Baltistan%2C_Pakistan.png",
+    "whitelisted": true
+  },
+  "bandage": {
+    "url": "https://m.media-amazon.com/images/I/71SlxOk8DCL._UF1000,1000_QL80_.jpg",
+    "whitelisted": true
+  },
+  "seesaw": {
+    "url": "https://swingsets.com/cdn/shop/files/Jack_and_June_Seesaw__JJ-SEESAW-CD_09_1600x.jpg",
+    "whitelisted": true
+  },
+  "rhinoceros": {
+    "url": "https://d1jyxxz9imt9yb.cloudfront.net/medialib/5483/image/s768x1300/XKP144_reduced.jpg",
+    "whitelisted": true
+  },
+  "acid": {
+    "url": "https://www.chemicals.co.uk/wp-content/uploads/2022/01/acids-with-different-phs-scaled.jpg",
+    "whitelisted": true
+  },
+  "purse": {
+    "url": "https://m.media-amazon.com/images/I/51-TuSnQhvS._UY900_.jpg",
+    "whitelisted": true
+  },
+  "campus": {
+    "url": "https://www.cnu.org/sites/default/files/styles/public_square_feature_image/public/BostonCollege1.jpg",
+    "whitelisted": true
+  },
+  "poncho": {
+    "url": "https://www.selvedge.org/cdn/shop/products/P23PONCHOPASTOR180CMX146CMGREY1_2.jpg",
+    "whitelisted": true
+  },
+  "soup": {
+    "url": "https://saltedplains.com/wp-content/uploads/2024/02/gluten-free-chicken-soup-7.jpg",
+    "whitelisted": true
+  },
+  "fish": {
+    "url": "https://cdn.britannica.com/34/240534-050-B8C4B11E/Porcupine-fish-Diodon-hystox.jpg",
+    "whitelisted": true
+  },
+  "rice": {
+    "url": "https://static01.nyt.com/images/2018/02/21/dining/00RICEGUIDE8/00RICEGUIDE8-jumbo.jpg",
+    "whitelisted": true
+  },
+  "peach": {
+    "url": "https://images.albertsons-media.com/is/image/ABS/184140090",
+    "whitelisted": true
+  },
+  "motor": {
+    "url": "https://appliance-standards.org/sites/default/files/styles/content_890/public/electric_motor_cropped.jpg",
+    "whitelisted": true
+  },
+  "cereal": {
+    "url": "https://mojo.generalmills.com/api/public/content/1HOVBbiSKUa6wqIpaBXEGA_gmi_hi_res_jpeg.jpeg",
+    "whitelisted": true
+  },
+  "dairy": {
+    "url": "https://domf5oio6qrcr.cloudfront.net/medialibrary/5413/h0119h16207258225642.jpg",
+    "whitelisted": true
+  },
+  "lipstick": {
+    "url": "https://i.etsystatic.com/12424904/r/il/8f2663/4222802492/il_570xN.4222802492_bg0q.jpg",
+    "whitelisted": true
+  },
+  "ferret": {
+    "url": "https://www.texasavian.com/blog/wp-content/uploads/2024/09/June-2000x1303.jpg",
+    "whitelisted": true
+  },
+  "trumpet": {
+    "url": "https://m.media-amazon.com/images/I/51D6sYNjfdL.jpg",
+    "whitelisted": true
+  },
+  "porcupine": {
+    "url": "https://www.scenichudson.org/wp-content/uploads/2021/03/iStock-134535226-1400x933.jpg",
+    "whitelisted": true
+  },
+  "liqueur": {
+    "url": "https://drinksworld.com/wp-content/uploads/liqueur-02.jpg",
+    "whitelisted": true
+  },
+  "telescope": {
+    "url": "https://cdn.mos.cms.futurecdn.net/VtkGQvZhCU3M7qtRnriPNZ-1200-80.jpg",
+    "whitelisted": true
+  },
+  "blanket": {
+    "url": "https://m.media-amazon.com/images/I/81+KAQGG9TL.jpg",
+    "whitelisted": true
+  },
+  "fuel": {
+    "url": "https://www.snexplores.org/wp-content/uploads/2019/11/860_main_fossil_fuels_explainer.png",
+    "whitelisted": true
+  },
+  "iron": {
+    "url": "https://m.media-amazon.com/images/I/61tPn137kPS.jpg",
+    "whitelisted": true
+  },
+  "hot dog": {
+    "url": "https://potatorolls.com/wp-content/uploads/2020/10/Basic-Hot-Dogs-960x640.jpg",
+    "whitelisted": true
+  },
+  "sprinkles": {
+    "url": "https://windycitybaker.com/wp-content/uploads/2020/06/Homemade_Sprinkles_22-500x500.jpg",
+    "whitelisted": true
+  },
+  "parakeet": {
+    "url": "https://animalwelfaresociety.org/wp-content/uploads/2024/08/awsmaine_FunFactsParakeetsSMALLS3_0824.jpg",
+    "whitelisted": true
+  },
+  "passerine": {
+    "url": "https://www.lyricbirdfood.com/media/1582/male-painted-bunting.jpg",
+    "whitelisted": true
+  },
+  "statue": {
+    "url": "https://theancienthome.com/cdn/shop/products/001-SCRO3420002w-venus-with-amphora-statue-medium_1_1.jpg",
+    "whitelisted": true
+  },
+  "shark": {
+    "url": "https://www.nhm.ac.uk/content/dam/nhm-www/discover/megalodon/megalodon_warpaint_shutterstock-full-width.jpg",
+    "whitelisted": true
+  },
+  "diamond": {
+    "url": "https://blog.brilliance.com/wp-content/uploads/2017/06/perfect-diamond-isolated-on-shiny-background.jpg",
+    "whitelisted": true
+  },
+  "liquor": {
+    "url": "https://www.acouplecooks.com/wp-content/uploads/2021/05/Liquor-Bottles-Alcohol-001.jpg",
+    "whitelisted": true
+  },
+  "buttercup": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Creeping_butercup_close_800.jpg/640px-Creeping_butercup_close_800.jpg",
+    "whitelisted": true
+  },
+  "soda": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Tumbler_of_cola_with_ice.jpg",
+    "whitelisted": true
+  },
+  "lunch": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lunch_at_Pihka_Lintulahti.jpg/250px-Lunch_at_Pihka_Lintulahti.jpg",
+    "whitelisted": true
   }
 }

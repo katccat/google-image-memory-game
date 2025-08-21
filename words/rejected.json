@@ -96,90 +96,48 @@
     "banana cake",
     "red velvet cake",
     "chocolate cake",
-    "panini"
+    "panini",
+    "sleeve",
+    "hoop",
+    "miniature",
+    "fridge",
+    "staircase",
+    "clarinet",
+    "bathrobe",
+    "cane",
+    "cooler",
+    "black mouth cur"
   ],
   "retry": [
-    "water",
-    "squirrel",
-    "silk",
-    "blanket",
-    "sleeve",
-    "iron",
-    "fuel",
-    "violin",
-    "coconut",
-    "telescope",
-    "gear",
-    "dairy",
-    "bathrobe",
-    "cemetery",
-    "sugarcane",
-    "mammal",
-    "centipede",
-    "deer",
-    "fountain",
-    "razor",
-    "liqueur",
-    "photograph",
-    "cereal",
-    "cooler",
-    "sailboat",
-    "liquor",
-    "lipstick",
-    "ferret",
-    "trumpet",
-    "barbell",
-    "loudspeaker",
-    "leather",
-    "porcupine",
-    "sausage",
-    "parakeet",
-    "hyena",
-    "dress",
-    "lunch",
-    "soda",
-    "motor",
-    "cane",
-    "tombstone",
-    "buttercup",
-    "chemical",
-    "automobile",
-    "hoop",
-    "doorway",
-    "miniature",
-    "fairground",
-    "sharpener",
-    "pigeon",
-    "diamond",
-    "sword",
-    "shield",
-    "fridge",
-    "bandage",
-    "seesaw",
-    "rhinoceros",
-    "statue",
-    "purse",
-    "furnace",
-    "staircase",
-    "sliver",
-    "acid",
-    "passerine",
-    "dime",
-    "jail",
-    "clarinet",
-    "campus",
-    "poncho",
-    "lightbulb",
-    "sprinkles",
-    "jam",
-    "hot dog",
-    "soup",
-    "fish",
-    "shark",
-    "salmon",
-    "bacon",
-    "peach",
-    "rice"
+    "bull terrier",
+    "border collie",
+    "shih tzu",
+    "rottweiler",
+    "pit bull",
+    "bloodhound",
+    "wolfhound",
+    "sheepdog",
+    "foxhound",
+    "king cavalier",
+    "welsh terrier",
+    "canaan dog",
+    "doberman",
+    "toy poodle",
+    "chinook dog",
+    "belgian malinois",
+    "bassett hound",
+    "pharaoh hound",
+    "xoloitzcuintli",
+    "akita",
+    "mastiff",
+    "yellow lab",
+    "saint bernard",
+    "schnauzer",
+    "bernese mountain dog",
+    "basenji",
+    "australian shepherd",
+    "pekingese",
+    "lhasa apso"
   ],
   "rejectedImages": {
     "water": {
@@ -199,7 +157,8 @@
     },
     "blanket": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Lautrec_in_bed_1893.jpg/960px-Lautrec_in_bed_1893.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Lautrec_in_bed_1893.jpg/960px-Lautrec_in_bed_1893.jpg",
+        "https://m.media-amazon.com/images/I/81I2m3XyziL.jpg"
       ]
     },
     "sleeve": {
@@ -209,17 +168,21 @@
     },
     "iron": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Iron_electrolytic_and_1cm3_cube.jpg/960px-Iron_electrolytic_and_1cm3_cube.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Iron_electrolytic_and_1cm3_cube.jpg/960px-Iron_electrolytic_and_1cm3_cube.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/a/ad/Iron_electrolytic_and_1cm3_cube.jpg"
       ]
     },
     "fuel": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Heinrich_Zille_Herbst.jpg/800px-Heinrich_Zille_Herbst.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Heinrich_Zille_Herbst.jpg/800px-Heinrich_Zille_Herbst.jpg",
+        "https://lirp.cdn-website.com/35ec1240/dms3rep/multi/opt/The-Importance-of-Using-the-Proper-Fuel-in-Your-Car-640w.jpg"
       ]
     },
     "violin": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/1/1b/Violin_VL100.png"
+        "https://upload.wikimedia.org/wikipedia/commons/1/1b/Violin_VL100.png",
+        "https://m.media-amazon.com/images/I/71UpBlUsKyL.jpg",
+        "https://www.stringworks.com/cdn/shop/products/CrescVNTop_db74faf5-027f-48c6-8673-476a3f2e70b8.jpg"
       ]
     },
     "coconut": {
@@ -229,22 +192,27 @@
     },
     "telescope": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/a/ac/100inchHooker.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/a/ac/100inchHooker.jpg",
+        "https://explorescientific.com/cdn/shop/files/80-50072_6_1200x1200.jpg"
       ]
     },
     "gear": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Animated_two_spur_gears_1_2.gif/960px-Animated_two_spur_gears_1_2.gif"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Animated_two_spur_gears_1_2.gif/960px-Animated_two_spur_gears_1_2.gif",
+        "https://i.etsystatic.com/10919371/r/il/74a9a5/1575587237/il_570xN.1575587237_nbnt.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Animated_two_spur_gears_1_2.gif/500px-Animated_two_spur_gears_1_2.gif"
       ]
     },
     "dairy": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Alte_Batzenalpe_2014_Interior_06.jpg/960px-Alte_Batzenalpe_2014_Interior_06.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Alte_Batzenalpe_2014_Interior_06.jpg/960px-Alte_Batzenalpe_2014_Interior_06.jpg",
+        "https://cdn.usdairy.com/optimize/getmedia/8b673f18-b311-423c-a3d2-2b0292670a09/Dairy-Products-Chart.png"
       ]
     },
     "bathrobe": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Lastminute.com_hotel_room_photo_shoot_-_51_Buckingham_Gate%2C_London.jpg/960px-Lastminute.com_hotel_room_photo_shoot_-_51_Buckingham_Gate%2C_London.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Lastminute.com_hotel_room_photo_shoot_-_51_Buckingham_Gate%2C_London.jpg/960px-Lastminute.com_hotel_room_photo_shoot_-_51_Buckingham_Gate%2C_London.jpg",
+        "https://www.ikea.com/us/en/images/products/rockan-bathrobe-white__1135537_pe879096_s5.jpg"
       ]
     },
     "cemetery": {
@@ -284,7 +252,8 @@
     },
     "liqueur": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/9/92/Licor-Beir%C3%A3o-%26-Orus_-_Orus_Clothing_%28cropped%29.png"
+        "https://upload.wikimedia.org/wikipedia/commons/9/92/Licor-Beir%C3%A3o-%26-Orus_-_Orus_Clothing_%28cropped%29.png",
+        "https://empirewine.imgix.net/item-hqid/4654.jpg"
       ]
     },
     "photograph": {
@@ -294,12 +263,19 @@
     },
     "cereal": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/f/fa/Les_Plantes_Cultivades._Cereals._Imatge_119.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/f/fa/Les_Plantes_Cultivades._Cereals._Imatge_119.jpg",
+        "https://www.kroger.com/product/images/large/front/0003800022055"
       ]
     },
     "cooler": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/6/6d/PortableIceChestPatent1955.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/6/6d/PortableIceChestPatent1955.jpg",
+        "https://tetonbcrentals.com/wp-content/uploads/2018/12/Cooler-Standard.jpg",
+        "https://www.igloocoolers.com/cdn/shop/files/00050541-F.jpg",
+        "https://i5.walmartimages.com/seo/Igloo-48-QT-Laguna-Ice-Chest-Cooler-Red_b63011cb-bbab-43fe-8fb4-311adab41a3d.994290b2eb70ea40ff5cbaf53a7c761a.jpeg",
+        "https://www.igloocoolers.com/cdn/shop/files/00033130-F.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/PortableIceChestPatent1955.jpg/250px-PortableIceChestPatent1955.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/2/27/Cooler_Master_V8.jpg"
       ]
     },
     "sailboat": {
@@ -309,22 +285,28 @@
     },
     "liquor": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Liquor_Still_Frankfort_489226997.jpg/960px-Liquor_Still_Frankfort_489226997.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Liquor_Still_Frankfort_489226997.jpg/960px-Liquor_Still_Frankfort_489226997.jpg",
+        "https://www.givethembeer.com/cdn/shop/products/LiquorSampler12.jpg",
+        "https://blog.haskells.com/hubfs/AdobeStock_103275825.jpeg",
+        "https://www.givethembeer.com/cdn/shop/files/HolidayLiquorBox-2.png"
       ]
     },
     "lipstick": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Applying_red_lipstick_-_model_Eve_Casini.jpg/960px-Applying_red_lipstick_-_model_Eve_Casini.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Applying_red_lipstick_-_model_Eve_Casini.jpg/960px-Applying_red_lipstick_-_model_Eve_Casini.jpg",
+        "https://sdcdn.io/mac/us/mac_sku_M0N904_1x1_0.png"
       ]
     },
     "ferret": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Ferret_2008.png/960px-Ferret_2008.png"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Ferret_2008.png/960px-Ferret_2008.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Ferret_2008.png/1200px-Ferret_2008.png"
       ]
     },
     "trumpet": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Yamaha_Trumpet_YTR-8335LA_crop.jpg/960px-Yamaha_Trumpet_YTR-8335LA_crop.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Yamaha_Trumpet_YTR-8335LA_crop.jpg/960px-Yamaha_Trumpet_YTR-8335LA_crop.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/1/12/Yamaha_Trumpet_YTR-8335LA_crop.jpg"
       ]
     },
     "barbell": {
@@ -344,7 +326,8 @@
     },
     "porcupine": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Erethizon_dorsatum_-_Prince_Rupert.jpg/960px-Erethizon_dorsatum_-_Prince_Rupert.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Erethizon_dorsatum_-_Prince_Rupert.jpg/960px-Erethizon_dorsatum_-_Prince_Rupert.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/8/8c/Erethizon_dorsatum_-_Prince_Rupert.jpg"
       ]
     },
     "sausage": {
@@ -354,7 +337,8 @@
     },
     "parakeet": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Male_and_female_parakeet_1.jpg/960px-Male_and_female_parakeet_1.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Male_and_female_parakeet_1.jpg/960px-Male_and_female_parakeet_1.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Blue_australian_parakeet.jpg/250px-Blue_australian_parakeet.jpg"
       ]
     },
     "hyena": {
@@ -364,12 +348,18 @@
     },
     "dress": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Afternoon_ensemble_MET_63.212a-b_CP4.jpg/960px-Afternoon_ensemble_MET_63.212a-b_CP4.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Afternoon_ensemble_MET_63.212a-b_CP4.jpg/960px-Afternoon_ensemble_MET_63.212a-b_CP4.jpg",
+        "https://babaroni.com/cdn/shop/files/preview_images/Sharla-3.jpg",
+        "https://www.promgirl.com/cdn/shop/files/cd323_red_1_1200x2000.jpg"
       ]
     },
     "lunch": {
       "url": [
-        "https://www.yummytoddlerfood.com/wp-content/uploads/2022/04/Homemade-Lunch-1-horiz-500x500.jpg"
+        "https://www.yummytoddlerfood.com/wp-content/uploads/2022/04/Homemade-Lunch-1-horiz-500x500.jpg",
+        "https://www.yummytoddlerfood.com/wp-content/uploads/2022/04/Homemade-Lunch-1-horiz.jpg",
+        "https://static01.nyt.com/images/2025/04/02/multimedia/28FD-Easy-Lunch-group-lpzm/28FD-Easy-Lunch-group-lpzm-superJumbo.jpg",
+        "https://www.eatingwell.com/thmb/zSh86Cx-fybgBu5-baxombw1OiA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/diy-taco-lunch-box-54f8791776b64900b285fbfc22a4f0bc.jpg",
+        "https://res.cloudinary.com/simpleview/image/upload/v1600178446/clients/sandysprings/Let_s_Do_Lunch_Listing_962ffd79-0f60-4202-9003-0ddc5796d36f.jpg"
       ]
     },
     "soda": {
@@ -379,12 +369,14 @@
     },
     "motor": {
       "url": [
-        "https://www.iqsdirectory.com/articles/electric-motor/dc-motor-diagram.jpg"
+        "https://www.iqsdirectory.com/articles/electric-motor/dc-motor-diagram.jpg",
+        "https://lirp.cdn-website.com/d62d74a8/dms3rep/multi/opt/image1-8d816884-640w.png"
       ]
     },
     "cane": {
       "url": [
-        "https://m.media-amazon.com/images/I/61GzjmHFoaL._UF1000,1000_QL80_.jpg"
+        "https://m.media-amazon.com/images/I/61GzjmHFoaL._UF1000,1000_QL80_.jpg",
+        "https://m.media-amazon.com/images/I/81LaZPUSeML._UF1000,1000_QL80_.jpg"
       ]
     },
     "tombstone": {
@@ -394,7 +386,11 @@
     },
     "buttercup": {
       "url": [
-        "https://preview.redd.it/does-buttercup-often-get-unfairly-treated-just-because-she-v0-vn6dx6133j6a1.png"
+        "https://preview.redd.it/does-buttercup-often-get-unfairly-treated-just-because-she-v0-vn6dx6133j6a1.png",
+        "https://i.guim.co.uk/img/media/69329e5bf7f47b54f69a16e83eaa4f3699ca775c/0_261_5155_3093/master/5155.jpg",
+        "https://static.wikia.nocookie.net/warner-bros-entertainment/images/1/14/Buttercup-pic.png/revision/latest/thumbnail/width/360/height/450",
+        "https://static.wikia.nocookie.net/cartoon-characters8569/images/c/c6/Buttercup.png/revision/latest",
+        "https://www.southernliving.com/thmb/0iOYtE7Dvm7C7OkGDMrbC92xv2g=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/gettyimagesbc-9472bf0d011f4259acbdcbe3c44a7a21.jpg"
       ]
     },
     "chemical": {
@@ -439,17 +435,23 @@
     },
     "diamond": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Rough_Diamond.jpg/960px-Rough_Diamond.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Rough_Diamond.jpg/960px-Rough_Diamond.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/b/b7/Rough_Diamond.jpg",
+        "https://docs.growndiamondcorp.com/blog/types-of-diamonds.png"
       ]
     },
     "sword": {
       "url": [
-        "https://www.darksword-armory.com/wp-content/uploads/2025/04/combat-ready-medieval-bastard-sword-hand-and-a-half-sword-1537.jpg"
+        "https://www.darksword-armory.com/wp-content/uploads/2025/04/combat-ready-medieval-bastard-sword-hand-and-a-half-sword-1537.jpg",
+        "https://www.darksword-armory.com/wp-content/uploads/2014/09/medieval-knight-bastard-sword-medieval-weapon-1329-verticle-600x1271.jpg",
+        "https://battlingblades.com/cdn/shop/files/1000020009__2___1_-removebg_1.jpg"
       ]
     },
     "shield": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/The_uncivilized_races_of_men_in_all_countries_of_the_world%3B_being_a_comprehensive_account_of_their_manners_and_customs%2C_and_of_their_physical%2C_social%2C_mental%2C_moral_and_religious_characteristics._By_%2814762645001%29.jpg/960px-thumbnail.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/The_uncivilized_races_of_men_in_all_countries_of_the_world%3B_being_a_comprehensive_account_of_their_manners_and_customs%2C_and_of_their_physical%2C_social%2C_mental%2C_moral_and_religious_characteristics._By_%2814762645001%29.jpg/960px-thumbnail.jpg",
+        "https://i.etsystatic.com/34410668/r/il/b3ed3f/3791424163/il_fullxfull.3791424163_7jk5.jpg",
+        "https://m.media-amazon.com/images/I/61ZK4vA2raL._UY1000_.jpg"
       ]
     },
     "fridge": {
@@ -474,7 +476,8 @@
     },
     "statue": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Statue_of_Unity.jpg/960px-Statue_of_Unity.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Statue_of_Unity.jpg/960px-Statue_of_Unity.jpg",
+        "https://www.collezionegalleriaborghese.it/uploads/server/files/CCLXII.jpg"
       ]
     },
     "purse": {
@@ -504,7 +507,8 @@
     },
     "passerine": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Passeriformes-01v01.jpg/960px-Passeriformes-01v01.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Passeriformes-01v01.jpg/960px-Passeriformes-01v01.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/e/e0/Passeriformes-01v01.jpg"
       ]
     },
     "dime": {
@@ -534,12 +538,15 @@
     },
     "lightbulb": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Gluehlampe_01_KMJ.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Gluehlampe_01_KMJ.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/b/b4/Gluehlampe_01_KMJ.png",
+        "https://www.creativeteaching.com/cdn/shop/files/10591_3_1024x1024.jpg"
       ]
     },
     "sprinkles": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Sprinkles2.jpg/960px-Sprinkles2.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Sprinkles2.jpg/960px-Sprinkles2.jpg",
+        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/5249_RainbowSprinkle-q8kPg9qY-large.jpg"
       ]
     },
     "jam": {
@@ -549,7 +556,8 @@
     },
     "hot dog": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Hot_dog_with_mustard.png/960px-Hot_dog_with_mustard.png"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Hot_dog_with_mustard.png/960px-Hot_dog_with_mustard.png",
+        "https://upload.wikimedia.org/wikipedia/commons/b/b1/Hot_dog_with_mustard.png"
       ]
     },
     "soup": {
@@ -564,17 +572,22 @@
     },
     "shark": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Corl0207_%2828225976491%29.jpg/960px-Corl0207_%2828225976491%29.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Corl0207_%2828225976491%29.jpg/960px-Corl0207_%2828225976491%29.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/0/08/Corl0207_%2828225976491%29.jpg"
       ]
     },
     "salmon": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Salmo_salar.jpg/960px-Salmo_salar.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Salmo_salar.jpg/960px-Salmo_salar.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/3/39/Salmo_salar.jpg",
+        "https://www.fisheries.noaa.gov/s3//styles/original/s3/2022-09/640x427-Salmon-Sockeye-NOAAFisheries.png"
       ]
     },
     "bacon": {
       "url": [
-        "https://upload.wikimedia.org/wikipedia/commons/3/31/Made20bacon.png"
+        "https://upload.wikimedia.org/wikipedia/commons/3/31/Made20bacon.png",
+        "https://www.lemonblossoms.com/wp-content/uploads/2019/01/Bacon-In-The-Oven-S1-1.jpg",
+        "https://www.allrecipes.com/thmb/raurqRYeb-POJxvNDMyVpk-gaoQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/267904-oven-baked-bacon-VAT-4x3-1closeup-dda2118e92bf45e68f7fac176f31b939.jpg"
       ]
     },
     "peach": {
@@ -585,6 +598,206 @@
     "rice": {
       "url": [
         "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg/960px-20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg"
+      ]
+    },
+    "Jony Ive": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/7/7d/Jonathan_Ive_%28OTRS%29.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Ive_Lasseter.jpg/250px-Ive_Lasseter.jpg",
+        "https://static.wikia.nocookie.net/ipod/images/b/ba/Ive_hero20110204.png/revision/latest/scale-to-width-down/575"
+      ]
+    },
+    "MacBook": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/MacBook-Pro-13inch.jpg/960px-MacBook-Pro-13inch.jpg"
+      ]
+    },
+    "iPhone": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/IPhone_16_Pro_Vector.svg/1200px-IPhone_16_Pro_Vector.svg.png",
+        "https://upload.wikimedia.org/wikipedia/commons/3/3d/Smartphone.png"
+      ]
+    },
+    "iMac": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/e/e6/IMac_vector.svg",
+        "https://upload.wikimedia.org/wikipedia/commons/7/77/IMac_Pro.svg"
+      ]
+    },
+    "iPod": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/1/11/IPod_family.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/6G_iPod.svg/1200px-6G_iPod.svg.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/HP_iPod_mini.jpg/1200px-HP_iPod_mini.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/e/ec/7th_Generation_iPod_Nano.svg"
+      ]
+    },
+    "Apple Store": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Apple_Store_locations.png/960px-Apple_Store_locations.png"
+      ]
+    },
+    "iPad": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/IPad_10.2%E2%80%91inch.png/1200px-IPad_10.2%E2%80%91inch.png",
+        "https://upload.wikimedia.org/wikipedia/commons/d/d8/IPad_Pro_11_mockup.png",
+        "https://upload.wikimedia.org/wikipedia/commons/6/60/IPad_2017_tablet.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Wikipedia_on_iPad_Pro.jpg/1200px-Wikipedia_on_iPad_Pro.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/IPad_Air.png/250px-IPad_Air.png"
+      ]
+    },
+    "NeXT, Inc": {
+      "url": [
+        "https://static.wikia.nocookie.net/next/images/3/30/NeXT_logo.svg/revision/latest",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/NeXT_logo.svg/1200px-NeXT_logo.svg.png",
+        "https://upload.wikimedia.org/wikipedia/en/thumb/1/1d/NeXTSTEP_desktop.png/250px-NeXTSTEP_desktop.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/NeXT_logo.svg/640px-NeXT_logo.svg.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/NeXT_logo.svg/250px-NeXT_logo.svg.png"
+      ]
+    },
+    "bull terrier": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/4/4c/Bullterrier-3453301920.jpg"
+      ]
+    },
+    "border collie": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/e/e4/Border_Collie_600.jpg"
+      ]
+    },
+    "shih tzu": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/d/df/Shihtzu_%28cropped%29.jpg"
+      ]
+    },
+    "rottweiler": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/2/26/Rottweiler_standing_facing_left.jpg"
+      ]
+    },
+    "pit bull": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/c/c0/Pit_bull_sampler.jpg"
+      ]
+    },
+    "bloodhound": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/d/d1/Bloodhound_Erland22.jpg"
+      ]
+    },
+    "wolfhound": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/d/da/%282%29_Irish_Wolfhound_4.jpg"
+      ]
+    },
+    "sheepdog": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Old_English_Sheepdog_%28side%29.jpg/1200px-Old_English_Sheepdog_%28side%29.jpg"
+      ]
+    },
+    "foxhound": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/AmericanFoxhound.jpg/1200px-AmericanFoxhound.jpg"
+      ]
+    },
+    "king cavalier": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/b/bc/King_Charles_Spaniel_200.jpg"
+      ]
+    },
+    "welsh terrier": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/7/7c/Terier_walijski_suka_2009_pl.jpg"
+      ]
+    },
+    "canaan dog": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/CanaanDogChakede.jpg/420px-CanaanDogChakede.jpg"
+      ]
+    },
+    "doberman": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/a/ac/Dobermann_handling.jpg"
+      ]
+    },
+    "toy poodle": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Toy_Poodle_in_Riga_3.JPG/250px-Toy_Poodle_in_Riga_3.JPG"
+      ]
+    },
+    "chinook dog": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/8/84/Mountan_Laurel_Ajax_the_Chinook_dog.jpg"
+      ]
+    },
+    "belgian malinois": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Malinois_Shepherd3.JPG/250px-Malinois_Shepherd3.JPG"
+      ]
+    },
+    "bassett hound": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/c/cf/BassetHound_profil.jpg"
+      ]
+    },
+    "pharaoh hound": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Pies_faraona_e34.jpg/1200px-Pies_faraona_e34.jpg"
+      ]
+    },
+    "xoloitzcuintli": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/b/bb/BIR_Grupp_5-_MEXIKANSK_NAKENHUND%2C_Lokal_Hero%E2%80%99s_King_Og_Hart%E2%80%99s_Istas_%2823607403303%29.jpg"
+      ]
+    },
+    "akita": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/a/af/Akita_Collage.png"
+      ]
+    },
+    "mastiff": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/7/76/The_dog_book_-_a_popular_history_of_the_dog%2C_with_practical_information_as_to_care_and_management_of_house%2C_kennel%2C_and_exhibition_dogs%3B_and_descriptions_of_all_the_important_breeds_%281906%29_%2820800295488%29.jpg"
+      ]
+    },
+    "yellow lab": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/34/Labrador_on_Quantock_%282175262184%29.jpg"
+      ]
+    },
+    "saint bernard": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Hummel_Vedor_vd_Robandahoeve.jpg/1200px-Hummel_Vedor_vd_Robandahoeve.jpg"
+      ]
+    },
+    "schnauzer": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/3c/Schnauzer_Size_Montage.png"
+      ]
+    },
+    "bernese mountain dog": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/7/7b/Boyero_de_Berna.jpg"
+      ]
+    },
+    "basenji": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/c/c5/Basenji_Profile_%28loosercrop%29.jpg"
+      ]
+    },
+    "australian shepherd": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Australian_Shepherd_red_bi.JPG/1200px-Australian_Shepherd_red_bi.JPG"
+      ]
+    },
+    "pekingese": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/2/24/1AKC_Pekingese_Dog_Show_2011.jpg"
+      ]
+    },
+    "lhasa apso": {
+      "url": [
+        "https://upload.wikimedia.org/wikipedia/commons/8/87/Aishia.jpg"
       ]
     }
   }

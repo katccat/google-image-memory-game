@@ -5,38 +5,63 @@ import sys
 from pathlib import Path
 from wikipedia_api import wikipedia_api_search
 from wikipedia_api import wikipedia_batch_search
-from google_scraper import scrape_images_async
+from google_scraper import scrape_images
+from google_scraper import create_driver
 
-async def main(input_file, output_file):
+async def main():
+    retry_mode = False
+    rejected_json = '../rejected.json'
+    word_file = '../word-lists/dogs.txt'
+    output_file = 'output.json'
     # load wordList
-    wordList = Path(input_file).read_text(encoding='utf-8').splitlines()
-    
-    try:
-        with open(output_file, 'r', encoding='utf-8') as file:
-            existing_json = json.load(file)
-    except FileNotFoundError:
-        existing_json = {}
+    #wordList = Path(rejected_json).read_text(encoding='utf-8').splitlines()
+    wordList = []
+    rejectedImages = {}
 
-    for (word, img) in existing_json.items():
-         if word in wordList:
-            wordList.remove(word)
+    try:
+        with open(rejected_json, 'r', encoding='utf-8') as file:
+            input_json = json.load(file)
+            if (retry_mode):
+                wordList = input_json['retry']
+            else:
+                wordList = Path(word_file).read_text(encoding='utf-8').splitlines()
+            rejectedImages = input_json['rejectedImages']
+    except FileNotFoundError:
+        sys.exit(1)
 
     results = {}
-    async with aiohttp.ClientSession() as session:
-        wikipedia_batch_search(session, wordlist);
+    wikipediaResults = await wikipedia_batch_search(wordList)
+    for word in wikipediaResults:
+        url = wikipediaResults.get(word)
+        rejected_urls = rejectedImages.get(word, {}).get('url', [])
+        if url is not None and url not in rejected_urls:
+            results[word] = {"url": url, "whitelisted": False}
+    chromeDriver = create_driver()
+    try:
         for word in wordList:
-            if word in results:
-                 continue
-            img = await wikipedia_api_search(session, word)
-            if img is None:
-                img_urls = await scrape_images_async(word)
-                if img_urls and img_urls[0]:
-                    img = img_urls[0].split('?')[0]
-                else:
-                    img = None
-            if img:
-                results[word] = img
-                print(f'"{word}": "{img}"')
+            print(word)
+            for result in results:
+                print(result.lower())
+                if result.lower() == word:
+                    print(f"skipped {word} because in results")
+                    continue
+            
+            img_urls = await scrape_images(driver = chromeDriver, query = word, num_images = 3)
+            if img_urls:
+                for url in img_urls:
+                    if url:
+                        filtered = url.split('?')[0]
+                        rejected_urls = rejectedImages.get(word, {}).get("url", [])
+                        if filtered not in rejected_urls:
+                            results[word] = {}
+                            results[word]['url'] = filtered
+                            results[word]['whitelisted'] = False
+                            print(f'"{word}": "{filtered}"')
+                            break
+                    else:
+                        print(f"Invalid image for {word}")
+    finally:
+        chromeDriver.quit()
 
     # save as JSON
     with open(output_file, 'w', encoding='utf-8') as file:
@@ -44,4 +69,5 @@ async def main(input_file, output_file):
 
 
 if __name__ == '__main__':
-    asyncio.run(main(sys.argv[1], sys.argv[2]))
+    #asyncio.run(main(sys.argv[1], sys.argv[2]))
+    asyncio.run(main())

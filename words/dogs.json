@@ -1,0 +1,130 @@
+{
+	"bulldog": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Bulldog_inglese.jpg",
+		"whitelisted": true
+	},
+	"chocolate lab": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Chocolate_Labrador_Retriever.jpg/1200px-Chocolate_Labrador_Retriever.jpg",
+		"whitelisted": true
+	},
+	"golden retriever": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_Retriever_Dukedestiny01_drvd.jpg",
+		"whitelisted": true
+	},
+	"german shepherd": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/d/d0/German_Shepherd_-_DSC_0346_%2810096362833%29.jpg",
+		"whitelisted": true
+	},
+	"dachshund": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/b/be/%EB%8B%A5%EC%8A%A4%ED%9B%88%ED%8A%B8%28%EB%8B%A8%EB%AA%A8%EC%A2%85%29_%28Dachshund_%28Short%29%29.jpg",
+		"whitelisted": true
+	},
+	"beagle": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Beagle_600.jpg",
+		"whitelisted": true
+	},
+	"poodle": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Full_attention_%288067543690%29.jpg",
+		"whitelisted": true
+	},
+	"great dane": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Dog_niemiecki_%C5%BC%C3%B3%C5%82ty_LM980.jpg/1200px-Dog_niemiecki_%C5%BC%C3%B3%C5%82ty_LM980.jpg",
+		"whitelisted": true
+	},
+	"pomeranian": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Pomeranian.JPG",
+		"whitelisted": true
+	},
+	"pug": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mops-duke-mopszucht-vom-maegdebrunnen.jpg",
+		"whitelisted": true
+	},
+	"cocker spaniel": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/%22Bill%22_-_Cocker_spaniel_anglais_2.JPG",
+		"whitelisted": true
+	},
+	"chihuahua": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Chihuahua1_bvdb.jpg",
+		"whitelisted": true
+	},
+	"jack russell terrier": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Jack_Russell_Terrier_1.jpg/1200px-Jack_Russell_Terrier_1.jpg",
+		"whitelisted": true
+	},
+	"robot dog": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Zoomer_hund.jpg/1200px-Zoomer_hund.jpg",
+		"whitelisted": true
+	},
+	"cane corso": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Cane_corso_temi_1_1024x768x24_%28cropped%29.png",
+		"whitelisted": true
+	},
+	"borzoi": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/d/de/Chart_rosyjski_borzoj_rybnik-kamien_pl.jpg",
+		"whitelisted": true
+	},
+	"service dog": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Emmet_Practices_Opening_a_Power_Door.jpg",
+		"whitelisted": true
+	},
+	"greyhound": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/GraceTheGreyhound.jpg",
+		"whitelisted": true
+	},
+	"dalmatian": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/6/68/Sun_Dog_Dalmatian.jpg",
+		"whitelisted": true
+	},
+	"shiba inu": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Taka_Shiba.jpg/1200px-Taka_Shiba.jpg",
+		"whitelisted": true
+	},
+	"corgi": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/9/99/Welsh_Pembroke_Corgi.jpg",
+		"whitelisted": true
+	},
+	"leonberger": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/7/76/Leonberger_male.jpg",
+		"whitelisted": true
+	},
+	"husky": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/1200px-Huskiesatrest.jpg",
+		"whitelisted": true
+	},
+	"wolf": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Eurasian_wolf_2.jpg/1200px-Eurasian_wolf_2.jpg",
+		"whitelisted": true
+	},
+	"yorkshire terrier": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/%282_version%29_Grupp_3%2C_YORKSHIRETERRIER%2C_NO_UCH_SE_UCH_Oxzar_Amazing_Bel%E2%80%99s_Toffy_%2824310212305%29.jpg/250px-%282_version%29_Grupp_3%2C_YORKSHIRETERRIER%2C_NO_UCH_SE_UCH_Oxzar_Amazing_Bel%E2%80%99s_Toffy_%2824310212305%29.jpg",
+		"whitelisted": true
+	},
+	"westie": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/West_Highland_White_Terrier_Krakow.jpg",
+		"whitelisted": true
+	},
+	"boxer": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Male_fawn_Boxer_undocked.jpg/1200px-Male_fawn_Boxer_undocked.jpg",
+		"whitelisted": true
+	},
+	"french bulldog": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/1/18/2008-07-28_Dog_at_Frolick_Field.jpg",
+		"whitelisted": true
+	},
+	"chow chow": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Chow-chow_in_Tallinn.JPG",
+		"whitelisted": true
+	},
+	"maltese": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Maltese_600.jpg",
+		"whitelisted": true
+	},
+	"komondor": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Komondor_delvin.jpg",
+		"whitelisted": true
+	},
+	"great pyrenees": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/7/71/Patou%2C_pyr%C3%A9nnes.jpg",
+		"whitelisted": true
+	}
+}

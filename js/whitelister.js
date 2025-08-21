@@ -4,9 +4,7 @@ class Game {
 	static config = {
 		fadeDelay: 700,
 		category: {
-			all: '/words/images-2.json',
-			dogs: '/words/dogs.json',
-			foods: '/words/foods.json',
+			all: '../words/images-2.json',
 		},
 		cellsPerGrid: 16,
 	};
@@ -48,6 +46,7 @@ class Game {
 		for (let i = 0; i < activeCells; i++) {
 			let word = wordList[i];
 			let imageURL = imageJSON[word].url;
+			console.log(imageURL);
 			this.state.cells[i].activate(word, imageURL);
 		}
 		this.state.unsolvedCells = activeCells;
@@ -93,10 +92,17 @@ class Cell {
 	constructor(game) {
 		this.game = game;
 		this.state = Cell.State.INACTIVE;
-		this.id = null;
+		this.id;
+		this.img;
 
-		this.container = document.createElement('div');
-		this.container.className = 'cell';
+		this.elements = {
+			container: document.createElement('div'),
+			image: document.createElement('div'),
+			text: document.createElement('div'),
+		};
+		this.elements.container.className = 'cell-container';
+		this.elements.image.className = 'cell'
+		this.elements.container.appendChild(this.elements.image);
 
 		this.interactContainer = document.createElement('div');
 		this.interactContainer.className = 'controls';
@@ -117,23 +123,22 @@ class Cell {
 
 		this.interactContainer.appendChild(rejectArea);
 		this.interactContainer.appendChild(this.approveButton);
-		this.container.appendChild(this.interactContainer);
+		this.elements.image.appendChild(this.interactContainer);
 
-		this.textDisplay = document.createElement('div');
-		this.textDisplay.className = 'overlay-text';
-		this.container.appendChild(this.textDisplay);
+		this.elements.text.className = 'overlay-text';
+		this.elements.image.appendChild(this.elements.text);
 	}
 	getElement() {
-		return this.container;
+		return this.elements.container;
 	}
 	getName() {
 		return this.id;
 	}
 	activate(word, src) {
 		this.id = word;
-		this.textDisplay.textContent = word;
-		this.container.style.backgroundImage = `url(${src})`;
-		this.container.classList.add("active");
+		this.elements.text.textContent = word;
+		this.elements.image.style.backgroundImage = `url(${src})`;
+		this.elements.image.classList.add("active");
 		this.state = Cell.State.DEFAULT;
 		this.approveButton.addEventListener('click', addWord.bind(this));
 		this.rejectImage.addEventListener('click', rejectImage.bind(this));
@@ -141,19 +146,13 @@ class Cell {
 	}
 	deactivate() {
 		this.state = Cell.State.INACTIVE;
-		this.container.classList.remove("active");
+		this.elements.image.classList.remove("active");
 		this.interactContainer.remove();
-	}
-	setOverlayImage(src) {
-		this.overlay.style.backgroundImage = `url(${src})`;
 	}
 }
 const approvedImageJSONItems = {};
-const rejectedImageJSONItems = {
-	doNotRetry : [],
-	retry: [],
-	rejectedImages: {}
-};
+const rejectedImageJSONItems = await fetch('../words/rejected.json').then(res => res.json());
+rejectedImageJSONItems.retry = [];
 
 class imageJSONItem {
 	constructor(src, approved = true) {
@@ -177,7 +176,6 @@ function addWord() {
 }
 function rejectWord() {
 	const word = this.getName();
-	const item = new imageJSONItem(imageJSON[word].url, true);
 	if (!pendingRejected.doNotRetry) pendingRejected.doNotRetry = [];
 	pendingRejected.doNotRetry.push(word);
 	pendingClear.push(word);
@@ -254,7 +252,7 @@ function createDownload(file, name) {
 	a.click();
 }
 
-const imageJSON = await fetch('./words/images.json').then(res => res.json());
+const imageJSON = await fetch('../words/indexer/output.json').then(res => res.json());
 
 const gridLayout = new GridLayout(Game.elements);
 gridLayout.update(Game.config.cellsPerGrid);

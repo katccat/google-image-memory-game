@@ -5,6 +5,8 @@ class Game {
 		fadeDelay: 700,
 		category: {
 			all: './words/images.json',
+			dogs: './words/dogs.json',
+			apple: './words/apple.json',
 		},
 		funColorChance: 0.2,
 		funGlyphChance: 0.6,
@@ -60,6 +62,9 @@ class Game {
 			avoidableMistakesMade : 0,
 			level: 0,
 		};
+		this.memory = {
+			validImages: [],
+		};
 		this.visual = {
 			showLoading: false,
 		};
@@ -96,24 +101,24 @@ class Game {
 	}
 	async activateCells(imageJSON, additionalMistakes) {
 		const cellsCopy = [...this.state.cells];
-		const usedWords = [];
 		const usedImages = [];
 		let activeCellCount = 0;
 		const wordList = Object.keys(imageJSON);
 		for (let i = 0; i < this.state.cells.length / 2; i++) {
 			let tries = 0;
 			let imageValid = false;
-			let word, imageURL;
+			let word, imageURL, wordIndex;
 			while (tries < 10) {
 				tries++;
-				word = randomItem(wordList);
+				wordIndex = Math.floor(Math.random() * wordList.length);
+				word = wordList[wordIndex];
 				imageURL = imageJSON[word].url;
-				if (usedWords.includes(word) || usedImages.includes(imageURL) || !imageJSON[word].whitelisted) {
+				if (usedImages.includes(imageURL) || !imageJSON[word].whitelisted) {
 					continue;
 				}
-				imageValid = await validateImage(imageURL)
+				imageValid = await validateImage(imageURL, this)
 				if (imageValid) {
-					usedWords.push(word);
+					wordList.splice(wordIndex, 1);
 					usedImages.push(imageURL);
 					break;
 				}
@@ -224,8 +229,7 @@ class Game {
 		Game.elements.tooltip.classList.toggle('fade-out', false);
 		Game.elements.grid.classList.toggle('active', true);
 		if (!advanceStage) this.faceChanger.resetFace();
-		const imageList = await fetch(board.images).then(res => res.json());
-		await this.activateCells(imageList, board.additionalMistakes);
+		await this.activateCells(board.images, board.additionalMistakes);
 		this.faceChanger.setMaxMistakes(this.state.remainingMistakes);
 		this.state.coolDown = false;
 		this.state.firstRun = false;
@@ -267,6 +271,7 @@ function faceChanger(game) {
 		died1: 'images/faces/6a.png',
 		died2: 'images/faces/6b.png',
 		special: 'images/faces/sophisticated.png',
+		special2: 'images/faces/sophisticated2.png',
 	};
 
 	let maxMistakes;
@@ -298,14 +303,14 @@ function faceChanger(game) {
 			(progress / maxMistakes) * (faceImages.length - 1)
 		), faceImages.length - 1);
 
-		if (this.game.state.avoidableMistakesMade > 1 && !(faceDisplay.src == faceImages.default || faceDisplay.src == faceImages.special)) {
+		if (this.game.state.avoidableMistakesMade > 1 && !(faceDisplay.src == faceImages.default || faceDisplay.src == faceImages.special || faceDisplay.src == faceImages.special2)) {
 			doSequence2 = true;
 		}
 		if (doSequence2) faceDisplay.src = faceImages.mistake2[index];
 		else faceDisplay.src = faceImages.mistake1[index];
 	}
 	this.resetFace = function(special = false) {
-		if (special) faceDisplay.src = faceImages.special;
+		if (special) faceDisplay.src = faceImages.special2;
 		else faceDisplay.src = faceImages.default;
 		doSequence2 = false;
 		dead = false;
@@ -331,7 +336,7 @@ class Cell {
 			image: document.createElement('div'),
 			text: document.createElement('div'),
 			mask: document.createElement('div'),
-		}
+		};
 		this.elements.container.className = 'cell-container';
 		this.elements.container.classList.toggle('show-loading', this.game.visual.showLoading);
 
@@ -405,11 +410,19 @@ function randomItem(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
 
-async function validateImage(url) {
+async function validateImage(url, game) {
 	return new Promise((resolve) => {
+		if (game.memory.validImages[url]) {
+			resolve(true);
+			return;
+		}
 		const img = new Image();
 		img.src = url;
-		img.onload = () => { resolve(true); cleanup(); };
+		img.onload = () => { 
+			game.memory.validImages[url] = true;
+			resolve(true); 
+			cleanup(); 
+		};
 		img.onerror = () => { resolve(false); cleanup(); };
 		function cleanup() {
 			img.onload = null;
@@ -419,24 +432,31 @@ async function validateImage(url) {
 }
 
 class Board {
-	constructor(cellCount, additionalMistakes = 0, images = Game.config.category.all) {
+	constructor(cellCount, additionalMistakes = 0, images) {
 		this.cellCount = cellCount;
 		this.additionalMistakes = additionalMistakes;
 		this.images = images;
 	}
 }
-const boards = [
-	new Board(4, 0),
-	new Board(8, 1),
-	new Board(16, 2),
-	new Board(20, 1),
-	new Board(20, 0), // foods
-	new Board(24, 0),
-	new Board(16, 0),
-	new Board(16, 0),
-	new Board(20, 0), // foods
-	new Board(20, 0),
-];
+const boards = [];
+{
+	const allCategory = await fetch(Game.config.category.all).then(res => res.json());
+	const appleCategory = await fetch(Game.config.category.apple).then(res => res.json());
+	const dogs = await fetch(Game.config.category.dogs).then(res => res.json());
+	boards.push(new Board(4, 0, allCategory));
+	boards.push(new Board(8, 1, allCategory));
+	boards.push(new Board(16, 2, allCategory));
+	boards.push(new Board(16, 0, appleCategory));
+	boards.push(new Board(20, 1, allCategory));
+	boards.push(new Board(16, 0, dogs));
+	boards.push(new Board(20, 0, allCategory));
+	boards.push(new Board(24, 0, allCategory));
+	boards.push(new Board(24, 0, appleCategory));
+	boards.push(new Board(16, 0, allCategory));
+	boards.push(new Board(16, 0, allCategory));
+	boards.push(new Board(20, 0, allCategory));
+	boards.push(new Board(20, 0, allCategory));
+}
 const gridLayout = new GridLayout(Game.elements);
 const game = new Game(boards);
 globalThis.game = game;

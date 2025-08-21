@@ -1,0 +1,70 @@
+{
+	"Magic Mouse": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Magic_Mouse.jpg/960px-Magic_Mouse.jpg",
+		"whitelisted": true
+	},
+	"Apple II": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Apple_II-IMG_7064.jpg/960px-Apple_II-IMG_7064.jpg",
+		"whitelisted": true
+	},
+	"Apple Lisa": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Apple-lisa-1.jpg/960px-Apple-lisa-1.jpg",
+		"whitelisted": true
+	},
+	"NeXTstation": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/NeXT_Pizzabox-IMG_7227.jpg/960px-NeXT_Pizzabox-IMG_7227.jpg",
+		"whitelisted": true
+	},
+	"Apple TV": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Apple_TV_4K_%283rd_Generation%2C_2022%29_with_Siri_Remote_%28cropped%29.jpg/960px-Apple_TV_4K_%283rd_Generation%2C_2022%29_with_Siri_Remote_%28cropped%29.jpg",
+		"whitelisted": true
+	},
+	"Macintosh 128K": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Computer_macintosh_128k%2C_1984_%28all_about_Apple_onlus%29.jpg/960px-Computer_macintosh_128k%2C_1984_%28all_about_Apple_onlus%29.jpg",
+		"whitelisted": true
+	},
+	"Steve Jobs": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg/960px-Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg",
+		"whitelisted": true
+	},
+	"Tim Cook": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/P20250806MR-0248_President_Donald_Trump_delivers_investment_remarks_alongside_Apple_CEO_Tim_Cook_%28cropped%29.jpg/800px-P20250806MR-0248_President_Donald_Trump_delivers_investment_remarks_alongside_Apple_CEO_Tim_Cook_%28cropped%29.jpg",
+		"whitelisted": true
+	},
+	"Scott Forstall": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Scott_Forstall.jpg/960px-Scott_Forstall.jpg",
+		"whitelisted": true
+	},
+	"Apple Watch": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Apple_Watch_Series_8_Midnight_Aluminium_Case.jpg/960px-Apple_Watch_Series_8_Midnight_Aluminium_Case.jpg",
+		"whitelisted": true
+	},
+	"iBook": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/6/62/IBook_G4.jpg",
+		"whitelisted": true
+	},
+	"Steve Woz": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Steve_Wozniak_by_Gage_Skidmore_3_%28cropped%29.jpg",
+		"whitelisted": true
+	},
+	"MacBook": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/MacBook_Pro_16_%28M1_Pro%2C_2021%29_-_Wikipedia.jpg/1200px-MacBook_Pro_16_%28M1_Pro%2C_2021%29_-_Wikipedia.jpg",
+		"whitelisted": true
+	},
+	"Apple Store": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Applemorumbi.jpg/250px-Applemorumbi.jpg",
+		"whitelisted": true
+	},
+	"iPhone": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Iphones_%28cropped%29.jpg/330px-Iphones_%28cropped%29.jpg",
+		"whitelisted": true
+	},
+	"iMac": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/IMac_M4_2024_2_%28cropped%29.jpg",
+		"whitelisted": true
+	},
+	"Jony Ive": {
+		"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Jonathan_Ive_%28OTRS%29_%28cropped%29.jpg/250px-Jonathan_Ive_%28OTRS%29_%28cropped%29.jpg",
+		"whitelisted": true
+	}
+}
