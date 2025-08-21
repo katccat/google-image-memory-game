@@ -137,7 +137,8 @@
     "basenji",
     "australian shepherd",
     "pekingese",
-    "lhasa apso"
+    "lhasa apso",
+    "extinguisher"
   ],
   "rejectedImages": {
     "water": {
@@ -798,6 +799,11 @@
     "lhasa apso": {
       "url": [
         "https://upload.wikimedia.org/wikipedia/commons/8/87/Aishia.jpg"
+      ]
+    },
+    "extinguisher": {
+      "url": [
+        "https://images.carriercms.com/image/upload/v1724232190/kidde/badger/Products/Images/PNG-Product_Image_10MB-8H_23923_F.png"
       ]
     }
   }
