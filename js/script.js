@@ -1,4 +1,5 @@
 import { GridLayout } from './gridlayout.js';
+import { getGoogleImg } from './images.js';
 
 class Game {
 	static config = {
@@ -21,6 +22,7 @@ class Game {
 			victory: ["I'm not a robot", "reCAPTCHA'd", "Great!"],
 			perfect: ['Perfect!', "I'm feeling lucky"],
 			failure: ["Aw, snap!", "That's an error.", "Please try again", "Only human!"],
+			nearmiss: ["Phew!", "Close!", "OK"],
 		},
 		glyphs: [
 			"images/download_arrow.png",
@@ -54,6 +56,7 @@ class Game {
 			cells: [],
 			revealedCells: [],
 			viewedCells: [],
+			viewedWords: [],
 			usedGlyphs: [],
 			unsolvedCells: 0,
 			remainingMistakes: 0,
@@ -67,6 +70,7 @@ class Game {
 		};
 		this.visual = {
 			showLoading: false,
+			splashNames: false,
 		};
 
 		this.boards = boards;
@@ -113,6 +117,7 @@ class Game {
 				wordIndex = Math.floor(Math.random() * wordList.length);
 				word = wordList[wordIndex];
 				imageURL = imageJSON[word].url;
+				//imageURL = await getGoogleImg(word);
 				if (usedImages.includes(imageURL) || !imageJSON[word].whitelisted) {
 					continue;
 				}
@@ -202,6 +207,7 @@ class Game {
 			if (advanceStage) {
 				if (this.state.level <= 1) messageList = Game.config.messages.intro;
 				else if (this.state.avoidableMistakesMade == 0) messageList = Game.config.messages.perfect;
+				else if (this.state.remainingMistakes == 0) messageList = Game.config.messages.nearmiss;
 				else messageList = Game.config.messages.victory;
 			}
 			else messageList = Game.config.messages.failure;
@@ -211,8 +217,10 @@ class Game {
 		this.state.coolDown = true;
 		this.state.revealedCells.length = 0;
 		this.state.viewedCells.length = 0;
+		this.state.viewedWords.length = 0;
 		this.state.avoidableMistakesMade = 0;
 		this.state.usedGlyphs.length = 0;
+		this.visual.splashNames = board.splashNames;
 		if (advanceStage) {
 			Game.elements.tooltip.classList.toggle('fade-out', true);
 			Game.elements.grid.classList.toggle('active', false);
@@ -235,19 +243,38 @@ class Game {
 		this.state.firstRun = false;
 	}
 }
-
+Game.splashTextHandler = function () {
+	Game.elements.splashContainer.classList.remove("expand");
+};
 Game.splashText = async function(text) {
 	const splashText = Game.elements.splashText;
 	const splashContainer = Game.elements.splashContainer;
+	splashContainer.removeEventListener('transitionend', Game.splashTextHandler, { once: true });
+	splashContainer.classList.toggle("notransition", true);
+	splashContainer.classList.remove("expand");
+	void splashContainer.offsetWidth;
 	splashText.textContent = text;
-	splashContainer.classList.add("expand");
+	splashContainer.classList.toggle("expand", true);
+	splashContainer.classList.toggle("notransition", false);
 	return new Promise(resolve => {
 		const handler = () => {
 			splashContainer.classList.remove("expand");
 			resolve(); // <-- now awaited properly
 		};
-		splashContainer.addEventListener('transitionend', handler, {once: true});
+		splashContainer.addEventListener('transitionend', handler, { once: true });
 	});
+};
+Game.splashTextInstant = function (text) {
+	const splashText = Game.elements.splashText;
+	const splashContainer = Game.elements.splashContainer;
+	splashContainer.removeEventListener('transitionend', Game.splashTextHandler, { once: true });
+	splashContainer.classList.toggle("notransition", true);
+	splashContainer.classList.remove("expand");
+	void splashContainer.offsetWidth;
+	splashText.textContent = text;
+	splashContainer.classList.toggle("expand", true);
+	splashContainer.classList.toggle("notransition", false);
+	splashContainer.addEventListener('transitionend', Game.splashTextHandler, { once: true });
 };
 
 function faceChanger(game) {
@@ -392,6 +419,10 @@ class Cell {
 		if (this.state !== Cell.State.DEFAULT || this.game.state.coolDown) return;
 		this.state = Cell.State.REVEALED;
 		this.elements.mask.classList.add('fade-out');
+		if (this.game.visual.splashNames && !this.game.state.viewedWords.includes(this.id)) {
+			Game.splashTextInstant(this.id);
+			this.game.state.viewedWords.push(this.id);
+		}
 		this.game.state.revealedCells.push(this);
 	}
 	solve() {
@@ -432,10 +463,11 @@ async function validateImage(url, game) {
 }
 
 class Board {
-	constructor(cellCount, additionalMistakes = 0, images) {
+	constructor(cellCount, images, additionalMistakes = 0, splashNames = false) {
 		this.cellCount = cellCount;
-		this.additionalMistakes = additionalMistakes;
 		this.images = images;
+		this.additionalMistakes = additionalMistakes;
+		this.splashNames = splashNames;
 	}
 }
 const boards = [];
@@ -443,19 +475,19 @@ const boards = [];
 	const allCategory = await fetch(Game.config.category.all).then(res => res.json());
 	const appleCategory = await fetch(Game.config.category.apple).then(res => res.json());
 	const dogs = await fetch(Game.config.category.dogs).then(res => res.json());
-	boards.push(new Board(4, 0, allCategory));
-	boards.push(new Board(8, 1, allCategory));
-	boards.push(new Board(16, 2, allCategory));
-	boards.push(new Board(16, 0, appleCategory));
-	boards.push(new Board(20, 1, allCategory));
-	boards.push(new Board(16, 0, dogs));
-	boards.push(new Board(20, 0, allCategory));
-	boards.push(new Board(24, 0, allCategory));
-	boards.push(new Board(24, 0, appleCategory));
-	boards.push(new Board(16, 0, allCategory));
-	boards.push(new Board(16, 0, allCategory));
-	boards.push(new Board(20, 0, allCategory));
-	boards.push(new Board(20, 0, allCategory));
+	boards.push(new Board(4, allCategory));
+	boards.push(new Board(8, allCategory, 1));
+	boards.push(new Board(16, allCategory, 2));
+	boards.push(new Board(16, appleCategory, 0, true));
+	boards.push(new Board(20, allCategory, 1));
+	boards.push(new Board(16, dogs, 0, true));
+	boards.push(new Board(20, allCategory));
+	boards.push(new Board(24, allCategory));
+	boards.push(new Board(24, appleCategory));
+	boards.push(new Board(16, allCategory));
+	boards.push(new Board(16, allCategory));
+	boards.push(new Board(20, allCategory));
+	boards.push(new Board(20, allCategory));
 }
 const gridLayout = new GridLayout(Game.elements);
 const game = new Game(boards);

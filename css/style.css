@@ -7,6 +7,10 @@
 * {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
+@font-face {
+	font-family: 'Redaction';
+	src: url("../fonts/Redaction_20-Regular.woff2");
+}
 .coral-pixels-regular {
 	font-family: "Coral Pixels", serif;
 	font-weight: 400;
@@ -31,10 +35,11 @@ body {
 	background-image: url("../images/bg.gif");
 	background-size: cover;
 	background-color: #f2f6f5;
+	padding: var(--gap);
 }
 @media (max-width: 600px) {
 	body {
-		background-image: none;
+		/*background-image: none;*/
 	}
 }
 
@@ -46,7 +51,7 @@ body {
 	width: 100%;
 	padding: 15px;
 	background-color: #4d91ff;
-	border: var(--gap) solid white;
+	/*border: var(--gap) solid white;*/
 	border-bottom: 0;
 	transition: 
 		background-color 300ms linear, 
@@ -61,6 +66,7 @@ body {
 	flex-shrink: 0;
 	justify-content: space-between;
 	align-items: center;
+	box-shadow: 0px 0px 18px 4px rgba(0, 0, 0, 0.16);
 }
 
 #tooltip-right {
@@ -89,7 +95,8 @@ body {
 
 #grid {
 	z-index: 0;
-	border: var(--gap) solid transparent;
+	padding-top: var(--gap);
+	/*border: var(--gap) solid transparent;*/
 	aspect-ratio: 1 / 1;
 	gap: var(--gap);
 	display: grid;
@@ -100,8 +107,8 @@ body {
 }
 
 #grid.active {
-	background-color: white;
-	border: var(--gap) solid white;
+	/*background-color: white;*/
+	/*border: var(--gap) solid white;*/
 }
 
 .cell-container {
@@ -135,7 +142,7 @@ body {
 	background-repeat: no-repeat;
 	transition: opacity 0.3s ease;
 	will-change: opacity;
-	/*box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.15);*/
+	box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.10);
 }
 
 .cell:hover {
@@ -147,6 +154,7 @@ body {
 }
 
 .cell .overlay-text {
+	visibility: hidden;
 	z-index: 3;
 	bottom: 0;
 	position: absolute;
@@ -213,7 +221,8 @@ body {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-color: #ededed;
+	/*background-color: #ededed;*/
+	background-color: white;
 	transition: opacity 0.3s linear;
 }
 
@@ -230,11 +239,12 @@ body {
     transition:
         transform 1.6s cubic-bezier(0.25, 1, 0.5, 1),
         opacity 1.6s ease-out;
+	pointer-events: none;
 }
 #splash-text {
+	/*text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);*/
 	display: inline-block;
 	text-align: center;
-	font-weight: bold;
 }
 
 #splash-container.expand {
@@ -250,7 +260,12 @@ body {
 		transform: translate(-50%, -50%) scale(3);
 	}
 }
-
+.notransition {
+	-webkit-transition: none !important;
+	-moz-transition: none !important;
+	-o-transition: none !important;
+	transition: none !important;
+}
 /* Buttons */
 .button {
 	display: inline-block;
