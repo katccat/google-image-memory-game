@@ -231,10 +231,6 @@
     "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/Pencils_hb.jpg",
     "whitelisted": true
   },
-  "hedgehog": {
-    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Igel.JPG/960px-Igel.JPG",
-    "whitelisted": true
-  },
   "marble": {
     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Marmo_z17.JPG/960px-Marmo_z17.JPG",
     "whitelisted": true
@@ -1759,7 +1755,7 @@
     "url": "https://m.media-amazon.com/images/I/51D6sYNjfdL.jpg",
     "whitelisted": true
   },
-  "porcupine": {
+  "hedgehog": {
     "url": "https://www.scenichudson.org/wp-content/uploads/2021/03/iStock-134535226-1400x933.jpg",
     "whitelisted": true
   },
