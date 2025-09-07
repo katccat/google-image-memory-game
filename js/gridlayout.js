@@ -1,4 +1,11 @@
 export function GridLayout(elements) {
+	const factors = [];
+	factors[4] = [2];
+	factors[8] = [2, 4];
+	factors[16] = [4];
+	factors[20] = [4, 5];
+	factors[24] = [3, 4, 6, 8];
+	factors[36] = [3, 4, 6, 9, 12];
 	let cellCount, suitableFactors;
 	const grid = elements.grid;
 
@@ -6,11 +13,14 @@ export function GridLayout(elements) {
 		cellCount = numCells;
 		suitableFactors = [];
 
-		if (cellCount == 4) suitableFactors = [2];
-		else if (cellCount == 8) suitableFactors = [2, 4];
+		if (factors[numCells]) suitableFactors = factors[numCells];
 		else {
-			for (let i = 3; i < cellCount; i++) {
-				if (cellCount % i == 0 && cellCount / i != 2) suitableFactors.push(i);
+			for (let i = 2; i < cellCount; i++) {
+				if (cellCount % i == 0) suitableFactors.push(i);
+			}
+			if (suitableFactors.length > 2 && suitableFactors[0] == 2) {
+				suitableFactors.splice(0, 1);
+				suitableFactors.splice(-1, 1);
 			}
 		}
 		this.resizeGrid();

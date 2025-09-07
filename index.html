@@ -16,7 +16,7 @@
 </head>
 
 <body>
-	<div id="splash-container">
+	<div id="splash-container" class="expand">
 		<span id="splash-text" class="coral-pixels-regular"></span>
 	</div>
 	<div id="grid-container">
@@ -24,15 +24,19 @@
 			<span class="tooltip-text">
 				Find all pairs that are<h1>matching</h1>
 			</span>
+			
 			<div id="tooltip-right">
 				<img src="images/faces/1.png" id="face" title="click to reload">
 				<span id="level-counter">Level 0</span>
 			</div>
+			<div id="lives-container">
+				<img src="images/snowflake2.png" class="life" id="life3">
+				<img src="images/snowflake2.png" class="life" id="life2">
+				<img src="images/snowflake2.png" class="life" id="life1">
+			</div>
 		</div>
 		<div id="grid"></div>
 	</div>
-	<script type="module" src="js/images.js"></script>
-	<script type="module" src="js/gridlayout.js"></script>
 	<script type="module" src="js/script.js"></script>
 </body>
 

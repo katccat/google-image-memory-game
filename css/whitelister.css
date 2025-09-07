@@ -1,0 +1,39 @@
+.cell .controls {
+	width: 100%;
+	height: 100%;
+	flex-direction: row;
+	opacity: 0;
+	display: flex;
+	cursor: pointer;
+	gap: 2px;
+}
+.cell .controls:hover {
+	opacity: 0.6;
+}
+.cell.active .controls {
+	cursor: pointer;
+}
+.cell .controls .approve, .cell .controls .reject{
+	height: 100%;
+	flex: 1;
+}
+.cell .controls .approve {
+	background-color: green;
+}
+.cell .controls .reject {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+.cell .controls .reject .word, .cell .controls .reject .image {
+	flex: 1;
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.cell .controls .approve:hover,  .cell .controls .reject .word:hover, .cell .controls .reject .image:hover {
+	border: 3px solid white;
+}

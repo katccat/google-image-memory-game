@@ -1,127 +1,79 @@
+import { Config } from './config.js';
+import { Elements } from './graphics.js';
+import { Graphics } from './graphics.js';
 import { GridLayout } from './gridlayout.js';
-import { getGoogleImg } from './images.js';
+import { Cell } from './cell.js';
+import { Board } from './board.js';
+import { BoardCreator } from './board.js';
+import { randomItem } from './utils.js';
+import { validateImage } from './utils.js';
 
 class Game {
-	static config = {
-		fadeDelay: 700,
-		category: {
-			all: './words/images.json',
-			dogs: './words/dogs.json',
-			apple: './words/apple.json',
-		},
-		funColorChance: 0.2,
-		funGlyphChance: 0.6,
-		colors: [
-			'#ed6a5e', // red
-			'#86b2f9', // blue
-			'#fdd868', // yellow
-			'#76d590', // green
-		],
-		messages: {
-			intro: ["I'm feeling lucky"],
-			victory: ["I'm not a robot", "reCAPTCHA'd", "Great!"],
-			perfect: ['Perfect!', "I'm feeling lucky"],
-			failure: ["Aw, snap!", "That's an error.", "Please try again", "Only human!"],
-			nearmiss: ["Phew!", "Close!", "OK"],
-		},
-		glyphs: [
-			"images/download_arrow.png",
-			"images/mandarin.png",
-			"images/puzzle.png",
-			"images/share.png",
-			"images/office.png",
-			"images/cog.png",
-			"images/search.png",
-			"images/contact.png",
-		],
-		introImages: [
-			'images/im.png',
-			'images/not.png',
-			'images/a.png',
-			'images/robot.png',
-		],
-	};
-	static elements = {
-		grid: document.getElementById('grid'),
-		gridContainer: document.getElementById('grid-container'),
-		tooltip: document.getElementById('tooltip'),
-		levelDisplay: document.getElementById('level-counter'),
-		splashText: document.getElementById('splash-text'),
-		splashContainer: document.getElementById('splash-container'),
-		faceDisplay: document.getElementById('face'),
-	};
-
 	constructor(boards) {
 		this.state = {
-			cells: [],
-			revealedCells: [],
-			viewedCells: [],
-			viewedWords: [],
-			usedGlyphs: [],
-			unsolvedCells: 0,
-			remainingMistakes: 0,
 			coolDown: false,
 			firstRun: true,
-			avoidableMistakesMade : 0,
-			level: 0,
+			newGame() {
+				this.cells = [];
+				this.revealedCells = [];
+				this.viewedCells = [];
+				this.viewedWords = [];
+				this.usedGlyphs = [];
+				this.unsolvedCells = 0;
+				this.remainingMistakes = 0;
+				this.avoidableMistakesMade = 0;
+			},
+
+			reset() {
+				this.level = 0;
+				this.lives = 3;
+			}
 		};
+		this.state.newGame();
+		this.state.reset();
 		this.memory = {
 			validImages: [],
+			previousLevel: -1,
 		};
-		this.visual = {
+		this.visualState = {
 			showLoading: false,
 			splashNames: false,
+			showOverlayText: true,
 		};
 
 		this.boards = boards;
-		this.faceChanger = new faceChanger(this);
+		this.faceChanger = new Graphics.faceChanger(this);
 	}
-
-	async deleteCells() {
-		let delay = 100;
-		const delayStep = 80 / this.state.cells.length;
-		for (const cell of this.state.cells) {
-			cell.deactivate();
-			await new Promise(resolve => setTimeout(resolve, delay));
-			delay += delayStep;
-		}
-		for (const cell of this.state.cells) {
-			cell.getElement().remove();
-		}
-		this.state.cells.length = 0;
-	}
-
-	createCells(numCells) {		
+	createCells = function (numCells) {
 		const fragment = document.createDocumentFragment();
 		for (let i = 0; i < numCells; i++) {
 			const cell = new Cell(this);
-			if (numCells === Game.config.introImages.length) {
-				cell.img = Game.config.introImages[i];
+			if (numCells === Config.introImages.length) {
+				cell.img = Config.introImages[i];
 			}
 			fragment.appendChild(cell.getElement());
 			this.state.cells.push(cell);
 		}
-		Game.elements.grid.appendChild(fragment);
-	}
-	async activateCells(imageJSON, additionalMistakes) {
-		const cellsCopy = [...this.state.cells];
+		Elements.grid.appendChild(fragment);
+	};
+	activateCells = async function (board, animate) {
+		let cellsCopy = [...this.state.cells];
 		const usedImages = [];
+		const wordList = Object.keys(board.images);
 		let activeCellCount = 0;
-		const wordList = Object.keys(imageJSON);
 		for (let i = 0; i < this.state.cells.length / 2; i++) {
 			let tries = 0;
 			let imageValid = false;
-			let word, imageURL, wordIndex;
+			let word, imageURL;
 			while (tries < 10) {
 				tries++;
-				wordIndex = Math.floor(Math.random() * wordList.length);
+				let wordIndex = Math.floor(Math.random() * wordList.length);
 				word = wordList[wordIndex];
-				imageURL = imageJSON[word].url;
-				//imageURL = await getGoogleImg(word);
-				if (usedImages.includes(imageURL) || !imageJSON[word].whitelisted) {
+				imageURL = board.images[word].url;
+				if (!board.images[word].whitelisted || usedImages.includes(imageURL)) {
 					continue;
 				}
-				imageValid = await validateImage(imageURL, this)
+				imageValid = await validateImage(imageURL, this);
 				if (imageValid) {
 					wordList.splice(wordIndex, 1);
 					usedImages.push(imageURL);
@@ -133,18 +85,47 @@ class Game {
 				continue;
 			}
 			for (let j = 0; j < 2; j++) {
-				const index = Math.floor(Math.random() * cellsCopy.length);
-				const cell = cellsCopy[index];
+				const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
+				const cell = cellsCopy[randomCellIndex];
 				cell.activate(word, imageURL);
+				if (Math.random() < board.funColorChance) {
+					const randomColor = randomItem(Config.colors);
+					cell.setColor(randomColor);
+				}
 				activeCellCount++;
-				cellsCopy.splice(index, 1);
+				cellsCopy.splice(randomCellIndex, 1);
 			}
 		}
 		this.state.unsolvedCells = activeCellCount;
-		this.state.remainingMistakes = activeCellCount / 2 - 1 + additionalMistakes;
-	}
+		this.state.remainingMistakes = activeCellCount / 2 - 1 + board.additionalMistakes;
 
-	async handleClick() {
+		cellsCopy = [...this.state.cells];
+		let delay = 300;
+		for (let i = 0; i < activeCellCount; i++) {
+			const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
+			const cell = cellsCopy[randomCellIndex];
+			cell.reveal();
+			cellsCopy.splice(randomCellIndex, 1);
+			if (delay > 0 && animate) {
+				await new Promise(resolve => setTimeout(resolve, delay));
+				delay = Math.floor(delay * 0.8);
+			}
+		}
+	};
+	deleteCells = async function () {
+		let delay = 100;
+		const delayStep = 80 / this.state.cells.length;
+		for (const cell of this.state.cells) {
+			cell.deactivate();
+			await new Promise(resolve => setTimeout(resolve, delay));
+			delay += delayStep;
+		}
+		for (const cell of this.state.cells) {
+			cell.getElement().remove();
+		}
+		this.state.cells.length = 0;
+	};
+	handleClick = async function () {
 		if (this.state.revealedCells.length > 1) {
 			const [cell1, cell2] = this.state.revealedCells;
 			this.state.revealedCells.length = 0;
@@ -154,6 +135,8 @@ class Game {
 				cell2.solve();
 				this.state.unsolvedCells -= 2;
 				if (this.state.unsolvedCells <= 0) {
+					if (this.board.giveLife) this.incrementLife(true);
+					this.state.level++;
 					this.newGame(true);
 				}
 			}
@@ -172,327 +155,110 @@ class Game {
 				}
 				if (this.state.avoidableMistakesMade > 0) this.faceChanger.changeFace(this.state.remainingMistakes);
 				if (this.state.remainingMistakes < 0) {
-					//Game.elements.tooltip.classList.toggle('fail', true);
-					this.newGame(false);
+					//Elements.tooltip.classList.toggle('fail', true);
+					this.incrementLife(false);
+					Graphics.updateLives(this.state.lives);
+					if (this.state.lives <= 0) {
+						this.restartGame();
+					}
+					else {
+						this.newGame(false);
+					}
 				}
 
-				this.state.coolDown = true;
+				//this.state.coolDown = true;
 
-				await new Promise(resolve => setTimeout(resolve, Game.config.fadeDelay));
+				await new Promise(resolve => setTimeout(resolve, Config.fadeDelay));
 
-				this.state.coolDown = false;
+				//this.state.coolDown = false;
 				cell1.hide();
 				cell2.hide();
-				
+
 			}
 			for (const cell of [cell1, cell2]) {
 				if (!this.state.viewedCells.includes(cell)) {
 					this.state.viewedCells.push(cell);
 				}
 			}
-			
 		}
-	}
+	};
+	newGame = async function (victory) {
+		if (this.state.level <= this.boards.length - 1) {
+			this.board = this.boards[this.state.level];
+		}
+		else this.board = BoardCreator.createBoard(this.state.level);
 
-	async newGame(advanceStage) {
-		if (advanceStage) this.state.level++;
-		const board = this.boards[Math.min(this.state.level, this.boards.length - 1)];
-		if (board.cellCount < 4 || board.cellCount % 2 !== 0) {
+		if (this.board.cellCount < 4 || this.board.cellCount % 2 !== 0) {
 			console.error("Please provide an even cell count greater than or equal to 4.");
 			return;
 		}
-		this.visual.showLoading = !advanceStage;
+		this.visualState.showLoading = !victory && this.state.level == this.memory.previousLevel;
 		let messageList;
 		if (!this.state.firstRun) {
-			if (advanceStage) {
-				if (this.state.level <= 1) messageList = Game.config.messages.intro;
-				else if (this.state.avoidableMistakesMade == 0) messageList = Game.config.messages.perfect;
-				else if (this.state.remainingMistakes == 0) messageList = Game.config.messages.nearmiss;
-				else messageList = Game.config.messages.victory;
+			if (victory) {
+				if (this.state.level <= 1) messageList = Config.messages.intro;
+				else if (this.state.avoidableMistakesMade == 0) messageList = Config.messages.perfect;
+				else if (this.state.remainingMistakes == 0) messageList = Config.messages.nearmiss;
+				else messageList = Config.messages.victory;
 			}
-			else messageList = Game.config.messages.failure;
+			else if (this.state.level < this.memory.previousLevel) messageList = Config.messages.gameover;
+			else messageList = Config.messages.failure;
 		}
-		
 
 		this.state.coolDown = true;
-		this.state.revealedCells.length = 0;
-		this.state.viewedCells.length = 0;
-		this.state.viewedWords.length = 0;
-		this.state.avoidableMistakesMade = 0;
-		this.state.usedGlyphs.length = 0;
-		this.visual.splashNames = board.splashNames;
-		if (advanceStage) {
-			Game.elements.tooltip.classList.toggle('fade-out', true);
-			Game.elements.grid.classList.toggle('active', false);
-			Game.elements.tooltip.addEventListener('transitionend', () => {
-				Game.elements.levelDisplay.innerText = `Level ${this.state.level}`;
-				this.faceChanger.resetFace(this.state.level > 4);
+		if (this.state.level != this.memory.previousLevel) {
+			Elements.tooltip.classList.toggle('fade-out', true);
+			Elements.grid.classList.toggle('active', false);
+			Elements.tooltip.addEventListener('transitionend', () => {
+				Graphics.resetToolTip(this, victory);
 			}, { once: true });
-
 		}
 		await this.deleteCells();
-		gridLayout.update(board.cellCount);
-		this.createCells(board.cellCount);
-		if (messageList) await Game.splashText(randomItem(messageList));
-		Game.elements.tooltip.classList.toggle('fade-out', false);
-		Game.elements.grid.classList.toggle('active', true);
-		if (!advanceStage) this.faceChanger.resetFace();
-		await this.activateCells(board.images, board.additionalMistakes);
+		this.state.newGame();
+		this.visualState.splashNames = this.board.textMode == Board.textMode.splashText;
+		if (this.state.level != this.memory.previousLevel) gridLayout.update(this.board.cellCount);
+		this.createCells(this.board.cellCount);
+		if (messageList) await Graphics.splashText(randomItem(messageList));
+		Elements.tooltip.classList.toggle('fade-out', false);
+		Elements.grid.classList.toggle('active', true);
+		if (this.state.level == this.memory.previousLevel) {
+			Graphics.resetToolTip(this, false);
+		}
+		await this.activateCells(this.board, this.state.level != this.memory.previousLevel);
 		this.faceChanger.setMaxMistakes(this.state.remainingMistakes);
 		this.state.coolDown = false;
 		this.state.firstRun = false;
-	}
-}
-Game.splashTextHandler = function () {
-	Game.elements.splashContainer.classList.remove("expand");
-};
-Game.splashText = async function(text) {
-	const splashText = Game.elements.splashText;
-	const splashContainer = Game.elements.splashContainer;
-	splashContainer.removeEventListener('transitionend', Game.splashTextHandler, { once: true });
-	splashContainer.classList.toggle("notransition", true);
-	splashContainer.classList.remove("expand");
-	void splashContainer.offsetWidth;
-	splashText.textContent = text;
-	splashContainer.classList.toggle("expand", true);
-	splashContainer.classList.toggle("notransition", false);
-	return new Promise(resolve => {
-		const handler = () => {
-			splashContainer.classList.remove("expand");
-			resolve(); // <-- now awaited properly
-		};
-		splashContainer.addEventListener('transitionend', handler, { once: true });
-	});
-};
-Game.splashTextInstant = function (text) {
-	const splashText = Game.elements.splashText;
-	const splashContainer = Game.elements.splashContainer;
-	splashContainer.removeEventListener('transitionend', Game.splashTextHandler, { once: true });
-	splashContainer.classList.toggle("notransition", true);
-	splashContainer.classList.remove("expand");
-	void splashContainer.offsetWidth;
-	splashText.textContent = text;
-	splashContainer.classList.toggle("expand", true);
-	splashContainer.classList.toggle("notransition", false);
-	splashContainer.addEventListener('transitionend', Game.splashTextHandler, { once: true });
-};
-
-function faceChanger(game) {
-	this.game = game;
-	const faceImages = {
-		mistake1: [
-			'images/faces/2.png',
-			'images/faces/3a.png',
-			'images/faces/4a.png',
-			'images/faces/5a.png',
-		],
-		mistake2: [
-			'images/faces/2.png',
-			'images/faces/3b.png',
-			'images/faces/4b.png',
-			'images/faces/5b.png',
-		],
-		length: 4,
-		default: 'images/faces/1.png',
-		diedImmediately: 'images/faces/6c.png',
-		died1: 'images/faces/6a.png',
-		died2: 'images/faces/6b.png',
-		special: 'images/faces/sophisticated.png',
-		special2: 'images/faces/sophisticated2.png',
+		this.memory.previousLevel = this.state.level;
 	};
-
-	let maxMistakes;
-	let doSequence2 = false;
-	let dead = false;
-	const faceDisplay = Game.elements.faceDisplay;
-
-	this.setMaxMistakes = function(mistakes) {
-		maxMistakes = mistakes;
-	}
-	this.changeFace = function() {
-		if (dead) return;
-		if (this.game.state.remainingMistakes <= 0) {
-			if (this.game.state.avoidableMistakesMade == 1) {
-				faceDisplay.src = faceImages.diedImmediately;
-			}
-			else if (!doSequence2) {
-				faceDisplay.src = faceImages.died1;
-			}
-			else {
-				faceDisplay.src = faceImages.died2;
-			}
-			dead = true;
-			return;
-		}
-
-		let progress = maxMistakes - Math.max(this.game.state.remainingMistakes, 0);
-		let index = Math.min(Math.ceil(
-			(progress / maxMistakes) * (faceImages.length - 1)
-		), faceImages.length - 1);
-
-		if (this.game.state.avoidableMistakesMade > 1 && !(faceDisplay.src == faceImages.default || faceDisplay.src == faceImages.special || faceDisplay.src == faceImages.special2)) {
-			doSequence2 = true;
-		}
-		if (doSequence2) faceDisplay.src = faceImages.mistake2[index];
-		else faceDisplay.src = faceImages.mistake1[index];
-	}
-	this.resetFace = function(special = false) {
-		if (special) faceDisplay.src = faceImages.special2;
-		else faceDisplay.src = faceImages.default;
-		doSequence2 = false;
-		dead = false;
-	}
-}
-
-class Cell {
-	static State = {
-		DEFAULT: 'default',
-		REVEALED: 'revealed',
-		SOLVED: 'solved',
-		INACTIVE: 'inactive',
+	restartGame = function () {
+		Graphics.updateLives(this.state.lives);
+		this.state.reset();
+		this.newGame(false);
 	};
-
-	constructor(game) {
-		this.game = game;
-		this.state = Cell.State.INACTIVE;
-		this.id;
-		this.img;
-
-		this.elements = {
-			container: document.createElement('div'),
-			image: document.createElement('div'),
-			text: document.createElement('div'),
-			mask: document.createElement('div'),
-		};
-		this.elements.container.className = 'cell-container';
-		this.elements.container.classList.toggle('show-loading', this.game.visual.showLoading);
-
-		this.elements.image.className = 'cell'
-		this.elements.container.appendChild(this.elements.image);
-
-		this.elements.text.className = 'overlay-text';
-		this.elements.image.appendChild(this.elements.text);
-
-		this.elements.mask.className = 'mask';
-		this.elements.image.appendChild(this.elements.mask);
-
-		this.elements.container.addEventListener('click', () => this.unhide());
-	}
-	getElement() {
-		return this.elements.container;
-	}
-	getName() {
-		return this.id;
-	}
-	activate(word, src) {
-		this.id = word;
-		this.elements.text.textContent = word;
-		this.elements.image.style.backgroundImage = `url(${src})`;
-		if (Math.random() < Game.config.funColorChance) {
-			const randomColor = Game.config.colors[randomItem(Object.keys(Game.config.colors))];
-			this.setColor(randomColor);
-			if (!this.img && Math.random() < Game.config.funGlyphChance && this.game.state.usedGlyphs.length < Game.config.glyphs.length) {
-				let glyph;
-				do {
-					glyph = randomItem(Game.config.glyphs);
-				} while (this.game.state.usedGlyphs.includes(glyph));
-				this.setOverlayImage(glyph);
-				this.game.state.usedGlyphs.push(glyph);
+	incrementLife = function (increment) {
+		if (increment) {
+			if (this.state.lives < Config.maxLives) {
+				this.state.lives++;
+				Graphics.splashTextInstant("+1!");
 			}
 		}
-		if (this.img) {
-			this.setOverlayImage(this.img);
-		}
-		this.elements.image.classList.add("active");
-		this.state = Cell.State.DEFAULT;
-	}
-	deactivate() {
-		this.state = Cell.State.INACTIVE;
-		this.elements.container.classList.toggle('show-loading', this.game.visual.showLoading);
-		this.elements.image.classList.remove("active");
-	}
-	hide() {
-		this.state = Cell.State.DEFAULT;
-		this.elements.mask.classList.remove('fade-out');
-	}
-	unhide() {
-		if (this.state !== Cell.State.DEFAULT || this.game.state.coolDown) return;
-		this.state = Cell.State.REVEALED;
-		this.elements.mask.classList.add('fade-out');
-		if (this.game.visual.splashNames && !this.game.state.viewedWords.includes(this.id)) {
-			Game.splashTextInstant(this.id);
-			this.game.state.viewedWords.push(this.id);
-		}
-		this.game.state.revealedCells.push(this);
-	}
-	solve() {
-		this.state = Cell.State.SOLVED;
-		this.elements.text.classList.add('fade-out');
-	}
-	setOverlayImage(src) {
-		this.elements.mask.style.backgroundImage = `url(${src})`;
-	}
-	setColor(color) {
-		this.elements.mask.style.backgroundColor = color;
-	}
+		else this.state.lives--;
+	};
 }
 
-function randomItem(list) {
-	return list[Math.floor(Math.random() * list.length)];
-}
-
-async function validateImage(url, game) {
-	return new Promise((resolve) => {
-		if (game.memory.validImages[url]) {
-			resolve(true);
-			return;
-		}
-		const img = new Image();
-		img.src = url;
-		img.onload = () => { 
-			game.memory.validImages[url] = true;
-			resolve(true); 
-			cleanup(); 
-		};
-		img.onerror = () => { resolve(false); cleanup(); };
-		function cleanup() {
-			img.onload = null;
-			img.onerror = null;
-		}
-	});
-}
-
-class Board {
-	constructor(cellCount, images, additionalMistakes = 0, splashNames = false) {
-		this.cellCount = cellCount;
-		this.images = images;
-		this.additionalMistakes = additionalMistakes;
-		this.splashNames = splashNames;
-	}
-}
 const boards = [];
 {
-	const allCategory = await fetch(Game.config.category.all).then(res => res.json());
-	const appleCategory = await fetch(Game.config.category.apple).then(res => res.json());
-	const dogs = await fetch(Game.config.category.dogs).then(res => res.json());
-	boards.push(new Board(4, allCategory));
-	boards.push(new Board(8, allCategory, 1));
-	boards.push(new Board(16, allCategory, 2));
-	boards.push(new Board(16, appleCategory, 0, true));
-	boards.push(new Board(20, allCategory, 1));
-	boards.push(new Board(16, dogs, 0, true));
-	boards.push(new Board(20, allCategory));
-	boards.push(new Board(24, allCategory));
-	boards.push(new Board(24, appleCategory));
-	boards.push(new Board(16, allCategory));
-	boards.push(new Board(16, allCategory));
-	boards.push(new Board(20, allCategory));
-	boards.push(new Board(20, allCategory));
+	await Config.getCategories();
+	boards.push(new Board(4, Config.category.all)); // 0
+	boards.push(new Board(8, Config.category.all, 1)); // 1
 }
-const gridLayout = new GridLayout(Game.elements);
+const gridLayout = new GridLayout(Elements);
 const game = new Game(boards);
 globalThis.game = game;
-game.newGame(false);
+game.newGame(true);
 window.addEventListener('resize', () => gridLayout.resizeGrid());
-Game.elements.grid.addEventListener('click', () => game.handleClick());
-Game.elements.faceDisplay.addEventListener('click', () => game.newGame(false));
+Elements.grid.addEventListener('click', () => game.handleClick());
+Elements.faceDisplay.addEventListener('click', () => {
+	game.incrementLife(false);
+	game.newGame(false);
+});
