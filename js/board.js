@@ -20,12 +20,12 @@ export class Board {
 export class BoardCreator {
 	static specialBoardChance = 0.3;
 	static cellCounts = {
-		easy: [16, 20],
-		normal: [24, 28],
-		hard: [30, 32, 36],
+		easy: [12, 18],
+		normal: [24],
+		hard: [30, 36],
 	};
 	static levels = Config.difficulty;
-	static giveLifeThreshold = 24;
+	static giveLifeThreshold = 20;
 	static previous = { level: null, board: null };
 	static createBoard(level) {
 		if (BoardCreator.previous.level == level) return BoardCreator.previous.board;
@@ -66,9 +66,9 @@ export class BoardCreator {
 		if (cellCount >= BoardCreator.giveLifeThreshold || doSpecialCategory) {
 			board.giveLife = true;
 		}
-		if (level >= BoardCreator.levels.normal) {
+		/*if (level >= BoardCreator.levels.normal) {
 			board.funColorChance = Math.min(1, (Config.funColorChance + (0.05 * (level - BoardCreator.levels.normal))));
-		}
+		}*/
 		BoardCreator.previous.board = board;
 		BoardCreator.previous.level = level;
 		return board;

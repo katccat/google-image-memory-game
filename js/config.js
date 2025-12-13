@@ -1,7 +1,7 @@
 export const Config = {
 	fadeDelay: 700,
 	category: { special: {} },
-	funColorChance: 0.2,
+	funColorChance: 0.8,//0.2,
 	funGlyphChance: 0.6,
 	maxLives: 3,
 	colors: [
@@ -14,7 +14,7 @@ export const Config = {
 		intro: ["I'm feeling lucky"],
 		victory: ["I'm not a robot", "reCAPTCHA'd", "Great!"],
 		perfect: ['Perfect!', "I'm feeling lucky"],
-		nearmiss: ["Phew!", "Close!", "I'm a lil rusty"],
+		nearmiss: ["Phew!", "Close!"],
 		failure: ["Aw, snap!", "That's an error.", "Please try again", "Only human!"],
 		gameover: ["Game over!"],
 	},
@@ -39,9 +39,36 @@ export const Config = {
 		normal: 5,
 		hard: 12,
 	},
-	boardAnimation: {
+	boardAnimationID: {
 		fade: 'fade',
 		buffering: 'buffering',
+	},
+	animation: {
+		shake: {
+			keyframes: [
+				{ marginLeft: '0', offset: 0 },
+				{ marginLeft: '8%', offset: 0.25 },
+				{ marginLeft: '-8%', offset: 0.75 },
+				{ marginLeft: '0', offset: 1 }
+			],
+			options: {
+				duration: 200,
+				iterations: 2,
+				easing: 'ease-in-out',
+			}
+		},
+		enlarge: {
+			keyframes: [
+				{ scale: '1', offset: 0 },
+				{ scale: '0.9', offset: 0.5 },
+				{ scale: '1', offset: 1 },
+			],
+			options: {
+				duration: 500,
+				iterations: 1,
+				easing: 'ease-in-out',
+			}
+		}
 	}
 };
 

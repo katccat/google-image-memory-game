@@ -15,6 +15,7 @@ export class Cell {
 		this.state = Cell.State.INACTIVE;
 		this.id;
 		this.img;
+		this.sibling;
 
 		this.elements = {
 			parent: document.createElement('div'),
@@ -29,7 +30,7 @@ export class Cell {
 		this.elements.contentContainer.className = 'cell-content-container';
 		this.elements.parent.appendChild(this.elements.contentContainer);
 
-		this.elements.image.className = 'cell-image'
+		this.elements.image.className = 'cell-image';
 		this.elements.contentContainer.appendChild(this.elements.image);
 
 		this.elements.text.className = 'cell-word-display';
@@ -38,7 +39,7 @@ export class Cell {
 		this.elements.mask.className = 'cell-mask';
 		this.elements.contentContainer.appendChild(this.elements.mask);
 
-		this.elements.contentContainer.addEventListener('click', () => this.unhide());
+		this.elements.parent.addEventListener('click', () => this.unhide());
 	}
 	getElement() {
 		return this.elements.parent;
@@ -65,22 +66,38 @@ export class Cell {
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
-		this.elements.mask.classList.toggle('fade-out', false);
+		this.elements.contentContainer.classList.toggle('unhide', false);
+	}
+	shake() {
+		this.elements.parent.animate(Config.animation.shake.keyframes, Config.animation.shake.options);
 	}
 	unhide() {
+		console.log("unhide 1");
+		console.log(this.state);
 		if (this.state !== Cell.State.DEFAULT || this.game.state.coolDown) return;
+		console.log("unhide 2");
+		//this.game.state.cellsFading = false;
 		this.state = Cell.State.REVEALED;
-		this.elements.mask.classList.toggle('fade-out', true);
+		this.elements.contentContainer.classList.toggle('unhide', true);
 		if (this.game.visualState.splashNames && !this.game.state.viewedWords.includes(this.id)) {
 			Graphics.splashTextInstant(this.id);
 			this.game.state.viewedWords.push(this.id);
 		}
 		this.game.state.revealedCells.push(this);
 	}
+	highlight(callOther = true) {
+		//if (callOther) this.sibling.highlight(false);
+		this.elements.parent.classList.toggle('animate', true);
+	}
+	unhighlight(callOther = true) {
+		//if (callOther) this.sibling.unhighlight(false);
+		this.elements.parent.classList.toggle('animate', false);
+		
+	}
 	solve() {
 		this.state = Cell.State.SOLVED;
 		this.elements.text.classList.toggle('fade-out', true);
-		this.elements.image.classList.toggle('pause', true);
+		this.unhighlight();
 	}
 	setOverlayImage(src) {
 		this.elements.mask.style.backgroundImage = `url(${src})`;

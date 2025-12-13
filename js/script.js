@@ -12,6 +12,7 @@ class Game {
 	constructor(boards) {
 		this.state = {
 			coolDown: false,
+			cellsFading: false,
 			firstRun: true,
 			newGame() {
 				this.cells = [];
@@ -84,6 +85,7 @@ class Game {
 				console.log("No word with picture found.");
 				continue;
 			}
+			let sibling1, sibling2;
 			for (let j = 0; j < 2; j++) {
 				const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
 				const cell = cellsCopy[randomCellIndex];
@@ -94,7 +96,11 @@ class Game {
 				}
 				activeCellCount++;
 				cellsCopy.splice(randomCellIndex, 1);
+				if (!sibling1) sibling1 = cell;
+				else sibling2 = cell;
 			}
+			sibling1.sibling = sibling2;
+			sibling2.sibling = sibling1;
 		}
 		this.state.unsolvedCells = activeCellCount;
 		this.state.remainingMistakes = activeCellCount / 2 - 1 + board.additionalMistakes;
@@ -126,7 +132,10 @@ class Game {
 		this.state.cells.length = 0;
 	};
 	handleClick = async function () {
-		if (this.state.revealedCells.length > 1) {
+		if (this.state.revealedCells.length == 1) {
+			this.state.revealedCells[0].highlight();
+		}
+		else if (this.state.revealedCells.length > 1) {
 			const [cell1, cell2] = this.state.revealedCells;
 			this.state.revealedCells.length = 0;
 
@@ -135,9 +144,12 @@ class Game {
 				cell2.solve();
 				this.state.unsolvedCells -= 2;
 				if (this.state.unsolvedCells <= 0) {
-					if (this.board.giveLife) this.incrementLife(true);
+					if (this.board.giveLife) this.incrementLives(true);
 					this.state.level++;
-					this.newGame(true);
+					Elements.gridContainer.animate(Config.animation.enlarge.keyframes, Config.animation.enlarge.options);
+					Elements.gridContainer.addEventListener('transitionend', () => {
+						this.newGame(true, Config.boardAnimationID.fade);
+					}, { once: true });
 				}
 			}
 			else {
@@ -145,6 +157,8 @@ class Game {
 				// if either of these cells have already been viewed, this could have been avoided
 				if (this.state.viewedCells.includes(cell1) || this.state.viewedCells.includes(cell2)) {
 					this.state.avoidableMistakesMade++;
+					cell1.shake();
+					cell2.shake();
 				}
 				else {
 					// if the player turned over the first cell which they have previously seen a match to but didn't make the match
@@ -156,33 +170,51 @@ class Game {
 				if (this.state.avoidableMistakesMade > 0) this.faceChanger.changeFace(this.state.remainingMistakes);
 				if (this.state.remainingMistakes < 0) {
 					//Elements.tooltip.classList.toggle('fail', true);
-					this.incrementLife(false);
+					this.incrementLives(false);
 					Graphics.updateLives(this.state.lives);
 					if (this.state.lives <= 0) {
 						this.restartGame();
 					}
 					else {
-						this.newGame(false);
+						this.newGame(false, Config.boardAnimationID.buffering);
 					}
+					return;
+				}
+				this.state.cellsFading = true;
+
+				function waitForFlag(flagRef) {
+					return new Promise(resolve => {
+						function checkFlag() {
+							if (flagRef()) {
+								// keep checking until it turns false
+								setTimeout(checkFlag, 50);
+							} else {
+								resolve();
+							}
+						}
+						checkFlag();
+					});
 				}
 
-				//this.state.coolDown = true;
+				const fadeDelay = new Promise(resolve => setTimeout(resolve, Config.fadeDelay));
+				const interrupt = waitForFlag(() => this.state.cellsFading);
 
-				await new Promise(resolve => setTimeout(resolve, Config.fadeDelay));
+				await Promise.race([fadeDelay, interrupt]);
 
-				//this.state.coolDown = false;
+				this.state.cellsFading = false;
 				cell1.hide();
 				cell2.hide();
 
 			}
 			for (const cell of [cell1, cell2]) {
+				cell.unhighlight();
 				if (!this.state.viewedCells.includes(cell)) {
 					this.state.viewedCells.push(cell);
 				}
 			}
 		}
 	};
-	newGame = async function (victory) {
+	newGame = async function (victory, boardAnimation = Config.boardAnimationID.fade) {
 		if (this.state.level <= this.boards.length - 1) {
 			this.board = this.boards[this.state.level];
 		}
@@ -192,7 +224,7 @@ class Game {
 			console.error("Please provide an even cell count greater than or equal to 4.");
 			return;
 		}
-		this.visualState.showLoading = !victory && this.state.level == this.memory.previousLevel;
+		this.visualState.showLoading = boardAnimation == Config.boardAnimationID.buffering;
 		let messageList;
 		if (!this.state.firstRun) {
 			if (victory) {
@@ -206,9 +238,9 @@ class Game {
 		}
 
 		this.state.coolDown = true;
-		if (this.state.level != this.memory.previousLevel) {
-			Elements.tooltip.classList.toggle('fade-out', true);
+		if (boardAnimation == Config.boardAnimationID.fade) {
 			Elements.grid.classList.toggle('active', false);
+			Elements.tooltip.classList.toggle('fade-out', true);
 			Elements.tooltip.addEventListener('transitionend', () => {
 				Graphics.resetToolTip(this, victory);
 			}, { once: true });
@@ -219,10 +251,10 @@ class Game {
 		if (this.state.level != this.memory.previousLevel) gridLayout.update(this.board.cellCount);
 		this.createCells(this.board.cellCount);
 		if (messageList) await Graphics.splashText(randomItem(messageList));
-		Elements.tooltip.classList.toggle('fade-out', false);
 		Elements.grid.classList.toggle('active', true);
-		if (this.state.level == this.memory.previousLevel) {
-			Graphics.resetToolTip(this, false);
+		Elements.tooltip.classList.toggle('fade-out', false);
+		if (boardAnimation == Config.boardAnimationID.buffering) {
+			Graphics.resetToolTip(this, victory);
 		}
 		await this.activateCells(this.board, this.state.level != this.memory.previousLevel);
 		this.faceChanger.setMaxMistakes(this.state.remainingMistakes);
@@ -233,9 +265,9 @@ class Game {
 	restartGame = function () {
 		Graphics.updateLives(this.state.lives);
 		this.state.reset();
-		this.newGame(false);
+		this.newGame(false, Config.boardAnimationID.fade);
 	};
-	incrementLife = function (increment) {
+	incrementLives = function (increment) {
 		if (increment) {
 			if (this.state.lives < Config.maxLives) {
 				this.state.lives++;
@@ -255,10 +287,10 @@ const boards = [];
 const gridLayout = new GridLayout(Elements);
 const game = new Game(boards);
 globalThis.game = game;
-game.newGame(true);
+game.newGame(true, Config.boardAnimationID.fade);
 window.addEventListener('resize', () => gridLayout.resizeGrid());
 Elements.grid.addEventListener('click', () => game.handleClick());
 Elements.faceDisplay.addEventListener('click', () => {
-	game.incrementLife(false);
-	game.newGame(false);
+	game.incrementLives(false);
+	game.newGame(false, Config.boardAnimationID.buffering);
 });
