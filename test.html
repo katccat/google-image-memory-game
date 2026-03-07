@@ -116,7 +116,7 @@
 			grid-template-columns: 1;
 		}
 
-		.cell-container {
+		.cell-wrapper {
 			position: relative;
 			display: flex;
 			align-items: flex-end; /* vertical alignment */
@@ -128,7 +128,7 @@
 			background-repeat: no-repeat;
 			perspective: 1000px;
 		}
-		.cell-content-container {
+		.cell-card {
 			opacity: 0;
 			position: absolute;
 			width: 100%;
@@ -136,13 +136,13 @@
 			transition: box-shadow 0.1s linear, transform 0.6s, opacity 0.3s ease;
 			transform-style: preserve-3d;
 		}
-		.cell-content-container:hover {
+		.cell-card:hover {
 			box-shadow: 0px 0px 18px 4px rgba(0, 0, 0, 0.16);
 		}
-		.cell-container:hover .cell-content-container {
+		.cell-wrapper:hover .cell-card {
 			transform: rotateX(-180deg);
 		}
-		.cell-image {
+		.cell-back {
 			background-image: url('images/cat.webp');
   			background-color: white;
 			position: absolute;
@@ -154,7 +154,7 @@
 			backface-visibility: hidden;
 			transform: rotateX(180deg);
 		}
-		.cell-mask {
+		.cell-front {
 			background-image: url('images/robot.png');
   			background-size: cover;
 			position: absolute;
@@ -189,13 +189,13 @@
 			</div>
 		</div>
 		<div id="grid">
-			<div class="cell-container">
-				<div class="cell-content-container fade-in">
-					<div class="cell-image"></div>
-					<div class="cell-mask"></div>
+			<div class="cell-wrapper">
+				<div class="cell-card fade-in">
+					<div class="cell-back"></div>
+					<div class="cell-front"></div>
 					
-					<!--<div class="cell-image-overlay fade-in"></div>-->
-					<!--<div class="cell-word-display">cat</div>-->
+					<!--<div class="cell-back-overlay fade-in"></div>-->
+					<!--<div class="cell-label">cat</div>-->
 					
 				</div>
 			</div>

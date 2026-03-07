@@ -19,25 +19,25 @@ export class Cell {
 
 		this.elements = {
 			parent: document.createElement('div'),
-			contentContainer: document.createElement('div'),
+			card: document.createElement('div'),
 			image: document.createElement('div'),
-			text: document.createElement('div'),
-			mask: document.createElement('div'),
+			label: document.createElement('div'),
+			front: document.createElement('div'),
 		};
-		this.elements.parent.className = 'cell-container';
+		this.elements.parent.className = 'cell-wrapper';
 		this.elements.parent.classList.toggle('show-loading', this.game.visualState.showLoading);
 
-		this.elements.contentContainer.className = 'cell-content-container';
-		this.elements.parent.appendChild(this.elements.contentContainer);
+		this.elements.card.className = 'cell-card';
+		this.elements.parent.appendChild(this.elements.card);
 
-		this.elements.image.className = 'cell-image';
-		this.elements.contentContainer.appendChild(this.elements.image);
+		this.elements.image.className = 'cell-back';
+		this.elements.card.appendChild(this.elements.image);
 
-		this.elements.text.className = 'cell-word-display';
-		this.elements.contentContainer.appendChild(this.elements.text);
+		this.elements.label.className = 'cell-label';
+		this.elements.image.appendChild(this.elements.label);
 
-		this.elements.mask.className = 'cell-mask';
-		this.elements.contentContainer.appendChild(this.elements.mask);
+		this.elements.front.className = 'cell-front';
+		this.elements.card.appendChild(this.elements.front);
 
 		this.elements.parent.addEventListener('click', () => this.unhide());
 	}
@@ -49,7 +49,7 @@ export class Cell {
 	}
 	activate(word, src) {
 		this.id = word;
-		this.elements.text.textContent = word;
+		//this.elements.label.textContent = word.toLowerCase();
 		this.elements.image.style.backgroundImage = `url(${src})`;
 		if (this.img) {
 			this.setOverlayImage(this.img);
@@ -57,53 +57,38 @@ export class Cell {
 	}
 	reveal() {
 		this.state = Cell.State.DEFAULT;
-		this.elements.contentContainer.classList.toggle('fade-in', true);
+		this.elements.parent.classList.toggle('fade-in', true);
 	}
 	deactivate() {
 		this.state = Cell.State.INACTIVE;
 		this.elements.parent.classList.toggle('show-loading', this.game.visualState.showLoading);
-		this.elements.contentContainer.classList.toggle('fade-in', false);
+		this.elements.parent.classList.toggle('fade-in', false);
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
-		this.elements.contentContainer.classList.toggle('unhide', false);
+		this.elements.card.classList.toggle('unhide', false);
 	}
 	shake() {
 		this.elements.parent.animate(Config.animation.shake.keyframes, Config.animation.shake.options);
 	}
 	unhide() {
-		console.log("unhide 1");
-		console.log(this.state);
 		if (this.state !== Cell.State.DEFAULT || this.game.state.coolDown) return;
-		console.log("unhide 2");
 		//this.game.state.cellsFading = false;
 		this.state = Cell.State.REVEALED;
-		this.elements.contentContainer.classList.toggle('unhide', true);
-		if (this.game.visualState.splashNames && !this.game.state.viewedWords.includes(this.id)) {
-			Graphics.splashTextInstant(this.id);
-			this.game.state.viewedWords.push(this.id);
-		}
+		this.elements.card.classList.toggle('unhide', true);
+		if (!this.game.state.viewedWords.includes(this.id)) this.game.state.viewedWords.push(this.id);
 		this.game.state.revealedCells.push(this);
-	}
-	highlight(callOther = true) {
-		//if (callOther) this.sibling.highlight(false);
-		this.elements.parent.classList.toggle('animate', true);
-	}
-	unhighlight(callOther = true) {
-		//if (callOther) this.sibling.unhighlight(false);
-		this.elements.parent.classList.toggle('animate', false);
-		
 	}
 	solve() {
 		this.state = Cell.State.SOLVED;
-		this.elements.text.classList.toggle('fade-out', true);
-		this.unhighlight();
+		//typeText(this.elements.label, this.id.toLowerCase());
+		this.startSolvedLoop();
 	}
 	setOverlayImage(src) {
-		this.elements.mask.style.backgroundImage = `url(${src})`;
+		this.elements.front.style.backgroundImage = `url(${src})`;
 	}
 	setColor(color) {
-		this.elements.mask.style.backgroundColor = color;
+		this.elements.front.style.backgroundColor = color;
 		if (!this.img && Math.random() < Config.funGlyphChance && this.game.state.usedGlyphs.length < Config.glyphs.length) {
 			let glyph;
 			do {
@@ -112,5 +97,42 @@ export class Cell {
 			this.setOverlayImage(glyph);
 			this.game.state.usedGlyphs.push(glyph);
 		}
+	}
+	setOverlayColor(color) {
+		this.elements.label.style.backgroundColor = color;
+	}
+	async startSolvedLoop() {
+
+		const run = async () => {
+
+			// type text while sliding in
+			await typeText(this.elements.label, this.id.toLowerCase());
+
+			// hold
+			await new Promise(r => setTimeout(r, 3000));
+			await deleteText(this.elements.label);
+			await new Promise(r => setTimeout(r, 1000));
+			run(); // loop
+		};
+		this.elements.label.classList.toggle('fade-in', true);
+		const animation = Config.animation.slide.right;
+		await this.elements.label.animate(animation.keyframes, animation.options).finished;
+		run();
+	}
+}
+
+
+async function typeText(element, text, delayMs = 150) {
+	element.textContent = '';
+	for (const char of text) {
+		element.textContent += char;
+		await new Promise(resolve => setTimeout(resolve, delayMs));
+	}
+}
+async function deleteText(element, delayMs = 30) {
+	const text = element.textContent;
+	for (const char of text) {
+		element.textContent = element.textContent.slice(0, -1);
+		await new Promise(resolve => setTimeout(resolve, delayMs));
 	}
 }

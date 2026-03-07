@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Test Harness</title>
+    <link rel="stylesheet" href="./css/cell.css">
+    <style>
+        :root {
+            --bg: #1a1a1a;
+            --panel: #242424;
+            --border: #333;
+            --text: #e0e0e0;
+            --muted: #888;
+            --accent: #4285f4;
+            --green: #34a853;
+            --red: #ea4335;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Google Sans', 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: var(--panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 16px;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        #sidebar h1 {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        button {
+            background: #2e2e2e;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s, border-color 0.15s;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: #3a3a3a;
+            border-color: #555;
+        }
+
+        button.accent {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        button.accent:hover {
+            background: #3b78e7;
+        }
+
+        button.danger {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        button.danger:hover {
+            background: rgba(234, 67, 53, 0.1);
+        }
+
+        button.success {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        button.success:hover {
+            background: rgba(52, 168, 83, 0.1);
+        }
+
+        .state-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: #2e2e2e;
+            border: 1px solid var(--border);
+            font-family: monospace;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type=range] {
+            flex: 1;
+            accent-color: var(--accent);
+        }
+
+        #scale-value {
+            width: 36px;
+            text-align: right;
+            color: var(--muted);
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .swatches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.1s, border-color 0.1s;
+        }
+
+        .swatch:hover {
+            transform: scale(1.15);
+            border-color: white;
+        }
+
+        #log {
+            font-size: 11px;
+            font-family: monospace;
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        #log .entry {
+            padding: 2px 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        #log .entry.new {
+            color: var(--text);
+        }
+
+        #stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background:
+                radial-gradient(ellipse at 30% 40%, rgba(66, 133, 244, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 70%, rgba(52, 168, 83, 0.04) 0%, transparent 50%),
+                var(--bg);
+        }
+
+        #cell-stage {
+            transition: width 0.3s ease, height 0.3s ease;
+            container-type: inline-size;
+            position: relative;
+        }
+
+        #state-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-family: monospace;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+            pointer-events: none;
+        }
+
+        input[type=text] {
+            background: #2e2e2e;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 7px 10px;
+            color: var(--text);
+            font-size: 12px;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        input[type=text]:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar">
+        <h1>Cell Test Harness</h1>
+        <div class="section">
+            <div class="section-title">State</div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;">
+                Current: <span class="state-badge" id="state-display">inactive</span>
+            </div>
+            <button class="accent" onclick="doReveal()">reveal()</button>
+            <button onclick="doUnhide()">unhide()</button>
+            <button class="success" onclick="doSolve()">solve()</button>
+            <button onclick="doHide()">hide()</button>
+            <button onclick="doDeactivate()">deactivate()</button>
+            <button onclick="doShake()">shake()</button>
+        </div>
+        <div class="section">
+            <div class="section-title">Content</div>
+            <div style="display:flex; gap:6px;">
+                <input id="word-input" type="text" value="Elephant" placeholder="Word" style="flex:1;">
+                <button onclick="applyWord()" style="width:52px; text-align:center; flex-shrink:0;">Set</button>
+            </div>
+            <input id="img-input" type="text" placeholder="Image URL"
+                value="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/960px-African_Bush_Elephant.jpg">
+            <button onclick="applyImage()">Apply Image</button>
+        </div>
+        <div class="section">
+            <div class="section-title">Front Color</div>
+            <div class="swatches" id="swatches"></div>
+        </div>
+        <div class="section">
+            <div class="section-title">Scale</div>
+            <div class="slider-row">
+                <span style="font-size:12px; color:var(--muted);">Size</span>
+                <input type="range" min="80" max="400" value="200" id="scale-slider" oninput="updateScale(this.value)">
+                <span id="scale-value">200px</span>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Reset</div>
+            <button class="danger" onclick="resetCell()">Reset Cell</button>
+        </div>
+        <div class="section">
+            <div class="section-title">Log</div>
+            <div id="log"></div>
+        </div>
+    </div>
+    <div id="stage">
+        <div id="cell-stage" style="width:200px; height:200px;"></div>
+        <div id="state-indicator">inactive</div>
+    </div>
+    <script type="module">
+        import { Cell } from './js/cell.js';
+
+        const mockGame = {
+            state: {
+                coolDown: false,
+                viewedWords: [],
+                revealedCells: [],
+                usedGlyphs: [],
+            },
+            visualState: {
+                showLoading: false,
+                splashNames: false,
+            }
+        };
+
+        const cell = new Cell(mockGame);
+        const stage = document.getElementById('cell-stage');
+        stage.appendChild(cell.getElement());
+
+        function updateIndicator(state) {
+            document.getElementById('state-display').textContent = state;
+            document.getElementById('state-indicator').textContent = state;
+        }
+
+        function log(msg) {
+            const el = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'entry new';
+            entry.textContent = '→ ' + msg;
+            el.prepend(entry);
+            setTimeout(() => entry.classList.remove('new'), 800);
+            if (el.children.length > 20) el.lastChild.remove();
+        }
+
+        function syncState() { updateIndicator(cell.state); }
+
+        window.doReveal = () => {
+            cell.activate(
+                document.getElementById('word-input').value,
+                document.getElementById('img-input').value
+            );
+            cell.reveal();
+            syncState();
+            log('reveal()');
+        };
+
+        window.doUnhide = () => {
+            mockGame.state.coolDown = false;
+            cell.unhide();
+            syncState();
+        };
+
+        window.doSolve = () => {
+            cell.solve();
+            syncState();
+            log('solve()');
+        };
+
+        window.doHide = () => {
+            cell.hide();
+            syncState();
+            log('hide()');
+        };
+
+        window.doDeactivate = () => {
+            cell.deactivate();
+            syncState();
+            log('deactivate()');
+        };
+
+        window.doShake = () => {
+            cell.shake();
+            log('shake()');
+        };
+
+        window.applyWord = () => {
+            cell.id = document.getElementById('word-input').value;
+            log('word → "' + cell.id + '"');
+        };
+
+        window.applyImage = () => {
+            cell.elements.image.style.backgroundImage =
+                'url(' + document.getElementById('img-input').value + ')';
+            log('image updated');
+        };
+
+        window.resetCell = () => {
+            cell.deactivate();
+            cell.elements.front.style.backgroundColor = '';
+            cell.elements.card.classList.remove('solved');
+            cell.elements.label.classList.remove('fade-in');
+            cell.elements.label.textContent = '';
+            syncState();
+            log('reset');
+        };
+
+        window.updateScale = (val) => {
+            stage.style.width = val + 'px';
+            stage.style.height = val + 'px';
+            document.getElementById('scale-value').textContent = val + 'px';
+        };
+
+        const colors = [
+            '#4285f4', '#ea4335', '#fbbc04', '#34a853',
+            '#ff6d00', '#ab47bc', '#00acc1', '#f06292',
+            '#8d6e63', '#78909c', '#c5e1a5', '#ffe082',
+        ];
+        const swatchContainer = document.getElementById('swatches');
+        colors.forEach(color => {
+            const s = document.createElement('div');
+            s.className = 'swatch';
+            s.style.background = color;
+            s.title = color;
+            s.onclick = () => { cell.setColor(color); log('color → ' + color); };
+            swatchContainer.appendChild(s);
+        });
+    </script>
+</body>
+
+</html>

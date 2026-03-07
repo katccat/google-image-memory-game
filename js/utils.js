@@ -22,3 +22,30 @@ export async function validateImage(url, game) {
 		}
 	});
 }
+
+export function waitForFlag(flagRef) {
+	return new Promise(resolve => {
+		function checkFlag() {
+			if (flagRef()) {
+				// keep checking until it turns false
+				setTimeout(checkFlag, 50);
+			} else {
+				resolve();
+			}
+		}
+		checkFlag();
+	});
+}
+
+export function fitText(element) {
+	const parent = element.parentElement;
+	let size = 10;
+	element.style.fontSize = size + 'px';
+	while (element.scrollWidth <= parent.clientWidth &&
+		element.scrollHeight <= parent.clientHeight &&
+		size < 200) {
+		size++;
+		element.style.fontSize = size + 'px';
+	}
+	element.style.fontSize = (size - 1) + 'px';
+}

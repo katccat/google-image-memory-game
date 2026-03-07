@@ -14,11 +14,12 @@ export class Board {
 		this.giveLife = false;
 		this.textMode = Board.textMode.showText;
 		this.funColorChance = Config.funColorChance;
+		this.allowRecycleWords = false;
 	}
 }
 
 export class BoardCreator {
-	static specialBoardChance = 0.3;
+	static specialBoardChance = 0.2;//0.3;
 	static cellCounts = {
 		easy: [12, 18],
 		normal: [24],
@@ -30,7 +31,7 @@ export class BoardCreator {
 	static createBoard(level) {
 		if (BoardCreator.previous.level == level) return BoardCreator.previous.board;
 
-		let cellCount, doSpecialCategory, category, textMode;
+		let cellCount, doSpecialCategory, category, textMode, allowRecycleWords;
 		{
 			const cellCounts = BoardCreator.cellCounts.easy;
 			if (level >= BoardCreator.levels.normal) {
@@ -48,13 +49,16 @@ export class BoardCreator {
 			let categoryKey = randomItem(Object.keys(Config.category.special));
 			category = Config.category.special[categoryKey];
 			textMode = Board.textMode.splashText;
+			allowRecycleWords = true;
 		}
 		else {
 			category = Config.category.all;
 			textMode = Board.textMode.showText;
+			allowRecycleWords = false;
 		}
 		const board = new Board(cellCount, category);
 		board.textMode = textMode;
+		board.allowRecycleWords = allowRecycleWords;
 
 		if (level < BoardCreator.levels.normal || (level < BoardCreator.levels.hard && doSpecialCategory)) {
 			if (cellCount < 16) board.additionalMistakes = 1;

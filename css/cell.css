@@ -1,0 +1,135 @@
+/* ============================================================
+   CELL LAYOUT
+   Each cell uses a 3D card-flip effect:
+   - .cell-wrapper        → outer wrapper, handles positioning
+   - .cell-card → the flipping card (3D transform)
+   - .cell-front             → card FRONT (face-down, plain color)
+   - .cell-back            → card BACK (image + word display)
+   ============================================================ */
+
+/* --- Outer Wrapper --- */
+.cell-wrapper {
+	position: relative;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	transform-origin: center;
+
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+
+	width: 100%;
+	height: 100%;
+
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	perspective: 1000px;
+	opacity: 0;
+	transition: opacity 0.3s linear;
+}
+
+.cell-wrapper.show-loading {
+	/*background-image: url("../images/loading.gif");*/
+}
+
+/* --- Flipping Card --- */
+.cell-card {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+
+	transform-style: preserve-3d;
+	transition:
+		box-shadow 0.1s linear,
+		transform 0.6s;
+}
+
+/* Flip the card on reveal */
+.cell-card.unhide {
+	transform: rotateX(-180deg);
+}
+
+/* Shadow on hover */
+.cell-card:hover {
+	box-shadow: 0px 0px 18px 4px rgba(0, 0, 0, 0.16);
+	z-index: 2;
+	transform: scale(1.025);
+}
+
+.cell-card.unhide:hover {
+	transform: rotateX(-180deg) scale(1.025);
+}
+
+/* --- Card Front: Mask (face-down state) --- */
+.cell-front {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+
+	background-color: rgb(237, 237, 237);
+	background-size: cover;
+
+	/* Faces forward by default; hidden after flip */
+	transform: rotateX(0deg);
+	backface-visibility: hidden;
+}
+
+/* --- Card Back: Image (revealed state) --- */
+.cell-back {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background-color: white;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+
+	/* Starts rotated so it's hidden until the card flips */
+	transform: rotateX(180deg);
+	backface-visibility: hidden;
+}
+
+/* --- Word Label (sits on top of card back) --- */
+.cell-label {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	color: white;
+	font-size: 20px;
+	background-color: rgba(0, 0, 0, 0.6);
+	word-break: break-all;
+	hyphens: auto;
+	pointer-events: none;
+	backface-visibility: hidden;
+	opacity: 0;
+	transform: translateX(0) translateY(0);
+		transition: opacity 0.6s linear, transform 0.6s ease-out;
+}
+
+@media (max-width: 600px) {
+	.cell-label {
+		font-size: 13px;
+	}
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes shake {
+	0% {
+		transform: translateX(3%);
+	}
+
+	50% {
+		transform: translateX(-6%);
+	}
+
+	100% {
+		transform: translateX(3%);
+	}
+}
