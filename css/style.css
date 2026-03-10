@@ -71,7 +71,8 @@ body {
 #tooltip {
 	width: 100%;
 	padding: 15px;
-	background-color: #4d91ff;
+	background: linear-gradient(to bottom, #65a7fc 0%, #4d91ff 50%, #4385ee 100%);
+	border-top: 1px solid #a8cfff;
 	border-bottom: 0;
 	transition:
 		background-color 300ms linear,
@@ -85,7 +86,7 @@ body {
 	flex-shrink: 0;
 	justify-content: space-between;
 	align-items: center;
-	box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.16);
+	box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 	z-index: 1;
 }
 

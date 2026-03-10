@@ -19,7 +19,7 @@ export class Board {
 }
 
 export class BoardCreator {
-	static specialBoardChance = 0.2;//0.3;
+	static specialBoardChance = 0;//0.3;
 	static cellCounts = {
 		easy: [12, 18],
 		normal: [24],
