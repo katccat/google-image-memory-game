@@ -106,7 +106,7 @@ class Game {
 			}
 			sibling1.sibling = sibling2;
 			sibling2.sibling = sibling1;
-			const color = randomItem(Config.darkColors);
+			const color = this.colorSequencer.nextColor();
 			sibling1.setOverlayColor(color);
 			sibling2.setOverlayColor(color);
 		}
@@ -305,6 +305,7 @@ async function init() {
 	];
 	const game = new Game(boards);
 	game.gridLayout = new GridLayout(Elements);
+	game.colorSequencer = new Graphics.colorSequencer(Config.darkColors);
 	globalThis.game = game;
 	game.newGame(true, Config.boardAnimationID.fade);
 	window.addEventListener('resize', () => game.gridLayout.resizeGrid());

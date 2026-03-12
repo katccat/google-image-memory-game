@@ -150,3 +150,15 @@ Graphics.resetToolTip = function(game, victory) {
 	this.updateLives(game.state.lives);
 	game.faceChanger.resetFace(victory);
 }
+Graphics.colorSequencer = function(sequence) {
+	const colorSequence = sequence;
+	
+	let index = Math.floor(Math.random() * colorSequence.length);
+	this.nextColor = function() {
+		console.log(index);
+		let color = colorSequence[index];
+		console.log(color);
+		index = (index + 1) % colorSequence.length;
+		return color;
+	}
+}

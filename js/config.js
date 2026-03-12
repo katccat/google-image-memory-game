@@ -1,7 +1,7 @@
 export const Config = {
 	fadeDelay: 700,
 	category: { special: {} },
-	funColorChance: 0.2,
+	funColorChance: 0,
 	funGlyphChance: 0.6,
 	maxLives: 3,
 	colors: [
@@ -15,7 +15,7 @@ export const Config = {
 		'#EA4335B3',
 		'#FBBC05B3',
 		'#34A853B3',
-		'#00000066',
+		/*'#00000066',*/
 	],
 	messages: {
 		intro: ["I'm feeling lucky"],
@@ -83,7 +83,7 @@ export const Config = {
 					{ transform: 'translateX(100%)', offset: 0 },
 					{ transform: 'translateX(0)', offset: 1 },
 				],
-				options: { duration: 600, easing: 'ease-out'},
+				options: { duration: 600, easing: 'ease-out', fill: 'forwards' },
 			},
 			left: {
 				keyframes: [

@@ -104,7 +104,6 @@
 	word-break: break-all;
 	hyphens: auto;
 	pointer-events: none;
-	backface-visibility: hidden;
 	opacity: 0;
 	transform: translateX(0) translateY(0);
 		transition: opacity 0.6s linear, transform 0.6s ease-out;
