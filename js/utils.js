@@ -49,3 +49,34 @@ export function fitText(element) {
 	}
 	element.style.fontSize = (size - 1) + 'px';
 }
+
+export function isPhone() {
+	const phoneQuery = window.matchMedia('(max-width: 600px)');
+	return phoneQuery.matches;
+}
+export function getLines(element, text) {
+	const words = text.split(' ');
+	const lines = [];
+	let currentLine = '';
+
+	element.textContent = 'a'; // so we're not starting off with a height of zero and guaranteeing a line break
+	let lastHeight = element.offsetHeight;
+
+	for (const word of words) {
+		const test = currentLine ? currentLine + ' ' + word : word;
+		element.textContent = test;
+
+		if (element.offsetHeight > lastHeight && currentLine !== '') {
+			// this word caused a new line
+			lines.push(currentLine);
+			currentLine = word;
+			lastHeight = element.offsetHeight;
+		} else {
+			currentLine = test;
+		}
+	}
+
+	if (currentLine) lines.push(currentLine);
+	element.textContent = '';
+	return lines;
+}

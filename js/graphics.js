@@ -21,19 +21,17 @@ Graphics.faceChanger = function(game) {
 			'images/faces/2.png',
 			'images/faces/3a.png',
 			'images/faces/4a.png',
-			'images/faces/5a.png',
 		],
 		mistake2: [
-			'images/faces/2.png',
 			'images/faces/3b.png',
-			'images/faces/4b.png',
+			'images/faces/3b.png',
 			'images/faces/5b.png',
 		],
-		length: 4,
+		length: 3,
 		default: 'images/faces/1.png',
-		died1: 'images/faces/7a.png',
+		died1: 'images/faces/7b.png',
 		died2: 'images/faces/7b.png',
-		diedImmediately: 'images/faces/7c.png',
+		diedImmediately: 'images/faces/7a.png',
 		special: 'images/faces/sophisticated.png',
 		special2: 'images/faces/sophisticated2.png',
 	};
@@ -63,7 +61,7 @@ Graphics.faceChanger = function(game) {
 		}
 
 		let progress = maxMistakes - Math.max(this.game.state.remainingMistakes, 0);
-		let index = Math.min(Math.floor(
+		let index = Math.min(Math.round(
 			(progress / maxMistakes) * (faceImages.length - 1)
 		), faceImages.length - 1);
 
@@ -77,7 +75,7 @@ Graphics.faceChanger = function(game) {
 		if (victory && game.state.level >= Config.difficulty.hard) {
 			faceDisplay.src = faceImages.special2;
 		}
-		else if (victory && game.state.level >= Config.difficulty.normal) {
+		else if (victory && game.state.level >= Config.difficulty.medium) {
 			faceDisplay.src = faceImages.special;
 		}
 		else {
@@ -124,30 +122,60 @@ Graphics.updateLives = function(lives) {
 	const life3 = Elements.life3;
 	const life2 = Elements.life2;
 	const life1 = Elements.life1;
-	if (lives >= 3) {
-		life3.classList.toggle('invisible', false);
-		life2.classList.toggle('invisible', false);
-		life1.classList.toggle('invisible', false);
+	switch (lives) {
+		case 3:
+			life1.classList.toggle('fade-out', false);
+			life2.classList.toggle('fade-out', false);
+			life3.classList.toggle('fade-out', false);
+			break;
+		case 2:
+			life1.classList.toggle('fade-out', true);
+			life2.classList.toggle('fade-out', false);
+			life3.classList.toggle('fade-out', false);
+			break;
+		case 1:
+			life1.classList.toggle('fade-out', true);
+			life2.classList.toggle('fade-out', true);
+			life3.classList.toggle('fade-out', false);
+			break;
+		default:
+			life1.classList.toggle('fade-out', true);
+			life2.classList.toggle('fade-out', true);
+			life3.classList.toggle('fade-out', true);
+			break;
 	}
-	else if (lives == 2) {
-		life3.classList.toggle('invisible', false);
-		life2.classList.toggle('invisible', false);
-		life1.classList.toggle('invisible', true);
-	}
-	else if (lives == 1) {
-		life3.classList.toggle('invisible', false);
-		life2.classList.toggle('invisible', true);
-		life1.classList.toggle('invisible', true);
-	}
-	else {
-		life3.classList.toggle('invisible', true);
-		life2.classList.toggle('invisible', true);
-		life1.classList.toggle('invisible', true);
+}
+Graphics.animateLives = function(lives) {
+	const life3 = Elements.life3;
+	const life2 = Elements.life2;
+	const life1 = Elements.life1;
+	switch (lives) {
+		case 3:
+			life1.src = Config.lifeImage.active;
+			life2.src = Config.lifeImage.inactive;
+			life3.src = Config.lifeImage.inactive;
+			break;
+		case 2:
+			life1.src = Config.lifeImage.inactive;
+			life2.src = Config.lifeImage.active;
+			life3.src = Config.lifeImage.inactive;
+			break;
+		case 1:
+			life1.src = Config.lifeImage.inactive;
+			life2.src = Config.lifeImage.inactive;
+			life3.src = Config.lifeImage.active;
+			break;
+		default:
+			life1.src = Config.lifeImage.inactive;
+			life2.src = Config.lifeImage.inactive;
+			life3.src = Config.lifeImage.active;
+			break;
 	}
 }
 Graphics.resetToolTip = function(game, victory) {
 	Elements.levelDisplay.innerText = `Level ${game.state.level}`;
 	this.updateLives(game.state.lives);
+	this.animateLives(game.state.lives);
 	game.faceChanger.resetFace(victory);
 }
 Graphics.colorSequencer = function(sequence) {
@@ -155,9 +183,7 @@ Graphics.colorSequencer = function(sequence) {
 	
 	let index = Math.floor(Math.random() * colorSequence.length);
 	this.nextColor = function() {
-		console.log(index);
 		let color = colorSequence[index];
-		console.log(color);
 		index = (index + 1) % colorSequence.length;
 		return color;
 	}

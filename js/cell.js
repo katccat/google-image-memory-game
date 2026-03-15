@@ -1,6 +1,7 @@
 import { Config } from './config.js';
 import { Graphics } from './graphics.js';
 import { randomItem } from './utils.js';
+import { getLines } from './utils.js';
 
 export class Cell {
 	static State = {
@@ -16,12 +17,14 @@ export class Cell {
 		this.id;
 		this.img;
 		this.sibling;
+		this.labelLines;
 
 		this.elements = {
 			parent: document.createElement('div'),
 			card: document.createElement('div'),
 			image: document.createElement('div'),
 			label: document.createElement('div'),
+			labelBuffer: document.createElement('div'),
 			front: document.createElement('div'),
 		};
 		this.elements.parent.className = 'cell-wrapper';
@@ -36,6 +39,9 @@ export class Cell {
 		this.elements.label.className = 'cell-label';
 		this.elements.image.appendChild(this.elements.label);
 
+		this.elements.labelBuffer.className = 'cell-label-buffer';
+		this.elements.image.appendChild(this.elements.labelBuffer);
+
 		this.elements.front.className = 'cell-front';
 		this.elements.card.appendChild(this.elements.front);
 
@@ -49,10 +55,10 @@ export class Cell {
 	}
 	activate(word, src) {
 		this.id = word;
-		//this.elements.label.textContent = word.toLowerCase();
+		this.elements.labelBuffer.innerText = word.toLowerCase();
 		this.elements.image.style.backgroundImage = `url(${src})`;
 		if (this.img) {
-			this.setOverlayImage(this.img);
+			this.setFrontGlyph(this.img);
 		}
 	}
 	reveal() {
@@ -81,39 +87,32 @@ export class Cell {
 	}
 	solve() {
 		this.state = Cell.State.SOLVED;
-		//typeText(this.elements.label, this.id.toLowerCase());
+		this.elements.card.classList.add('solved');
 		this.startSolvedLoop();
 	}
-	setOverlayImage(src) {
+	setFrontGlyph(src) {
 		this.elements.front.style.backgroundImage = `url(${src})`;
 	}
-	setColor(color) {
+	setFrontColor(color) {
 		this.elements.front.style.backgroundColor = color;
-		if (!this.img && Math.random() < Config.funGlyphChance && this.game.state.usedGlyphs.length < Config.glyphs.length) {
-			let glyph;
-			do {
-				glyph = randomItem(Config.glyphs);
-			} while (this.game.state.usedGlyphs.includes(glyph));
-			this.setOverlayImage(glyph);
-			this.game.state.usedGlyphs.push(glyph);
-		}
 	}
-	setOverlayColor(color) {
+	setBackColor(color) {
 		this.elements.label.style.backgroundColor = color;
 	}
 	async startSolvedLoop() {
-
 		const run = async () => {
 
 			// type text while sliding in
-			await typeText(this.elements.label, this.id.toLowerCase());
+			await typeText(this.elements.label, this.labelLines);
 
 			// hold
 			await new Promise(r => setTimeout(r, 3000));
 			await deleteText(this.elements.label);
 			await new Promise(r => setTimeout(r, 1000));
-			run(); // loop
+			if (this.state !== Cell.State.INACTIVE) run(); // loop
 		};
+		this.labelLines = getLines(this.elements.labelBuffer, this.id.toLowerCase());
+		console.log(this.labelLines);
 		this.elements.label.classList.toggle('fade-in', true);
 		const animation = Config.animation.slide.right;
 		await this.elements.label.animate(animation.keyframes, animation.options).finished;
@@ -123,16 +122,24 @@ export class Cell {
 
 
 async function typeText(element, text, delayMs = 150) {
-	element.textContent = '';
-	for (const char of text) {
-		element.textContent += char;
-		await new Promise(resolve => setTimeout(resolve, delayMs));
+	element.innerHTML = '';
+	for (let i = 0; i < text.length; i++) {
+		for (const char of text[i]) {
+			element.innerHTML += char;
+			await new Promise(resolve => setTimeout(resolve, delayMs));
+		}
+		if (i < text.length - 1) element.innerHTML += ' <br>';
 	}
 }
 async function deleteText(element, delayMs = 30) {
-	const text = element.textContent;
-	for (const char of text) {
-		element.textContent = element.textContent.slice(0, -1);
+	while (element.innerHTML.length > 0) {
+		const html = element.innerHTML;
+		// if the last characters are a tag e.g. <br>, strip the whole tag
+		if (html.endsWith('>')) {
+			element.innerHTML = html.replace(/<[^>]+>$/, '');
+		} else {
+			element.innerHTML = html.slice(0, -1);
+		}
 		await new Promise(resolve => setTimeout(resolve, delayMs));
 	}
 }

@@ -2,7 +2,7 @@ export const Config = {
 	fadeDelay: 700,
 	category: { special: {} },
 	funColorChance: 0,
-	funGlyphChance: 0.6,
+	funGlyphChance: 0.1,
 	maxLives: 3,
 	colors: [
 		'#ed6a5e', // red
@@ -35,6 +35,10 @@ export const Config = {
 		"images/search.png",
 		"images/contact.png",
 	],
+	lifeImage: {
+		active: 'images/tabby-life1.gif',
+		inactive: 'images/tabby-life.png',
+	},
 	introImages: [
 		'images/im.png',
 		'images/not.png',
@@ -43,8 +47,8 @@ export const Config = {
 	],
 	difficulty: {
 		easy: 0,
-		normal: 5,
-		hard: 12,
+		medium: 5,
+		hard: 8,
 	},
 	boardAnimationID: {
 		fade: 'fade',
@@ -73,7 +77,7 @@ export const Config = {
 			options: {
 				duration: 500,
 				iterations: 1,
-				easing: 'ease-in-out',
+				easing: 'ease-out',
 				endDelay: 1000,
 			}
 		},
@@ -83,36 +87,45 @@ export const Config = {
 					{ transform: 'translateX(100%)', offset: 0 },
 					{ transform: 'translateX(0)', offset: 1 },
 				],
-				options: { duration: 600, easing: 'ease-out', fill: 'forwards' },
+				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
 			},
 			left: {
 				keyframes: [
-					{ transform: 'translateX(-100%)', opacity: 0, offset: 0 },
-					{ transform: 'translateX(0)', opacity: 1, offset: 1 },
+					{ transform: 'translateX(-100%)', offset: 0 },
+					{ transform: 'translateX(0)', offset: 1 },
 				],
-				options: { duration: 600, easing: 'ease-out', fill: 'forwards' },
+				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
 			},
 			up: {
 				keyframes: [
-					{ transform: 'translateY(-100%)', opacity: 0, offset: 0 },
-					{ transform: 'translateY(0)', opacity: 1, offset: 1 },
+					{ transform: 'translateY(-100%)', offset: 0 },
+					{ transform: 'translateY(0)', offset: 1 },
 				],
-				options: { duration: 600, easing: 'ease-out', fill: 'forwards' },
+				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
 			},
 			down: {
 				keyframes: [
-					{ transform: 'translateY(100%)', opacity: 0, offset: 0 },
-					{ transform: 'translateY(0)', opacity: 1, offset: 1 },
+					{ transform: 'translateY(100%)', offset: 0 },
+					{ transform: 'translateY(0)', offset: 1 },
 				],
-				options: { duration: 600, easing: 'ease-out', fill: 'forwards' },
+				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
 			},
 		},
 	}
 };
 
+const IS_DEV = window.location.hostname !== 'clayrobot.net' &&
+	window.location.hostname !== 'www.clayrobot.net' &&
+	window.location.hostname !== 'clayrobot.netlify.app';
+
+const BACKEND = IS_DEV
+	? 'https://backend.clayrobot.net/dev/memorygame'
+	: 'https://backend.clayrobot.net/memorygame';
+Config.BACKEND = BACKEND;
+
 Config.getCategories = async function() {
 	try {
-		this.category.all = await fetch('https://backend.clayrobot.net/memorygame').then(res => {
+		this.category.all = await fetch(Config.BACKEND).then(res => {
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			return res.json();
 		});

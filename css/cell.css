@@ -13,7 +13,7 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	transform-origin: center;
+	transform-origin: 0% 0%;
 
 	display: flex;
 	align-items: flex-end;
@@ -21,13 +21,18 @@
 
 	width: 100%;
 	height: 100%;
-
+	container-type: inline-size;
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-	perspective: 1000px;
+	perspective: 1200px;
 	opacity: 0;
-	transition: opacity 0.3s linear;
+	z-index: 1;
+	transition: 
+		opacity 0.3s linear;
+}
+.cell-wrapper:hover {
+	z-index: 3;
 }
 
 .cell-wrapper.show-loading {
@@ -39,27 +44,24 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
-
 	transform-style: preserve-3d;
 	transition:
-		box-shadow 0.1s linear,
-		transform 0.6s;
+		transform 0.4s ease-out,
+		box-shadow 0.1s linear;
+}
+
+.cell-card:hover {
+	box-shadow: 0px 0px 18px 4px rgba(0, 0, 0, 0.16);
+	transform: scale(1.025);
 }
 
 /* Flip the card on reveal */
 .cell-card.unhide {
-	transform: rotateX(-180deg);
-}
-
-/* Shadow on hover */
-.cell-card:hover {
-	box-shadow: 0px 0px 18px 4px rgba(0, 0, 0, 0.16);
-	z-index: 2;
-	transform: scale(1.025);
-}
-
-.cell-card.unhide:hover {
 	transform: rotateX(-180deg) scale(1.025);
+}
+
+.cell-card.unhide.solved {
+	transform: rotateX(-180deg);
 }
 
 /* --- Card Front: Mask (face-down state) --- */
@@ -86,7 +88,7 @@
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-
+	
 	/* Starts rotated so it's hidden until the card flips */
 	transform: rotateX(180deg);
 	backface-visibility: hidden;
@@ -94,25 +96,38 @@
 
 /* --- Word Label (sits on top of card back) --- */
 .cell-label {
+	font-family: "Google Sans";
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	padding: 10px;
 	color: white;
-	font-size: 20px;
+	
 	background-color: rgba(0, 0, 0, 0.6);
-	word-break: break-all;
-	hyphens: auto;
+	backdrop-filter: blur(0.8px);
+	word-break: break-word;
+	text-overflow: ellipsis;
 	pointer-events: none;
 	opacity: 0;
+	
+	font-size: 16cqi;
 	transform: translateX(0) translateY(0);
 		transition: opacity 0.6s linear, transform 0.6s ease-out;
 }
+.cell-label-buffer {
+	font-family: "Google Sans";
+	position: absolute;
+	width: 100%;
+	height: auto;
+	padding: 10px;
 
-@media (max-width: 600px) {
-	.cell-label {
-		font-size: 13px;
-	}
+	word-break: break-word;
+	/*hyphens: auto;*/
+	pointer-events: none;
+	opacity: 0;
+	background-color: black;
+
+	font-size: 16cqi;
 }
 
 /* ============================================================

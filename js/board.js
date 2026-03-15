@@ -1,18 +1,13 @@
 import { Config } from './config.js';
 import { randomItem } from './utils.js';
+import { isPhone } from './utils.js';
 
 export class Board {
-	static textMode = {
-		showText: 'showText',
-		hideText: 'hideText',
-		splashText: 'splashText',
-	};
 	constructor(cellCount, images, additionalMistakes = 0) {
 		this.cellCount = cellCount;
 		this.images = images;
 		this.additionalMistakes = additionalMistakes;
 		this.giveLife = false;
-		this.textMode = Board.textMode.showText;
 		this.funColorChance = Config.funColorChance;
 		this.allowRecycleWords = false;
 	}
@@ -21,23 +16,33 @@ export class Board {
 export class BoardCreator {
 	static specialBoardChance = 0;//0.3;
 	static cellCounts = {
-		easy: [12, 18],
-		normal: [24],
-		hard: [30, 36],
+		normal: {
+			easy: [8, 12, 18],
+			medium: [20, 24],
+			hard: [30, 36],
+		},
+		phone: {
+			easy: [8, 12, 18],
+			medium: [20],
+			hard: [24],
+		}
+		
 	};
 	static levels = Config.difficulty;
-	static giveLifeThreshold = 20;
+	static giveLifeThreshold = 18;
 	static previous = { level: null, board: null };
 	static createBoard(level) {
 		if (BoardCreator.previous.level == level) return BoardCreator.previous.board;
 
-		let cellCount, doSpecialCategory, category, textMode, allowRecycleWords;
+		let cellCount, doSpecialCategory, category, allowRecycleWords;
+
 		{
-			const cellCounts = BoardCreator.cellCounts.easy;
-			if (level >= BoardCreator.levels.normal) {
-				cellCounts.push(...BoardCreator.cellCounts.normal);
+			const availableCellCounts = isPhone() ? BoardCreator.cellCounts.phone : BoardCreator.cellCounts.normal;
+			const cellCounts = availableCellCounts.easy;
+			if (level >= BoardCreator.levels.medium) {
+				cellCounts.push(...availableCellCounts.medium);
 				if (level >= BoardCreator.levels.hard) {
-					cellCounts.push(...BoardCreator.cellCounts.hard);
+					cellCounts.push(...availableCellCounts.hard);
 				}
 			}
 			cellCount = randomItem(cellCounts);
@@ -48,30 +53,27 @@ export class BoardCreator {
 		if (doSpecialCategory) {
 			let categoryKey = randomItem(Object.keys(Config.category.special));
 			category = Config.category.special[categoryKey];
-			textMode = Board.textMode.splashText;
 			allowRecycleWords = true;
 		}
 		else {
 			category = Config.category.all;
-			textMode = Board.textMode.showText;
 			allowRecycleWords = false;
 		}
 		const board = new Board(cellCount, category);
-		board.textMode = textMode;
 		board.allowRecycleWords = allowRecycleWords;
 
-		if (level < BoardCreator.levels.normal || (level < BoardCreator.levels.hard && doSpecialCategory)) {
+		if (level < BoardCreator.levels.medium || (level < BoardCreator.levels.hard && doSpecialCategory)) {
 			if (cellCount < 16) board.additionalMistakes = 1;
-			else board.additionalMistakes = 2;
+			else board.additionalMistakes = 0;
 		}
 		else if (level >= BoardCreator.levels.hard) {
-			board.additionalMistakes = -1;
+			//board.additionalMistakes = -1;
 		}
 		if (cellCount >= BoardCreator.giveLifeThreshold || doSpecialCategory) {
 			board.giveLife = true;
 		}
-		/*if (level >= BoardCreator.levels.normal) {
-			board.funColorChance = Math.min(1, (Config.funColorChance + (0.05 * (level - BoardCreator.levels.normal))));
+		/*if (level >= BoardCreator.levels.medium) {
+			board.funColorChance = Math.min(1, (Config.funColorChance + (0.05 * (level - BoardCreator.levels.medium))));
 		}*/
 		BoardCreator.previous.board = board;
 		BoardCreator.previous.level = level;

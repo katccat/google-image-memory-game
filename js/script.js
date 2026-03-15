@@ -17,6 +17,7 @@ class Game {
 			firstRun: true,
 			newGame() {
 				this.cells = [];
+				this.orderSolved = [];
 				this.revealedCells = [];
 				this.viewedCells = []; // for keeping track of avoidable mistakes
 				this.viewedWords = []; // for keeping track of unique pictures seen
@@ -40,7 +41,6 @@ class Game {
 		};
 		this.visualState = {
 			showLoading: false,
-			splashNames: false,
 			showOverlayText: true,
 		};
 
@@ -51,8 +51,19 @@ class Game {
 		const fragment = document.createDocumentFragment();
 		for (let i = 0; i < numCells; i++) {
 			const cell = new Cell(this);
-			if (numCells === Config.introImages.length) {
-				cell.img = Config.introImages[i];
+			if (Math.random() < Config.funColorChance) {
+				cell.setFrontColor(randomItem(Config.colors));
+			}
+			if (this.state.level === 0 && numCells === Config.introImages.length) {
+				cell.setFrontGlyph(Config.introImages[i]);
+			}
+			else if (Math.random() < Config.funGlyphChance && this.state.usedGlyphs.length < Config.glyphs.length) {
+				let glyph;
+				do {
+					glyph = randomItem(Config.glyphs);
+				} while (this.state.usedGlyphs.includes(glyph));
+				cell.setFrontGlyph(glyph);
+				this.state.usedGlyphs.push(glyph);
 			}
 			fragment.appendChild(cell.getElement());
 			this.state.cells.push(cell);
@@ -95,10 +106,6 @@ class Game {
 				const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
 				const cell = cellsCopy[randomCellIndex];
 				cell.activate(word, imageURL);
-				if (Math.random() < board.funColorChance) {
-					const randomColor = randomItem(Config.colors);
-					cell.setColor(randomColor);
-				}
 				activeCellCount++;
 				cellsCopy.splice(randomCellIndex, 1);
 				if (!sibling1) sibling1 = cell;
@@ -107,8 +114,8 @@ class Game {
 			sibling1.sibling = sibling2;
 			sibling2.sibling = sibling1;
 			const color = this.colorSequencer.nextColor();
-			sibling1.setOverlayColor(color);
-			sibling2.setOverlayColor(color);
+			sibling1.setBackColor(color);
+			sibling2.setBackColor(color);
 		}
 		this.state.unsolvedCells = activeCellCount;
 		this.state.remainingMistakes = activeCellCount / 2 - 1 + board.additionalMistakes;
@@ -126,13 +133,22 @@ class Game {
 			}
 		}
 	};
-	deleteCells = async function () {
-		let currentDelay = 0;
-		const delayStep = 600 / this.state.cells.length; // the divide is so the total wait scales with the number of cells so it doesn't take forever later on
-		for (const cell of this.state.cells) {
-			cell.deactivate();
-			await new Promise(resolve => setTimeout(resolve, currentDelay));
-			currentDelay += delayStep;
+	deleteCells = async function (victory) {
+		let currentDelay = 250;
+		const delayStep = 1.1
+		if (!victory) {
+			for (const cell of this.state.cells) {
+				cell.deactivate();
+				await new Promise(resolve => setTimeout(resolve, currentDelay));
+				currentDelay *= delayStep;
+			}
+		}
+		else {
+			for (const cell of this.state.orderSolved) {
+				cell.deactivate();
+				await new Promise(resolve => setTimeout(resolve, currentDelay));
+				currentDelay *= delayStep;
+			}
 		}
 		for (const cell of this.state.cells) {
 			cell.getElement().remove();
@@ -148,10 +164,12 @@ class Game {
 				cell1.solve();
 				cell2.solve();
 				this.state.unsolvedCells -= 2;
+				this.state.orderSolved.push(cell1, cell2);
 				if (this.state.unsolvedCells <= 0) {
 					if (this.board.giveLife) this.incrementLives(true);
 					this.state.level++;
-					await Elements.gridContainer.animate(Config.animation.enlarge.keyframes, Config.animation.enlarge.options).finished;
+					//await Elements.gridContainer.animate(Config.animation.enlarge.keyframes, Config.animation.enlarge.options).finished;
+					await new Promise(resolve => setTimeout(resolve, 3000));
 					this.newGame(true, Config.boardAnimationID.fade);
 				}
 			}
@@ -246,7 +264,7 @@ class Game {
 		}
 
 		// Wait for cells to finish fading out before removing them
-		await this.deleteCells();
+		await this.deleteCells(victory);
 
 		// ── State reset ──────────────────────────────────────────────
 		if (victory) {
@@ -258,7 +276,6 @@ class Game {
 		this.state.newGame();
 
 		// ── Build new board ──────────────────────────────────────────
-		this.visualState.splashNames = this.board.textMode === Board.textMode.splashText;
 		const levelChanged = this.state.level !== this.memory.previousLevel;
 		if (levelChanged) this.gridLayout.update(this.board.cellCount);
 		this.createCells(this.board.cellCount);
