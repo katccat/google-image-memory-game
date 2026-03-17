@@ -1,6 +1,8 @@
 export const Config = {
 	fadeDelay: 700,
-	category: { special: {} },
+	category: { 
+		special: {} 
+	},
 	funColorChance: 0,
 	funGlyphChance: 0.1,
 	maxLives: 3,
@@ -35,12 +37,6 @@ export const Config = {
 		"images/search.png",
 		"images/contact.png",
 	],
-	introImages: [
-		'images/im.png',
-		'images/not.png',
-		'images/a.png',
-		'images/robot.png',
-	],
 	introMessage: [
 		"I'm",
 		"not",
@@ -68,19 +64,6 @@ export const Config = {
 				duration: 200,
 				iterations: 2,
 				easing: 'ease-in-out',
-			}
-		},
-		enlarge: {
-			keyframes: [
-				{ scale: '1', offset: 0 },
-				{ scale: '0.9', offset: 0.5 },
-				{ scale: '1', offset: 1 },
-			],
-			options: {
-				duration: 500,
-				iterations: 1,
-				easing: 'ease-out',
-				endDelay: 1000,
 			}
 		},
 		slide: {
@@ -137,4 +120,5 @@ Config.getCategories = async function() {
 	}
 	this.category.special.dogs = await fetch('./words/dogs.json').then(res => res.json());
 	this.category.special.apple = await fetch('./words/apple.json').then(res => res.json());
+	this.category.all = this.category.all.trends;
 };

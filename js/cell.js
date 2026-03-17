@@ -87,12 +87,12 @@ export class Cell {
 		//this.game.state.cellsFading = false;
 		this.state = Cell.State.REVEALED;
 		this.elements.card.classList.toggle('unhide', true);
-		if (!this.game.state.viewedWords.includes(this.id)) this.game.state.viewedWords.push(this.id);
 		this.game.state.revealedCells.push(this);
 	}
 	solve() {
 		this.state = Cell.State.SOLVED;
 		this.elements.card.classList.add('solved');
+		if (!this.game.state.viewedWords.includes(this.id)) this.game.state.viewedWords.push(this.id);
 	}
 	setFrontGlyph(src) {
 		this.elements.front.style.backgroundImage = `url(${src})`;

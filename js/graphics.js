@@ -32,17 +32,17 @@ export class Graphics {};
 Graphics.faceChanger = function(game) {
 	this.game = game;
 	const faceImages = {
-		mistake1: [
+		mistake1: [//1 2 
 			'images/faces/2.png',
 			'images/faces/3a.png',
-			'images/faces/4a.png',
+			//'images/faces/4a.png',
 		],
 		mistake2: [
 			'images/faces/3b.png',
 			'images/faces/4b.png',
-			'images/faces/5b2.gif',
+			'images/faces/4b.gif',
+			'images/faces/5b.gif',
 		],
-		length: 3,
 		default: 'images/faces/1.png',
 		died1: 'images/faces/7b.png',
 		died2: 'images/faces/7b.png',
@@ -61,7 +61,7 @@ Graphics.faceChanger = function(game) {
 	}
 	this.changeFace = function () {
 		if (dead) return;
-		if (this.game.state.remainingMistakes <= 0) {
+		if (this.game.state.remainingMistakes < 0) {
 			if (this.game.state.avoidableMistakesMade == 1) {
 				faceDisplay.src = faceImages.diedImmediately;
 			}
@@ -74,15 +74,18 @@ Graphics.faceChanger = function(game) {
 			dead = true;
 			return;
 		}
+		let length;
+		if (this.game.state.avoidableMistakesMade > 1 && !(faceDisplay.src == faceImages.default || faceDisplay.src == faceImages.special || faceDisplay.src == faceImages.special2)) {
+			doSequence2 = true;
+			length = faceImages.mistake2.length;
+		}
+		else length = faceImages.mistake1.length;
 
 		let progress = maxMistakes - Math.max(this.game.state.remainingMistakes, 0);
 		let index = Math.min(Math.round(
-			(progress / maxMistakes) * (faceImages.length - 1)
-		), faceImages.length - 1);
+			(progress / maxMistakes) * (length - 1)
+		), length - 1);
 
-		if (this.game.state.avoidableMistakesMade > 1 && !(faceDisplay.src == faceImages.default || faceDisplay.src == faceImages.special || faceDisplay.src == faceImages.special2)) {
-			doSequence2 = true;
-		}
 		if (doSequence2) faceDisplay.src = faceImages.mistake2[index];
 		else faceDisplay.src = faceImages.mistake1[index];
 	}
