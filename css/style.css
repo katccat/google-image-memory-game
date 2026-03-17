@@ -111,10 +111,19 @@ body.dark {
 	gap: 2px;
 }
 
-#lives-container .life {
-	/*image-rendering: pixelated;*/
+.life-slot {
+	position: relative;
 	height: 24px;
-	transition:  1s linear;
+	width: 24px;
+	/* match your image's aspect ratio */
+}
+
+.life-slot .life {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 24px;
+	transition: 0.5s linear;
 }
 
 #tooltip-right img {

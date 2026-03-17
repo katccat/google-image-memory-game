@@ -1,7 +1,7 @@
 import { Config } from './config.js';
 import { Graphics } from './graphics.js';
-import { randomItem } from './utils.js';
 import { getLines } from './utils.js';
+import { truncate } from './utils.js';
 
 export class Cell {
 	static State = {
@@ -15,6 +15,7 @@ export class Cell {
 		this.game = game;
 		this.state = Cell.State.INACTIVE;
 		this.id;
+		this.displayName;
 		this.img;
 		this.sibling;
 		this.labelLines;
@@ -53,9 +54,13 @@ export class Cell {
 	getName() {
 		return this.id;
 	}
+	getDisplayName() {
+		return this.displayName;
+	}
 	activate(word, src) {
 		this.id = word;
-		this.elements.labelBuffer.innerText = word.toLowerCase();
+		this.displayName = truncate(word.toLowerCase(), 46);
+		this.elements.labelBuffer.innerText = this.displayName;
 		this.elements.image.style.backgroundImage = `url(${src})`;
 		if (this.img) {
 			this.setFrontGlyph(this.img);
@@ -88,7 +93,6 @@ export class Cell {
 	solve() {
 		this.state = Cell.State.SOLVED;
 		this.elements.card.classList.add('solved');
-		this.startSolvedLoop();
 	}
 	setFrontGlyph(src) {
 		this.elements.front.style.backgroundImage = `url(${src})`;
@@ -99,47 +103,36 @@ export class Cell {
 	setBackColor(color) {
 		this.elements.label.style.backgroundColor = color;
 	}
-	async startSolvedLoop() {
-		const run = async () => {
-
-			// type text while sliding in
-			await typeText(this.elements.label, this.labelLines);
-
-			// hold
-			await new Promise(r => setTimeout(r, 3000));
-			await deleteText(this.elements.label);
-			await new Promise(r => setTimeout(r, 1000));
-			if (this.state !== Cell.State.INACTIVE) run(); // loop
-		};
-		this.labelLines = getLines(this.elements.labelBuffer, this.id.toLowerCase());
-		console.log(this.labelLines);
-		this.elements.label.classList.toggle('fade-in', true);
-		const animation = Config.animation.slide.right;
-		await this.elements.label.animate(animation.keyframes, animation.options).finished;
-		run();
-	}
 }
+export async function CellSolvedLoop(game, ...cells) {
+	const run = async () => {
+		await Graphics.typeText(lines, ...elements);
+		resolvers.forEach(r => r());
+		if (game.state.coolDown) return;
 
+		await new Promise(r => setTimeout(r, 3000));
+		await Graphics.deleteText(...elements);
+		await new Promise(r => setTimeout(r, 1000));
 
-async function typeText(element, text, delayMs = 150) {
-	element.innerHTML = '';
-	for (let i = 0; i < text.length; i++) {
-		for (const char of text[i]) {
-			element.innerHTML += char;
-			await new Promise(resolve => setTimeout(resolve, delayMs));
+		for (let i = cells.length - 1; i >= 0; i--) {
+			if (cells[i].state === Cell.State.INACTIVE) {
+				cells.splice(i, 1);
+			}
 		}
-		if (i < text.length - 1) element.innerHTML += ' <br>';
-	}
-}
-async function deleteText(element, delayMs = 30) {
-	while (element.innerHTML.length > 0) {
-		const html = element.innerHTML;
-		// if the last characters are a tag e.g. <br>, strip the whole tag
-		if (html.endsWith('>')) {
-			element.innerHTML = html.replace(/<[^>]+>$/, '');
-		} else {
-			element.innerHTML = html.slice(0, -1);
-		}
-		await new Promise(resolve => setTimeout(resolve, delayMs));
-	}
+		if (cells.length > 0) run();
+	};
+
+	const elements = [];
+	const resolvers = [];
+	cells.forEach(cell => {
+		cell.typingDone = new Promise(r => resolvers.push(r));
+		elements.push(cell.elements.label);
+	});
+	const text = cells[0].getDisplayName();
+	const testElement = cells[0].elements.labelBuffer;
+	const lines = getLines(testElement, text);
+	elements.forEach(element => element.classList.add('fade-in'));
+	const animation = Config.animation.slide.right;
+	await Promise.all(elements.map(el => el.animate(animation.keyframes, animation.options).finished));
+	run();
 }

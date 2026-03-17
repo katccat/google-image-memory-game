@@ -29,7 +29,7 @@
 	opacity: 0;
 	z-index: 1;
 	transition: 
-		opacity 0.3s linear;
+		opacity 0.4s linear;
 }
 .cell-wrapper:hover {
 	z-index: 3;
@@ -106,13 +106,14 @@
 	background-color: rgba(0, 0, 0, 0.6);
 	backdrop-filter: blur(0.8px);
 	word-break: break-word;
-	text-overflow: ellipsis;
+	overflow-wrap: break-word;
+
 	pointer-events: none;
 	opacity: 0;
 	
 	font-size: 16cqi;
-	transform: translateX(0) translateY(0);
-		transition: opacity 0.6s linear, transform 0.6s ease-out;
+
+	transition: opacity 0.6s linear, transform 0.6s ease-out;
 }
 .cell-label-buffer {
 	font-family: "Google Sans";
@@ -120,11 +121,12 @@
 	width: 100%;
 	height: auto;
 	padding: 10px;
-
 	word-break: break-word;
-	/*hyphens: auto;*/
+	overflow-wrap: break-word;
+
 	pointer-events: none;
 	opacity: 0;
+	color: white;
 	background-color: black;
 
 	font-size: 16cqi;

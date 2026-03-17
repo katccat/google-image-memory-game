@@ -35,10 +35,6 @@ export const Config = {
 		"images/search.png",
 		"images/contact.png",
 	],
-	lifeImage: {
-		active: 'images/tabby-life1.gif',
-		inactive: 'images/tabby-life.png',
-	},
 	introImages: [
 		'images/im.png',
 		'images/not.png',
@@ -47,8 +43,8 @@ export const Config = {
 	],
 	difficulty: {
 		easy: 0,
-		medium: 5,
-		hard: 8,
+		medium: 8,
+		hard: 14,
 	},
 	boardAnimationID: {
 		fade: 'fade',
@@ -89,7 +85,7 @@ export const Config = {
 				],
 				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
 			},
-			left: {
+			/*left: {
 				keyframes: [
 					{ transform: 'translateX(-100%)', offset: 0 },
 					{ transform: 'translateX(0)', offset: 1 },
@@ -102,14 +98,14 @@ export const Config = {
 					{ transform: 'translateY(0)', offset: 1 },
 				],
 				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
-			},
-			down: {
+			},*/
+			/*down: {
 				keyframes: [
 					{ transform: 'translateY(100%)', offset: 0 },
 					{ transform: 'translateY(0)', offset: 1 },
 				],
 				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
-			},
+			},*/
 		},
 	}
 };

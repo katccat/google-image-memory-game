@@ -23,7 +23,7 @@
 		<span id="splash-text" class="coral-pixels-regular"></span>
 	</div>
 	<div id="grid-container">
-		<div id="tooltip">
+		<div id="tooltip" class="fade-out">
 			<span class="tooltip-text">
 				I'm not a robot<h1><span id="level-counter">Level 0</span></h1>
 			</span>
@@ -33,9 +33,21 @@
 				<!--<span id="level-counter">Level 0</span>-->
 			</div>
 			<div id="lives-container">
-				<img src="images/tabby-life1.gif" class="life" id="life1">
-				<img src="images/tabby-life.png" class="life" id="life2">
-				<img src="images/tabby-life.png" class="life" id="life3">
+				<div class="life-slot">
+					<img src="images/tabby-life1.gif" class="life" id="life3-gif">
+					<img src="images/tabby-life.png" class="life fade-out" id="life3-static">
+					<img src="images/snowflake2.png" class="life fade-out" id="life3-dead">
+				</div>
+				<div class="life-slot">
+					<img src="images/tabby-life1.gif" class="life fade-out" id="life2-gif">
+					<img src="images/tabby-life.png" class="life" id="life2-static">
+					<img src="images/snowflake2.png" class="life fade-out" id="life2-dead">
+				</div>
+				<div class="life-slot">
+					<img src="images/tabby-life1.gif" class="life fade-out" id="life1-gif">
+					<img src="images/tabby-life.png" class="life" id="life1-static">
+					<img src="images/snowflake2.png" class="life fade-out" id="life1-dead">
+				</div>
 			</div>
 		</div>
 		<div id="grid"></div>

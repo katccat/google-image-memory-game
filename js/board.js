@@ -14,7 +14,7 @@ export class Board {
 }
 
 export class BoardCreator {
-	static specialBoardChance = 0;//0.3;
+	static specialBoardChance = 0;
 	static cellCounts = {
 		normal: {
 			easy: [8, 12, 18],
@@ -22,18 +22,15 @@ export class BoardCreator {
 			hard: [30, 36],
 		},
 		phone: {
-			easy: [8, 12, 18],
-			medium: [20],
+			easy: [8, 12, 12],
+			medium: [18, 20],
 			hard: [24],
 		}
-		
 	};
 	static levels = Config.difficulty;
-	static giveLifeThreshold = 18;
+	static giveLifeThreshold = 12;
 	static previous = { level: null, board: null };
 	static createBoard(level) {
-		if (BoardCreator.previous.level == level) return BoardCreator.previous.board;
-
 		let cellCount, doSpecialCategory, category, allowRecycleWords;
 
 		{
@@ -62,19 +59,15 @@ export class BoardCreator {
 		const board = new Board(cellCount, category);
 		board.allowRecycleWords = allowRecycleWords;
 
-		if (level < BoardCreator.levels.medium || (level < BoardCreator.levels.hard && doSpecialCategory)) {
-			if (cellCount < 16) board.additionalMistakes = 1;
-			else board.additionalMistakes = 0;
+		if (cellCount > 16) {
+			if (level < BoardCreator.levels.hard) board.additionalMistakes = 2;
+			else board.additionalMistakes = 1;
 		}
-		else if (level >= BoardCreator.levels.hard) {
-			//board.additionalMistakes = -1;
-		}
+		else if (level < BoardCreator.levels.normal) board.additionalMistakes = 1;
+
 		if (cellCount >= BoardCreator.giveLifeThreshold || doSpecialCategory) {
 			board.giveLife = true;
 		}
-		/*if (level >= BoardCreator.levels.medium) {
-			board.funColorChance = Math.min(1, (Config.funColorChance + (0.05 * (level - BoardCreator.levels.medium))));
-		}*/
 		BoardCreator.previous.board = board;
 		BoardCreator.previous.level = level;
 		return board;

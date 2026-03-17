@@ -55,28 +55,33 @@ export function isPhone() {
 	return phoneQuery.matches;
 }
 export function getLines(element, text) {
-	const words = text.split(' ');
+	const oldText = element.textContent
+	const words = text.split(/(?<=[-–—\s])/);
 	const lines = [];
 	let currentLine = '';
 
 	element.textContent = 'a'; // so we're not starting off with a height of zero and guaranteeing a line break
-	let lastHeight = element.offsetHeight;
+	let baselineHeight = element.offsetHeight;
 
 	for (const word of words) {
-		const test = currentLine ? currentLine + ' ' + word : word;
+		const test = currentLine ? currentLine + word : word;
 		element.textContent = test;
 
-		if (element.offsetHeight > lastHeight && currentLine !== '') {
+		if (element.offsetHeight > baselineHeight && currentLine !== '') {
 			// this word caused a new line
 			lines.push(currentLine);
 			currentLine = word;
-			lastHeight = element.offsetHeight;
-		} else {
+		}
+		else {
 			currentLine = test;
 		}
 	}
 
 	if (currentLine) lines.push(currentLine);
-	element.textContent = '';
+	element.textContent = oldText;
 	return lines;
+}
+export function truncate(str, maxLength) {
+	if (str.length <= maxLength) return str;
+	return str.slice(0, maxLength - 3) + '...';
 }

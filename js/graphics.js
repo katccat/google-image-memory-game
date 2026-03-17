@@ -1,4 +1,5 @@
 import { Config } from "./config.js";
+import { getLines } from "./utils.js";
 
 export const Elements = {
 	grid: document.getElementById('grid'),
@@ -8,9 +9,23 @@ export const Elements = {
 	splashText: document.getElementById('splash-text'),
 	splashContainer: document.getElementById('splash-container'),
 	faceDisplay: document.getElementById('face'),
-	life1: document.getElementById('life1'),
-	life2: document.getElementById('life2'),
-	life3: document.getElementById('life3'),
+	lives: [
+		{ // life 1 index 0
+			animated: document.getElementById('life1-gif'),
+			static: document.getElementById('life1-static'),
+			dead: document.getElementById('life1-dead'),
+		},
+		{ // life 2 index 1
+			animated: document.getElementById('life2-gif'),
+			static: document.getElementById('life2-static'),
+			dead: document.getElementById('life2-dead'),
+		},
+		{ // life 3 index 2
+			animated: document.getElementById('life3-gif'),
+			static: document.getElementById('life3-static'),
+			dead: document.getElementById('life3-dead'),
+		},
+	],
 }
 export class Graphics {};
 
@@ -24,8 +39,8 @@ Graphics.faceChanger = function(game) {
 		],
 		mistake2: [
 			'images/faces/3b.png',
-			'images/faces/3b.png',
-			'images/faces/5b.png',
+			'images/faces/4b.png',
+			'images/faces/5b2.gif',
 		],
 		length: 3,
 		default: 'images/faces/1.png',
@@ -118,64 +133,57 @@ Graphics.splashTextInstant = function(text) {
 	splashContainer.classList.toggle("notransition", false);
 	splashContainer.addEventListener('transitionend', Graphics.splashTextHandler, { once: true });
 };
-Graphics.updateLives = function(lives) {
-	const life3 = Elements.life3;
-	const life2 = Elements.life2;
-	const life1 = Elements.life1;
-	switch (lives) {
-		case 3:
-			life1.classList.toggle('fade-out', false);
-			life2.classList.toggle('fade-out', false);
-			life3.classList.toggle('fade-out', false);
-			break;
-		case 2:
-			life1.classList.toggle('fade-out', true);
-			life2.classList.toggle('fade-out', false);
-			life3.classList.toggle('fade-out', false);
-			break;
-		case 1:
-			life1.classList.toggle('fade-out', true);
-			life2.classList.toggle('fade-out', true);
-			life3.classList.toggle('fade-out', false);
-			break;
-		default:
-			life1.classList.toggle('fade-out', true);
-			life2.classList.toggle('fade-out', true);
-			life3.classList.toggle('fade-out', true);
-			break;
-	}
-}
-Graphics.animateLives = function(lives) {
-	const life3 = Elements.life3;
-	const life2 = Elements.life2;
-	const life1 = Elements.life1;
-	switch (lives) {
-		case 3:
-			life1.src = Config.lifeImage.active;
-			life2.src = Config.lifeImage.inactive;
-			life3.src = Config.lifeImage.inactive;
-			break;
-		case 2:
-			life1.src = Config.lifeImage.inactive;
-			life2.src = Config.lifeImage.active;
-			life3.src = Config.lifeImage.inactive;
-			break;
-		case 1:
-			life1.src = Config.lifeImage.inactive;
-			life2.src = Config.lifeImage.inactive;
-			life3.src = Config.lifeImage.active;
-			break;
-		default:
-			life1.src = Config.lifeImage.inactive;
-			life2.src = Config.lifeImage.inactive;
-			life3.src = Config.lifeImage.active;
-			break;
-	}
+Graphics.lifeDisplay = {
+	lifeElements: Elements.lives,
+	getIndex(life) {
+		const index = Math.max(Math.min(life - 1, this.lifeElements.length - 1), 0);
+		return index;
+	},
+	show(element) {
+		element.classList.remove('fade-out');
+	},
+	hide(element) {
+		element.classList.add('fade-out');
+	},
+	animateLife(life) {
+		const index = this.getIndex(life);
+
+		this.show(this.lifeElements[index].animated);
+		this.hide(this.lifeElements[index].static);
+		this.hide(this.lifeElements[index].dead);
+	},
+	staticLife(life) {
+		const index = this.getIndex(life);
+
+		this.hide(this.lifeElements[index].animated);
+		this.show(this.lifeElements[index].static);
+		this.hide(this.lifeElements[index].dead);
+	},
+	removeLife(life) {
+		const index = this.getIndex(life);
+
+		this.hide(this.lifeElements[index].animated);
+		this.hide(this.lifeElements[index].static);
+		this.show(this.lifeElements[index].dead);
+	},
+	addLife(life) {
+		const index = this.getIndex(life);
+
+		this.animateLife(life);
+		if (index > 0) this.staticLife(life - 1);
+	},
+	stageLives(lives) {
+		this.lifeElements.forEach((_, i) => {
+			const life = i + 1;
+			if (life < lives) this.staticLife(life);
+			else if (life === lives) this.animateLife(life);
+			else this.removeLife(life);
+		});
+	},
 }
 Graphics.resetToolTip = function(game, victory) {
 	Elements.levelDisplay.innerText = `Level ${game.state.level}`;
-	this.updateLives(game.state.lives);
-	this.animateLives(game.state.lives);
+	this.lifeDisplay.stageLives(game.state.lives);
 	game.faceChanger.resetFace(victory);
 }
 Graphics.colorSequencer = function(sequence) {
@@ -186,5 +194,31 @@ Graphics.colorSequencer = function(sequence) {
 		let color = colorSequence[index];
 		index = (index + 1) % colorSequence.length;
 		return color;
+	}
+}
+Graphics.typeText = async function(text, ...elements) {
+	const delayMs = 150;
+	elements.forEach(element => element.innerHTML = '');
+	for (let i = 0; i < text.length; i++) {
+		for (const char of text[i]) {
+			elements.forEach(element => element.innerHTML += char);
+			await new Promise(resolve => setTimeout(resolve, delayMs));
+		}
+		if (i < text.length - 1) elements.forEach(element => element.innerHTML += '<br>');
+	}
+}
+Graphics.deleteText = async function(...elements) {
+	const delayMs = 30;
+	while (elements[0].innerHTML.length > 0) {
+		elements.forEach(element => {
+			const html = element.innerHTML;
+			// if the last characters are a tag e.g. <br>, strip the whole tag
+			if (html.endsWith('>')) {
+				element.innerHTML = html.replace(/<[^>]+>$/, '');
+			} else {
+				element.innerHTML = html.slice(0, -1);
+			}
+		});
+		await new Promise(resolve => setTimeout(resolve, delayMs));
 	}
 }
