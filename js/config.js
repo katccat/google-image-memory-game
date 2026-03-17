@@ -7,7 +7,7 @@ export const Config = {
 	colors: [
 		'#ed6a5e', // red
 		'#86b2f9', // blue
-		'#fdd868', // yellow
+		'#ffd65a', // yellow
 		'#76d590', // green
 	],
 	darkColors: [
@@ -40,6 +40,12 @@ export const Config = {
 		'images/not.png',
 		'images/a.png',
 		'images/robot.png',
+	],
+	introMessage: [
+		"I'm",
+		"not",
+		"a",
+		"robot",
 	],
 	difficulty: {
 		easy: 0,

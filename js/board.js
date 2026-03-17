@@ -28,7 +28,7 @@ export class BoardCreator {
 		}
 	};
 	static levels = Config.difficulty;
-	static giveLifeThreshold = 12;
+	static giveLifeThreshold = 0;
 	static previous = { level: null, board: null };
 	static createBoard(level) {
 		let cellCount, doSpecialCategory, category, allowRecycleWords;

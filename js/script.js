@@ -55,8 +55,9 @@ class Game {
 			if (Math.random() < Config.funColorChance) {
 				cell.setFrontColor(randomItem(Config.colors));
 			}
-			if (this.state.level === 0 && numCells === Config.introImages.length) {
-				cell.setFrontGlyph(Config.introImages[i]);
+			if (this.state.level === 0 && numCells === Config.introMessage.length) {
+				cell.writeOnFront(Config.introMessage[i]);
+				cell.setFontColor(this.colorSequencerLight.nextColor());
 			}
 			else if (Math.random() < Config.funGlyphChance && this.state.usedGlyphs.length < Config.glyphs.length) {
 				let glyph;
@@ -114,7 +115,7 @@ class Game {
 			}
 			sibling1.sibling = sibling2;
 			sibling2.sibling = sibling1;
-			const color = this.colorSequencer.nextColor();
+			const color = this.colorSequencerDark.nextColor();
 			sibling1.setBackColor(color);
 			sibling2.setBackColor(color);
 		}
@@ -144,8 +145,6 @@ class Game {
 		if (numCells <= 8) totalDuration = 2000;
 		else if (numCells <= 12) totalDuration = 3000;
 		else totalDuration = 4000;
-		console.log(totalDuration);
-		console.log(delayStep);
 
 		// Solve for initialDelay so the sequence sums to totalDuration
 		const initialDelay = totalDuration * (delayStep - 1) / (Math.pow(delayStep, numCells) - 1);
@@ -223,6 +222,7 @@ class Game {
 	}
 	loseGame = async function(animation = Config.boardAnimationID.fade) {
 		this.removeLife();
+		this.state.coolDown = true;
 		await new Promise(resolve => setTimeout(resolve, 1000));
 		if (this.state.lives <= 0) {
 			this.restartGame();
@@ -331,7 +331,8 @@ async function init() {
 	];
 	const game = new Game(boards);
 	game.gridLayout = new GridLayout(Elements);
-	game.colorSequencer = new Graphics.colorSequencer(Config.darkColors);
+	game.colorSequencerDark = new Graphics.colorSequencer(Config.darkColors);
+	game.colorSequencerLight = new Graphics.colorSequencer(Config.colors);
 	globalThis.game = game;
 	game.newGame(true, Config.boardAnimationID.fade);
 	window.addEventListener('resize', () => game.gridLayout.resizeGrid());

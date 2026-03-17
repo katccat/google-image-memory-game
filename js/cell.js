@@ -57,9 +57,9 @@ export class Cell {
 	getDisplayName() {
 		return this.displayName;
 	}
-	activate(word, src) {
+	activate(word, src, src2) {
 		this.id = word;
-		this.displayName = truncate(word.toLowerCase(), 46);
+		this.displayName = truncate(word.toLowerCase(), 42);
 		this.elements.labelBuffer.innerText = this.displayName;
 		this.elements.image.style.backgroundImage = `url(${src})`;
 		if (this.img) {
@@ -96,6 +96,12 @@ export class Cell {
 	}
 	setFrontGlyph(src) {
 		this.elements.front.style.backgroundImage = `url(${src})`;
+	}
+	writeOnFront(text) {
+		this.elements.front.textContent = text;
+	}
+	setFontColor(color) {
+		this.elements.front.style.color = color;
 	}
 	setFrontColor(color) {
 		this.elements.front.style.backgroundColor = color;

@@ -42,6 +42,7 @@ export function GridLayout(elements) {
 	this.resizeGrid = () => {
 		const tooltip = elements.tooltip;
 		const gridContainer = elements.gridContainer;
+		const root = document.documentElement;
 		const viewportWidth = gridContainer.getBoundingClientRect().width;
 		const viewportHeight = window.innerHeight - tooltip.getBoundingClientRect().height;
 		const viewportAspectRatio = viewportWidth / viewportHeight;
@@ -62,5 +63,21 @@ export function GridLayout(elements) {
 			grid.style.height = "auto";
 		}
 		tooltip.style.width = grid.getBoundingClientRect().width + 'px';
+		const cellWidth = grid.getBoundingClientRect().width / columns;
+		let cellPerspective;
+		console.log(cellWidth);
+		if (cellWidth > 280) {
+			cellPerspective = 720;
+		} 
+		else if (cellWidth > 150) {
+			cellPerspective = 480;
+		} 
+		else if (cellWidth > 100) {
+			cellPerspective = 300;
+		} 
+		else {
+			cellPerspective = 200;
+		} 
+		root.style.setProperty('--cell-perspective', `${cellPerspective}px`);
 	}
 };
