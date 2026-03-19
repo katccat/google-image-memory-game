@@ -1,11 +1,11 @@
+import { Elements } from './graphics.js';
 export const Config = {
 	fadeDelay: 700,
-	category: { 
-		special: {} 
-	},
+	trendData: {},
 	funColorChance: 0,
 	funGlyphChance: 0.1,
 	maxLives: 3,
+	scoreRounding: 1,
 	colors: [
 		'#ed6a5e', // red
 		'#86b2f9', // blue
@@ -49,8 +49,8 @@ export const Config = {
 		hard: 14,
 	},
 	boardAnimationID: {
-		fade: 'fade',
-		buffering: 'buffering',
+		win: 'win',
+		lose: 'lose',
 	},
 	animation: {
 		shake: {
@@ -103,22 +103,22 @@ const IS_DEV = window.location.hostname !== 'clayrobot.net' &&
 	window.location.hostname !== 'www.clayrobot.net' &&
 	window.location.hostname !== 'clayrobot.netlify.app';
 
-const BACKEND = IS_DEV
-	? 'https://backend.clayrobot.net/dev/memorygame'
-	: 'https://backend.clayrobot.net/memorygame';
-Config.BACKEND = BACKEND;
+if (IS_DEV) {
+	Config.BACKEND = 'https://backend.clayrobot.net/dev/memorygame';
+	Elements.title.textContent = "I'm not a robot (dev)";
+}
+else {
+	Config.BACKEND = 'https://backend.clayrobot.net/memorygame';
+}
 
 Config.getCategories = async function() {
 	try {
-		this.category.all = await fetch(Config.BACKEND).then(res => {
+		this.trendData = await fetch(Config.BACKEND).then(res => {
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			return res.json();
 		});
 	} catch (err) {
 		console.warn('Failed to fetch remote index, falling back to local:', err.message);
-		this.category.all = await fetch('./words/images.json').then(res => res.json());
+		this.trendData = await fetch('./words/fallback.json').then(res => res.json());
 	}
-	this.category.special.dogs = await fetch('./words/dogs.json').then(res => res.json());
-	this.category.special.apple = await fetch('./words/apple.json').then(res => res.json());
-	this.category.all = this.category.all.trends;
 };

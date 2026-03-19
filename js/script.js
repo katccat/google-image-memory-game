@@ -6,7 +6,6 @@ import { Cell, CellSolvedLoop } from './cell.js';
 import { Board } from './board.js';
 import { BoardCreator } from './board.js';
 import { randomItem } from './utils.js';
-import { validateImage } from './utils.js';
 import { waitForFlag } from './utils.js';
 
 class Game {
@@ -20,33 +19,27 @@ class Game {
 				this.solvedCells = [];
 				this.revealedCells = [];
 				this.viewedCells = []; // for keeping track of avoidable mistakes
-				this.viewedWords = []; // for keeping track of unique pictures seen
 				this.usedGlyphs = [];
 				this.unsolvedCells = 0;
 				this.remainingMistakes = 0;
 				this.avoidableMistakesMade = 0;
-
+				this.pendingTrends = [];
+				this.won = false;
+				this.lost = false;
 			},
-
 			reset() {
 				this.level = 0;
 				this.lives = 3;
+				this.score = 0;
 			}
 		};
 		this.state.refresh();
 		this.state.reset();
 		this.memory = {
-			validImages: [],
 			previousLevel: -1,
-			viewedWordsInSession: [],
-		};
-		this.visualState = {
-			showLoading: false,
-			showOverlayText: true,
 		};
 
 		this.boards = boards;
-		this.faceChanger = new Graphics.faceChanger(this);
 	}
 	createCells = function (numCells) {
 		const fragment = document.createDocumentFragment();
@@ -75,43 +68,46 @@ class Game {
 	activateCells = async function (board) {
 		let cellsCopy = [...this.state.cells];
 		const usedImages = [];
-		const wordList = Object.keys(board.images);
 		let activeCellCount = 0;
+
 		for (let i = 0; i < this.state.cells.length / 2; i++) {
 			let tries = 0;
 			let imageValid = false;
-			let word, imageURL;
-			while (tries < 10) {
+			let word, imageURL, rank, recycled;
+
+			while (tries < 5) {
 				tries++;
-				let wordIndex = Math.floor(Math.random() * wordList.length);
-				word = wordList[wordIndex];
-				if (!board.allowRecycleWords && this.memory.viewedWordsInSession.includes(word)) {
-					continue;
-				}
-				imageURL = board.images[word].url;
-				if (usedImages.includes(imageURL)) {
-					continue;
-				}
-				imageValid = await validateImage(imageURL, this);
-				if (imageValid) {
-					wordList.splice(wordIndex, 1);
-					usedImages.push(imageURL);
-					break;
-				}
+
+				({key: word, recycled} = this.trendSelector.getRandomTrendKey());
+
+				imageURL = Config.trendData.trends[word].url;
+				rank = Config.trendData.trends[word].rank;
+				if (usedImages.includes(imageURL)) continue;
+
+				imageValid = true;
+				usedImages.push(imageURL);
+				break;
 			}
+
 			if (!imageValid) {
 				console.log("No word with picture found.");
 				continue;
 			}
+
 			let sibling1, sibling2;
 			for (let j = 0; j < 2; j++) {
 				const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
 				const cell = cellsCopy[randomCellIndex];
 				cell.activate(word, imageURL);
+				if (rank) cell.setRank(rank);
+				cell.recycled = recycled;
 				activeCellCount++;
 				cellsCopy.splice(randomCellIndex, 1);
 				if (!sibling1) sibling1 = cell;
 				else sibling2 = cell;
+			}
+			if (!recycled) {
+				this.state.pendingTrends.push(word);
 			}
 			sibling1.sibling = sibling2;
 			sibling2.sibling = sibling1;
@@ -119,6 +115,7 @@ class Game {
 			sibling1.setBackColor(color);
 			sibling2.setBackColor(color);
 		}
+
 		this.state.unsolvedCells = activeCellCount;
 		this.state.remainingMistakes = activeCellCount / 2 - 1 + board.additionalMistakes;
 
@@ -169,7 +166,10 @@ class Game {
 			if (cell1.getName() === cell2.getName()) {
 				cell1.solve();
 				cell2.solve();
-				CellSolvedLoop(game, cell1, cell2);
+				const solvedLoop = new CellSolvedLoop(game, cell1, cell2);
+				cell1.solvedLoop = solvedLoop;
+				cell2.solvedLoop = solvedLoop;
+				solvedLoop.start();
 				this.state.unsolvedCells -= 2;
 				this.state.solvedCells.push(cell1, cell2);
 				if (this.state.unsolvedCells <= 0) {
@@ -199,7 +199,7 @@ class Game {
 				this.state.cellsFading = true;
 
 				const fadeDelay = new Promise(resolve => setTimeout(resolve, Config.fadeDelay));
-				const interrupt = waitForFlag(() => this.state.cellsFading);
+				const interrupt = waitForFlag(() => this.state.cellsFading, false);
 
 				await Promise.race([fadeDelay, interrupt]);
 
@@ -214,24 +214,29 @@ class Game {
 			}
 		}
 	};
-	winGame = async function(animation = Config.boardAnimationID.fade) {
-		if (this.board.giveLife) this.addLife();
-		this.state.level++;
-		await Promise.all(this.state.solvedCells.map(cell => Promise.resolve(cell.typingDone)));
-		this.newGame(true, animation);
-	}
-	loseGame = async function(animation = Config.boardAnimationID.fade) {
-		this.removeLife();
+	winGame = async function () {
+		this.state.won = true;
 		this.state.coolDown = true;
+		if (this.board.giveLife) this.addLife();
+		this.addTrends(this.state.pendingTrends, true);
+		this.state.level++;
+		await Promise.all(this.state.solvedCells.map(cell => cell.typingDone));
+		await Promise.all(this.state.solvedCells.map(cell => cell.solvedLoop.end()));
+		this.newGame(true);
+	};
+	loseGame = async function() {
+		this.state.lost = true;
+		this.state.coolDown = true;
+		this.removeLife();
+		this.addTrends(this.state.pendingTrends, false);
 		await new Promise(resolve => setTimeout(resolve, 1000));
 		if (this.state.lives <= 0) {
 			this.restartGame();
 		}
 		else {
-
-			this.newGame(false, animation);
+			this.newGame(false);
 		}
-	}
+	};
 	selectMessage = function (victory) {
 		if (this.state.firstRun) return null;
 		if (victory) {
@@ -243,62 +248,53 @@ class Game {
 		if (this.state.level < this.memory.previousLevel) return Config.messages.gameover;
 		return Config.messages.failure;
 	};
-
-	newGame = async function (victory, boardAnimation = Config.boardAnimationID.fade) {
+	selectBoard = function () {
+		const board = this.state.level <= this.boards.length - 1
+			? this.boards[this.state.level]
+			: BoardCreator.createBoard(this.state.level);
+		if (board.cellCount < 4 || board.cellCount % 2 !== 0) {
+			console.error("Please provide an even cell count greater than or equal to 4.");
+			return null;
+		}
+		return board;
+	};
+	newGame = async function (victory) {
 		// ── Message selection (before state resets) ──────────────────
 		let messageList = this.selectMessage(victory);
-		/*if (victory && this.board.giveLife) {
-			messageList = ["+1!"];
-		};*/
 		// ── Board selection ──────────────────────────────────────────
-		if (this.state.level <= this.boards.length - 1) {
-			this.board = this.boards[this.state.level];
-		} else {
-			this.board = BoardCreator.createBoard(this.state.level);
-		}
-
-		if (this.board.cellCount < 4 || this.board.cellCount % 2 !== 0) {
-			console.error("Please provide an even cell count greater than or equal to 4.");
-			return;
-		}
+		this.board = this.selectBoard();
+		if (!this.board) return;
+		const newCellCount = this.board.cellCount !== this.state.cells.length;
 		// ── Begin teardown ───────────────────────────────────────────
-		this.state.coolDown = true;
-		this.visualState.showLoading = boardAnimation === Config.boardAnimationID.buffering;
+		//this.state.coolDown = true;
+		if (!victory) await this.deleteCells(victory);
 
-		if (boardAnimation === Config.boardAnimationID.fade) {
-			// Fade out grid and tooltip simultaneously, reset tooltip once faded
-			Elements.grid.classList.toggle('active', false);
-			Elements.tooltip.classList.toggle('fade-out', true);
-			Elements.tooltip.addEventListener('transitionend', () => {
-				Graphics.resetToolTip(this, victory);
-			}, { once: true });
-		}
+		// Fade out grid and tooltip simultaneously, reset tooltip once faded
+		Elements.grid.classList.remove('active');
+		Elements.tooltip.classList.remove('active');
+		Elements.tooltip.addEventListener('transitionend', () => {
+			Graphics.resetToolTip(this, victory);
+		}, { once: true });
 
+		await new Promise(r => setTimeout(r, 320));
 		// Wait for cells to finish fading out before removing them
-		await this.deleteCells(victory);
-
+		if (victory) await this.deleteCells(victory);
+		if (newCellCount || this.state.firstRun) await this.gridLayout.update(this.board.cellCount);
 		// ── State reset ──────────────────────────────────────────────
-
-		this.memory.viewedWordsInSession.push(...this.state.viewedWords);
-		if (this.memory.viewedWordsInSession.length >= Object.keys(Config.category.all).length - 50) {
-			this.memory.viewedWordsInSession = [];
-		}
 
 		this.state.refresh();
 
 		// ── Build new board ──────────────────────────────────────────
-		this.gridLayout.update(this.board.cellCount);
+		
 		this.createCells(this.board.cellCount);
 
 		// ── Splash message (blocks until animation completes) ────────
 		if (messageList) await Graphics.splashText(randomItem(messageList));
 
 		// ── Fade grid back in ────────────────────────────────────────
-		Elements.grid.classList.toggle('active', true);
-		Elements.tooltip.classList.toggle('fade-out', false);
-		if (boardAnimation === Config.boardAnimationID.buffering) {
-			Graphics.resetToolTip(this, victory);
-		}
+		Elements.tooltip.classList.add('active');
+		Elements.grid.classList.add('active');
+
 
 		// ── Activate cells (animates in one by one) ──────────────────
 		await this.activateCells(this.board);
@@ -311,34 +307,125 @@ class Game {
 	};
 	restartGame = function () {
 		this.state.reset();
-		this.newGame(false, Config.boardAnimationID.fade);
+		this.newGame(false);
 	};
 	addLife = function () {
 		this.state.lives = Math.min(this.state.lives + 1, Config.maxLives);
 		Graphics.lifeDisplay.addLife(this.state.lives);
 	};
+	addTrends = function (trends, victory) {
+		if (victory) {
+			for (const trend of trends) {
+				this.trendSelector.markUsed(trend);
+				this.state.score++;
+			}
+			this.percentScorer.interpolateScore(this.state.score);
+		}
+		else {
+			for (const trend of trends) {
+				this.trendSelector.markViewed(trend);
+			}
+		}
+
+		this.trendSelector.saveData();
+	};
+	recordScore = function(score) {
+
+		//localStorage.setItem('fetchedDate', fetchedDate);
+	}
 
 	removeLife = function () {
 		Graphics.lifeDisplay.removeLife(this.state.lives--);
 	};
 }
 
+const TrendSelector = function (trendData) {
+	const trends = trendData.trends;
+	const fetchedDate = trendData.fetchedDate;
+	const keys = {
+		unused: Object.keys(trends),
+		used: [],
+		deferred: [],
+	};
+	const savedDate = localStorage.getItem('fetchedDate');
+	if (savedDate && savedDate === fetchedDate) {
+		try {
+			const saved = JSON.parse(localStorage.getItem('trendKeys'));
+			if (saved) {
+				keys.unused = saved.unused.filter(k => trends[k]);
+				keys.deferred = saved.deferred.filter(k => trends[k]);
+				keys.used = saved.used ?? [];
+			}
+		} catch {
+			// leave keys as default if parsing fails
+		}
+	} else {
+		localStorage.removeItem('trendKeys');
+		localStorage.removeItem('fetchedDate');
+	}
+	function moveKey(key, from, to) {
+		const index = from.indexOf(key);
+		if (index === -1) return false;
+		from.splice(index, 1);
+		to.push(key);
+		return true;
+	}
+	this.deferUsed = function () {
+		keys.deferred.push(...keys.used);
+		keys.used = [];
+	};
+
+	this.markUsed = function (key) {
+		if (moveKey(key, keys.unused, keys.used)) return;
+		moveKey(key, keys.deferred, keys.used); // in case it was recycled
+	};
+	this.markViewed = function(key) {
+		moveKey(key, keys.unused, keys.deferred);
+	}
+
+	this.getRandomTrendKey = function () {
+		let pool, recycled;
+		if (keys.unused.length > 0) {
+			pool = keys.unused; recycled = false;
+		} else if (keys.deferred.length > 0) {
+			pool = keys.deferred; recycled = false;
+		} else {
+			pool = keys.used; recycled = true;
+		}
+		const key = pool[Math.floor(Math.random() * pool.length)];
+		return { key, recycled };
+	};
+
+	this.saveData = function () {
+		const data = {
+			unused: [...keys.unused],
+			used : [],
+			deferred: [...keys.deferred, ...keys.used],
+		};
+		localStorage.setItem('trendKeys', JSON.stringify(data));
+		localStorage.setItem('fetchedDate', fetchedDate);
+	};
+};
+
 async function init() {
 	await Config.getCategories();
 	const boards = [
-		new Board(4, Config.category.all),
-		new Board(8, Config.category.all, 1),
+		new Board(4, Config.trendData.trends),
+		new Board(8, Config.trendData.trends, 2, true),
 	];
 	const game = new Game(boards);
 	game.gridLayout = new GridLayout(Elements);
+	game.faceChanger = new Graphics.faceChanger(game);
+	game.trendSelector = new TrendSelector(Config.trendData);
+	game.percentScorer = new Graphics.PercentScorer(Config.trendData.length);
 	game.colorSequencerDark = new Graphics.colorSequencer(Config.darkColors);
 	game.colorSequencerLight = new Graphics.colorSequencer(Config.colors);
 	globalThis.game = game;
-	game.newGame(true, Config.boardAnimationID.fade);
+	game.newGame(true);
 	window.addEventListener('resize', () => game.gridLayout.resizeGrid());
 	Elements.grid.addEventListener('click', () => game.handleClick());
 	Elements.faceDisplay.addEventListener('click', () => {
-		game.loseGame(Config.boardAnimationID.fade);
+		game.loseGame();
 	});
 }
 init();

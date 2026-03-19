@@ -2,16 +2,12 @@
 	--theme-blue: #4990e2;
 	--global-padding: 8px;
 	--gap: 8px;
+	--bg-color: rgb(242, 242, 242);
 }
 
 /* Typography */
 * {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-@font-face {
-	font-family: 'Gilroy';
-	src: url("../fonts/Gilroy-Light.otf");
+	font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .coral-pixels-regular {
@@ -41,7 +37,7 @@ body {
 	user-select: none;
 	/*background-image: url("../images/bg.gif");*/
 	background-size: cover;
-	background-color: rgb(242, 242, 242);
+	background-color: var(--bg-color);
 }
 body.dark {
 	background-color: rgb(43, 43, 43) !important;
@@ -78,7 +74,7 @@ body.dark {
 	border-bottom: 0;
 	transition:
 		opacity 0.3s linear;
-	opacity: 1;
+	opacity: 0;
 	color: white;
 	white-space: nowrap;
 	overflow: hidden;
@@ -89,6 +85,14 @@ body.dark {
 	align-items: center;
 	/*box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);*/
 	z-index: 3;
+}
+#score-counter {
+	font-size: 1.1rem;
+	width: 100%;
+	padding-right: 10px;
+	text-align: right;
+	font-family: "Tiny5";
+	/*font-family: monospace;*/
 }
 
 #life-counter {
@@ -127,10 +131,9 @@ body.dark {
 }
 
 #tooltip-right img {
-	margin-top: auto;
-	margin-bottom: auto;
-	height: 60px;
-	image-rendering: pixelated;
+	
+	height: 56px;
+	margin-bottom: -5px;
 	cursor: pointer;
 }
 
@@ -160,6 +163,9 @@ body.dark {
 #grid.active {
 	background-color: rgba(255, 255, 255, 1);
 	box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+#tooltip.active {
+	opacity: 1 !important;
 }
 
 #splash-container {

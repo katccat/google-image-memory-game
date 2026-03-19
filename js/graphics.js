@@ -5,7 +5,9 @@ export const Elements = {
 	grid: document.getElementById('grid'),
 	gridContainer: document.getElementById('grid-container'),
 	tooltip: document.getElementById('tooltip'),
+	title: document.getElementById('title'),
 	levelDisplay: document.getElementById('level-counter'),
+	scoreDisplay: document.getElementById('score-counter'),
 	splashText: document.getElementById('splash-text'),
 	splashContainer: document.getElementById('splash-container'),
 	faceDisplay: document.getElementById('face'),
@@ -185,10 +187,53 @@ Graphics.lifeDisplay = {
 	},
 }
 Graphics.resetToolTip = function(game, victory) {
-	Elements.levelDisplay.innerText = `Level ${game.state.level}`;
+	Elements.levelDisplay.textContent = `Level ${game.state.level}`;
 	this.lifeDisplay.stageLives(game.state.lives);
 	game.faceChanger.resetFace(victory);
+	game.percentScorer.updateScore(game.state.score);
 }
+Graphics.PercentScorer = function (denominator) {
+	const scoreDisplay = Elements.scoreDisplay;
+	const rounding = Config.scoreRounding;
+	const delay = 60;
+	let lastScore = 0;
+	let intervalId = null;
+
+	const percentScore = function (score) {
+		return parseFloat((score / denominator * 100).toFixed(rounding));
+	};
+	const displayScore = function (score) {
+		scoreDisplay.textContent = score + "%";
+	};
+
+	this.interpolateScore = function (newScore) {
+		const displayStart = percentScore(lastScore);
+		const displayEnd = percentScore(newScore);
+		lastScore = newScore;
+
+		// Cancel any in-progress interpolation
+		if (intervalId) clearInterval(intervalId);
+
+		let current = displayStart;
+		const step = displayEnd > current ? 0.1 : -0.1;
+
+		intervalId = setInterval(() => {
+			current += step;
+			displayScore(current.toFixed(rounding));
+			if (parseFloat(current.toFixed(rounding)) >= displayEnd) {
+				clearInterval(intervalId);
+				intervalId = null;
+			}
+		}, delay);
+	};
+
+	this.updateScore = function (score) {
+		if (intervalId) clearInterval(intervalId);
+		intervalId = null;
+		lastScore = score;
+		displayScore(percentScore(score).toFixed(rounding));
+	};
+};
 Graphics.colorSequencer = function(sequence) {
 	const colorSequence = sequence;
 	

@@ -9,7 +9,7 @@ export function GridLayout(elements) {
 	let cellCount, suitableFactors;
 	const grid = elements.grid;
 
-	this.update = function (numCells) {
+	this.update = async function (numCells) {
 		cellCount = numCells;
 		suitableFactors = [];
 
@@ -65,7 +65,7 @@ export function GridLayout(elements) {
 		tooltip.style.width = grid.getBoundingClientRect().width + 'px';
 		const cellWidth = grid.getBoundingClientRect().width / columns;
 		let cellPerspective;
-		console.log(cellWidth);
+		//console.log(cellWidth);
 		if (cellWidth > 280) {
 			cellPerspective = 720;
 		} 

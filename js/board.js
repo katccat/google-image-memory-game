@@ -3,18 +3,17 @@ import { randomItem } from './utils.js';
 import { isPhone } from './utils.js';
 
 export class Board {
-	constructor(cellCount, images, additionalMistakes = 0) {
+	constructor(cellCount, images, additionalMistakes = 0, giveLife = false) {
 		this.cellCount = cellCount;
 		this.images = images;
 		this.additionalMistakes = additionalMistakes;
-		this.giveLife = false;
+		this.giveLife = giveLife;
 		this.funColorChance = Config.funColorChance;
 		this.allowRecycleWords = false;
 	}
 }
 
 export class BoardCreator {
-	static specialBoardChance = 0;
 	static cellCounts = {
 		normal: {
 			easy: [8, 12, 18],
@@ -28,10 +27,10 @@ export class BoardCreator {
 		}
 	};
 	static levels = Config.difficulty;
-	static giveLifeThreshold = 0;
+	static giveLifeThreshold = 8;
 	static previous = { level: null, board: null };
 	static createBoard(level) {
-		let cellCount, doSpecialCategory, category, allowRecycleWords;
+		let cellCount, category, allowRecycleWords;
 
 		{
 			const availableCellCounts = isPhone() ? BoardCreator.cellCounts.phone : BoardCreator.cellCounts.normal;
@@ -45,17 +44,9 @@ export class BoardCreator {
 			cellCount = randomItem(cellCounts);
 		}
 
-		doSpecialCategory = Math.random() < BoardCreator.specialBoardChance;
-
-		if (doSpecialCategory) {
-			let categoryKey = randomItem(Object.keys(Config.category.special));
-			category = Config.category.special[categoryKey];
-			allowRecycleWords = true;
-		}
-		else {
-			category = Config.category.all;
-			allowRecycleWords = false;
-		}
+		category = Config.trendData.trends;
+		allowRecycleWords = false;
+		
 		const board = new Board(cellCount, category);
 		board.allowRecycleWords = allowRecycleWords;
 
@@ -65,7 +56,7 @@ export class BoardCreator {
 		}
 		else if (level < BoardCreator.levels.normal) board.additionalMistakes = 1;
 
-		if (cellCount >= BoardCreator.giveLifeThreshold || doSpecialCategory) {
+		if (cellCount >= BoardCreator.giveLifeThreshold) {
 			board.giveLife = true;
 		}
 		BoardCreator.previous.board = board;
