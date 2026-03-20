@@ -11,6 +11,7 @@ export const Elements = {
 	splashText: document.getElementById('splash-text'),
 	splashContainer: document.getElementById('splash-container'),
 	faceDisplay: document.getElementById('face'),
+	continuePrompt: document.getElementById('continue-prompt'),
 	lives: [
 		{ // life 1 index 0
 			animated: document.getElementById('life1-gif'),
@@ -105,38 +106,18 @@ Graphics.faceChanger = function(game) {
 		dead = false;
 	}
 }
-Graphics.splashTextHandler = function() {
-	Elements.splashContainer.classList.remove("expand");
-};
-Graphics.splashText = async function(text) {
-	const splashText = Elements.splashText;
+Graphics.splashText = async function (text) {
 	const splashContainer = Elements.splashContainer;
-	splashContainer.removeEventListener('transitionend', Graphics.splashTextHandler, { once: true });
 	splashContainer.classList.toggle("notransition", true);
 	splashContainer.classList.remove("expand");
 	void splashContainer.offsetWidth;
-	splashText.textContent = text;
-	splashContainer.classList.toggle("expand", true);
+	Elements.splashText.textContent = text;
 	splashContainer.classList.toggle("notransition", false);
-	return new Promise(resolve => {
-		const handler = () => {
-			splashContainer.classList.remove("expand");
-			resolve(); // <-- now awaited properly
-		};
-		splashContainer.addEventListener('transitionend', handler, { once: true });
-	});
-};
-Graphics.splashTextInstant = function(text) {
-	const splashText = Elements.splashText;
-	const splashContainer = Elements.splashContainer;
-	splashContainer.removeEventListener('transitionend', Graphics.splashTextHandler, { once: true });
-	splashContainer.classList.toggle("notransition", true);
-	splashContainer.classList.remove("expand");
-	void splashContainer.offsetWidth;
-	splashText.textContent = text;
 	splashContainer.classList.toggle("expand", true);
-	splashContainer.classList.toggle("notransition", false);
-	splashContainer.addEventListener('transitionend', Graphics.splashTextHandler, { once: true });
+	return new Promise(resolve => setTimeout(() => {
+		splashContainer.classList.remove("expand");
+		resolve();
+	}, 1700));
 };
 Graphics.lifeDisplay = {
 	lifeElements: Elements.lives,
@@ -190,12 +171,12 @@ Graphics.resetToolTip = function(game, victory) {
 	Elements.levelDisplay.textContent = `Level ${game.state.level}`;
 	this.lifeDisplay.stageLives(game.state.lives);
 	game.faceChanger.resetFace(victory);
-	game.percentScorer.updateScore(game.state.score);
+	game.percentScorer.updateScore(game.memory.score.num);
 }
 Graphics.PercentScorer = function (denominator) {
 	const scoreDisplay = Elements.scoreDisplay;
 	const rounding = Config.scoreRounding;
-	const delay = 60;
+	const delay = 80;
 	let lastScore = 0;
 	let intervalId = null;
 
@@ -216,13 +197,14 @@ Graphics.PercentScorer = function (denominator) {
 
 		let current = displayStart;
 		const step = displayEnd > current ? 0.1 : -0.1;
-
+		scoreDisplay.classList.add('enlarge');
 		intervalId = setInterval(() => {
 			current += step;
 			displayScore(current.toFixed(rounding));
 			if (parseFloat(current.toFixed(rounding)) >= displayEnd) {
 				clearInterval(intervalId);
 				intervalId = null;
+				scoreDisplay.classList.remove('enlarge');
 			}
 		}, delay);
 	};
@@ -245,7 +227,7 @@ Graphics.colorSequencer = function(sequence) {
 	}
 }
 Graphics.typeText = async function(text, ...elements) {
-	const delayMs = 150;
+	const delayMs = 100;
 	elements.forEach(element => element.innerHTML = '');
 	for (let i = 0; i < text.length; i++) {
 		for (const char of text[i]) {
@@ -269,4 +251,12 @@ Graphics.deleteText = async function(...elements) {
 		});
 		await new Promise(resolve => setTimeout(resolve, delayMs));
 	}
+}
+Graphics.showPrompt = async function() {
+	Elements.continuePrompt.classList.add('fade-in');
+	//Elements.continuePrompt.classList.add('breathing');
+}
+Graphics.hidePrompt = async function () {
+	//Elements.continuePrompt.classList.remove('breathing');
+	Elements.continuePrompt.classList.remove('fade-in');
 }

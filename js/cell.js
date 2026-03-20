@@ -23,7 +23,9 @@ export class Cell {
 		this.labelLines;
 		this.recycled;
 		this.rank;
+		this.bespoke = false;
 		this.solvedLoop;
+		this.transitioning;
 
 		this.elements = {
 			parent: document.createElement('div'),
@@ -80,6 +82,7 @@ export class Cell {
 	}
 	setRank(rank) {
 		this.rank = rank;
+		if (rank <= 7) this.bespoke = true;
 		this.elements.number.textContent = rank;
 	}
 	reveal() {
@@ -94,15 +97,23 @@ export class Cell {
 		this.state = Cell.State.DEFAULT;
 		this.elements.card.classList.toggle('unhide', false);
 	}
-	shake() {
-		this.elements.parent.animate(Config.animation.shake.keyframes, Config.animation.shake.options);
+	async shake() {
+		const animation = this.elements.parent.animate(Config.animation.shake.keyframes, Config.animation.shake.options);
+		this.transitioning = Promise.all([
+			animation.finished,
+			new Promise(resolve => setTimeout(resolve, 500))
+		]);
 	}
-	unhide() {
+	async unhide() {
 		if (this.state !== Cell.State.DEFAULT || this.game.state.coolDown) return;
-		//this.game.state.cellsFading = false;
+		this.game.state.cellsFading = false;
 		this.state = Cell.State.REVEALED;
-		this.elements.card.classList.toggle('unhide', true);
 		this.game.state.revealedCells.push(this);
+		this.elements.card.classList.toggle('unhide', true);
+		this.transitioning = Promise.all([
+			awaitTransition(this.elements.card),
+			new Promise(resolve => setTimeout(resolve, 500))
+		]);
 	}
 	solve() {
 		this.state = Cell.State.SOLVED;
@@ -129,14 +140,16 @@ export class CellSolvedLoop {
 		let typingResolver, endResolver;
 		const typingDone = new Promise(r => typingResolver = r);
 		const endPromise = new Promise(r => endResolver = r);
+		const specialAnimation = cells[0].bespoke;
 		let ended = false;
 		
 		this.end = async function () {
 			if (ended) return;
 			ended = true;
+			if (specialAnimation) bgElements.forEach(e => setBespoke(e));
 			rankElements.forEach(e => e.classList.add('fade-in'));
 			labelElements.forEach(e => e.classList.add('fade-out'));
-			await new Promise(r => setTimeout(r, 1000));
+			//await new Promise(r => setTimeout(r, 1000));
 			endResolver();
 		};
 
@@ -161,8 +174,10 @@ export class CellSolvedLoop {
 		
 		this.start = async () => {
 			await Promise.all(bgElements.map(el => el.animate(animation.keyframes, animation.options).finished));
-
-			while (true) {
+			await Graphics.typeText(lines, ...labelElements);
+			await new Promise(r => setTimeout(r, 1000));
+			typingResolver();
+			/*while (true) {
 				if (game.state.lost) {
 					typingResolver()
 					endResolver();
@@ -183,7 +198,30 @@ export class CellSolvedLoop {
 				}
 				if (cells.length === 0) return;
 				console.log('running');
-			}
+			}*/
 		};
 	}
+}
+const setBespoke = function(element) {
+	const current = getComputedStyle(element).backgroundColor;
+	const colors = [...Config.darkColors];
+	let currentIndex = 0;
+	for (let i = 0; i < colors.length; i ++) {
+		if (colors[i] === current) currentIndex = i;
+		console.log(`${colors[i]} : ${current}`);
+	}
+	console.log(currentIndex);
+	const orderedColors = colors.splice(currentIndex);
+	orderedColors.push(...colors);
+	element.animate([
+		{ backgroundColor: orderedColors[0] },
+		{ backgroundColor: orderedColors[1] },
+		{ backgroundColor: orderedColors[2] },
+		{ backgroundColor: orderedColors[3] },
+		{ backgroundColor: orderedColors[0] },
+	], {
+		duration: 4000,
+		iterations: Infinity,
+		easing: 'linear',
+	});
 }

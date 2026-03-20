@@ -45,6 +45,7 @@
 	transition:
 		transform 0.5s ease-out,
 		box-shadow 0.1s linear;
+	will-change: transform;
 }
 
 .cell-card:hover {
@@ -102,7 +103,7 @@
 	height: 100%;
 	color: white;
 	
-	background-color: rgba(0, 0, 0, 0.6);
+	background-color: rgba(0, 0, 0, 0.7);
 	backdrop-filter: blur(0.8px);
 	pointer-events: none;
 	opacity: 0;

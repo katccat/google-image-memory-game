@@ -23,20 +23,22 @@ class Game {
 				this.unsolvedCells = 0;
 				this.remainingMistakes = 0;
 				this.avoidableMistakesMade = 0;
-				this.pendingTrends = [];
+				this.pendingTrends = new Set();
 				this.won = false;
 				this.lost = false;
+				this.announceMilestone = false;
 			},
 			reset() {
 				this.level = 0;
 				this.lives = 3;
-				this.score = 0;
 			}
 		};
 		this.state.refresh();
 		this.state.reset();
 		this.memory = {
 			previousLevel: -1,
+			score: {},
+			saveScore: true,
 		};
 
 		this.boards = boards;
@@ -106,9 +108,6 @@ class Game {
 				if (!sibling1) sibling1 = cell;
 				else sibling2 = cell;
 			}
-			if (!recycled) {
-				this.state.pendingTrends.push(word);
-			}
 			sibling1.sibling = sibling2;
 			sibling2.sibling = sibling1;
 			const color = this.colorSequencerDark.nextColor();
@@ -152,15 +151,23 @@ class Game {
 			await new Promise(resolve => setTimeout(resolve, currentDelay));
 			currentDelay *= delayStep;
 		}
-
+		await new Promise(resolve => setTimeout(resolve, 500));
 		for (const cell of this.state.cells) {
 			cell.getElement().remove();
 		}
 		this.state.cells.length = 0;
 	};
 	handleClick = async function () {
+		if (this.state.awaitPlayer) {
+			this.state.awaitPlayer = false;
+			Graphics.hidePrompt();
+			this.newGame(this.state.won);
+			return;
+		}
 		if (this.state.revealedCells.length > 1) {
 			const [cell1, cell2] = this.state.revealedCells;
+			if (!cell1.recycled) this.state.pendingTrends.add(cell1.getName());
+			if (!cell2.recycled) this.state.pendingTrends.add(cell2.getName());
 			this.state.revealedCells.length = 0;
 
 			if (cell1.getName() === cell2.getName()) {
@@ -179,10 +186,16 @@ class Game {
 			else {
 				this.state.remainingMistakes--;
 				// if either of these cells have already been viewed, this could have been avoided
+				
+				const promises = [];
+
 				if (this.state.viewedCells.includes(cell1) || this.state.viewedCells.includes(cell2)) {
 					this.state.avoidableMistakesMade++;
+					await Promise.all([cell1.transitioning, cell2.transitioning]);
 					cell1.shake();
 					cell2.shake();
+					if (cell1.transitioning) promises.push(cell1.transitioning);
+					if (cell2.transitioning) promises.push(cell2.transitioning);
 				}
 				else {
 					// if the player turned over the first cell which they have previously seen a match to but didn't make the match
@@ -197,11 +210,10 @@ class Game {
 					return;
 				}
 				this.state.cellsFading = true;
-
 				const fadeDelay = new Promise(resolve => setTimeout(resolve, Config.fadeDelay));
 				const interrupt = waitForFlag(() => this.state.cellsFading, false);
-
-				await Promise.race([fadeDelay, interrupt]);
+				promises.push(fadeDelay, interrupt);
+				await Promise.race(promises);
 
 				this.state.cellsFading = false;
 				cell1.hide();
@@ -218,17 +230,21 @@ class Game {
 		this.state.won = true;
 		this.state.coolDown = true;
 		if (this.board.giveLife) this.addLife();
-		this.addTrends(this.state.pendingTrends, true);
+		this.faceChanger.resetFace(false);
+		this.trendSelector.addTrends(this.state.pendingTrends, true);
 		this.state.level++;
 		await Promise.all(this.state.solvedCells.map(cell => cell.typingDone));
 		await Promise.all(this.state.solvedCells.map(cell => cell.solvedLoop.end()));
-		this.newGame(true);
+		this.state.awaitPlayer = true;
+		await new Promise(r => setTimeout(r, 800));
+		Graphics.showPrompt();
+		//this.newGame(true);
 	};
 	loseGame = async function() {
 		this.state.lost = true;
 		this.state.coolDown = true;
 		this.removeLife();
-		this.addTrends(this.state.pendingTrends, false);
+		this.trendSelector.addTrends(this.state.pendingTrends, false);
 		await new Promise(resolve => setTimeout(resolve, 1000));
 		if (this.state.lives <= 0) {
 			this.restartGame();
@@ -241,6 +257,7 @@ class Game {
 		if (this.state.firstRun) return null;
 		if (victory) {
 			if (this.state.level <= 1) return Config.messages.intro;
+			if (this.state.announceMilestone) return [`${this.memory.score.num} trends collected!`];
 			if (this.state.avoidableMistakesMade === 0) return Config.messages.perfect;
 			if (this.state.remainingMistakes === 0) return Config.messages.nearmiss;
 			return Config.messages.victory;
@@ -275,21 +292,21 @@ class Game {
 		Elements.tooltip.addEventListener('transitionend', () => {
 			Graphics.resetToolTip(this, victory);
 		}, { once: true });
-
 		await new Promise(r => setTimeout(r, 320));
 		// Wait for cells to finish fading out before removing them
 		if (victory) await this.deleteCells(victory);
-		if (newCellCount || this.state.firstRun) await this.gridLayout.update(this.board.cellCount);
+		// ── Splash message (blocks until animation completes) ────────
+		if (messageList) await Graphics.splashText(randomItem(messageList));
+		
 		// ── State reset ──────────────────────────────────────────────
-
+		if (newCellCount || this.state.firstRun) await this.gridLayout.update(this.board.cellCount);
 		this.state.refresh();
 
 		// ── Build new board ──────────────────────────────────────────
 		
 		this.createCells(this.board.cellCount);
 
-		// ── Splash message (blocks until animation completes) ────────
-		if (messageList) await Graphics.splashText(randomItem(messageList));
+		
 
 		// ── Fade grid back in ────────────────────────────────────────
 		Elements.tooltip.classList.add('active');
@@ -313,56 +330,38 @@ class Game {
 		this.state.lives = Math.min(this.state.lives + 1, Config.maxLives);
 		Graphics.lifeDisplay.addLife(this.state.lives);
 	};
-	addTrends = function (trends, victory) {
-		if (victory) {
-			for (const trend of trends) {
-				this.trendSelector.markUsed(trend);
-				this.state.score++;
-			}
-			this.percentScorer.interpolateScore(this.state.score);
-		}
-		else {
-			for (const trend of trends) {
-				this.trendSelector.markViewed(trend);
-			}
-		}
-
-		this.trendSelector.saveData();
+	initScore = function (score, denominator) {
+		this.memory.score.num = score;
+		this.memory.score.denominator = denominator;
 	};
-	recordScore = function(score) {
-
-		//localStorage.setItem('fetchedDate', fetchedDate);
-	}
+	incrementScore = function(num) {
+		const prev = this.memory.score.num;
+		this.memory.score.num += num;
+		const crossed = Config.milestones.find(m => prev < m && this.memory.score.num >= m);
+		this.state.announceMilestone = crossed;
+		if (this.memory.saveProgress) localStorage.setItem('score', JSON.stringify(this.memory.score));
+	};
 
 	removeLife = function () {
 		Graphics.lifeDisplay.removeLife(this.state.lives--);
 	};
 }
 
-const TrendSelector = function (trendData) {
+const TrendSelector = function (trendData, game) {
 	const trends = trendData.trends;
-	const fetchedDate = trendData.fetchedDate;
+	const newDate = trendData.fetchedDate;
 	const keys = {
 		unused: Object.keys(trends),
 		used: [],
 		deferred: [],
 	};
-	const savedDate = localStorage.getItem('fetchedDate');
-	if (savedDate && savedDate === fetchedDate) {
-		try {
-			const saved = JSON.parse(localStorage.getItem('trendKeys'));
-			if (saved) {
-				keys.unused = saved.unused.filter(k => trends[k]);
-				keys.deferred = saved.deferred.filter(k => trends[k]);
-				keys.used = saved.used ?? [];
-			}
-		} catch {
-			// leave keys as default if parsing fails
+	this.restoreKeys = function(restoredKeys) {
+		if (restoredKeys) {
+			keys.unused = restoredKeys.unused.filter(k => trends[k]);
+			keys.deferred = restoredKeys.deferred.filter(k => trends[k]);
+			keys.used = restoredKeys.used.filter(k => trends[k]);
 		}
-	} else {
-		localStorage.removeItem('trendKeys');
-		localStorage.removeItem('fetchedDate');
-	}
+	};
 	function moveKey(key, from, to) {
 		const index = from.indexOf(key);
 		if (index === -1) return false;
@@ -381,7 +380,23 @@ const TrendSelector = function (trendData) {
 	};
 	this.markViewed = function(key) {
 		moveKey(key, keys.unused, keys.deferred);
-	}
+	};
+
+	this.addTrends = function (trendSet, victory) {
+		if (victory) {
+			for (const trend of trendSet) {
+				this.markUsed(trend);
+			}
+			game.incrementScore(trendSet.size);
+			game.percentScorer.interpolateScore(game.memory.score.num);
+		}
+		else {
+			for (const trend of trendSet) {
+				this.markViewed(trend);
+			}
+		}
+		if (game.memory.saveProgress) this.saveData();
+	};
 
 	this.getRandomTrendKey = function () {
 		let pool, recycled;
@@ -399,11 +414,11 @@ const TrendSelector = function (trendData) {
 	this.saveData = function () {
 		const data = {
 			unused: [...keys.unused],
-			used : [],
-			deferred: [...keys.deferred, ...keys.used],
+			used: [...keys.used],
+			deferred: [...keys.deferred],
 		};
 		localStorage.setItem('trendKeys', JSON.stringify(data));
-		localStorage.setItem('fetchedDate', fetchedDate);
+		localStorage.setItem('fetchedDate', newDate);
 	};
 };
 
@@ -416,10 +431,39 @@ async function init() {
 	const game = new Game(boards);
 	game.gridLayout = new GridLayout(Elements);
 	game.faceChanger = new Graphics.faceChanger(game);
-	game.trendSelector = new TrendSelector(Config.trendData);
+	game.trendSelector = new TrendSelector(Config.trendData, game);
 	game.percentScorer = new Graphics.PercentScorer(Config.trendData.length);
 	game.colorSequencerDark = new Graphics.colorSequencer(Config.darkColors);
 	game.colorSequencerLight = new Graphics.colorSequencer(Config.colors);
+	
+	//
+	const localDate = localStorage.getItem('fetchedDate');
+	const newDate = Config.trendData.fetchedDate;
+	const dateMatch = newDate && (localDate === newDate || !localDate);
+	
+	let restoredScore = 0;
+	if (newDate) {
+		game.memory.saveProgress = true;
+		if (dateMatch) {
+			try {
+				const savedKeys = JSON.parse(localStorage.getItem('trendKeys')); 
+				game.trendSelector.restoreKeys(savedKeys);
+			} catch {}
+			try {
+				const saved = JSON.parse(localStorage.getItem('score'));
+				if (saved) restoredScore = saved.num;
+			} catch {}
+		} else {
+			localStorage.removeItem('trendKeys');
+			localStorage.removeItem('fetchedDate');
+			localStorage.removeItem('score');
+		}
+	} else game.memory.saveProgress = false;
+	game.initScore(restoredScore, Config.trendData.length);
+	Graphics.resetToolTip(game, false);
+	//
+	
+	
 	globalThis.game = game;
 	game.newGame(true);
 	window.addEventListener('resize', () => game.gridLayout.resizeGrid());

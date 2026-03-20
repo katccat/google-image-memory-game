@@ -5,6 +5,7 @@ export const Config = {
 	funColorChance: 0,
 	funGlyphChance: 0.1,
 	maxLives: 3,
+	milestones: [10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
 	scoreRounding: 1,
 	colors: [
 		'#ed6a5e', // red
@@ -13,10 +14,10 @@ export const Config = {
 		'#76d590', // green
 	],
 	darkColors: [
-		'#4285F4B3',
-		'#EA4335B3',
-		'#FBBC05B3',
-		'#34A853B3',
+		'rgba(66, 133, 244, 0.7)',
+		'rgba(234, 67, 53, 0.7)',
+		'rgba(251, 188, 5, 0.7)',
+		'rgba(52, 168, 83, 0.7)',
 		/*'#00000066',*/
 	],
 	messages: {
@@ -56,14 +57,18 @@ export const Config = {
 		shake: {
 			keyframes: [
 				{ marginLeft: '0', offset: 0 },
-				{ marginLeft: '8%', offset: 0.25 },
-				{ marginLeft: '-8%', offset: 0.75 },
-				{ marginLeft: '0', offset: 1 }
+				{ marginLeft: '-10px', offset: 0.08 },
+				{ marginLeft: '10px', offset: 0.25 },
+				{ marginLeft: '-10px', offset: 0.41 },
+				{ marginLeft: '10px', offset: 0.58 },
+				{ marginLeft: '-5px', offset: 0.75 },
+				{ marginLeft: '5px', offset: 0.92 },
+				{ marginLeft: '0', offset: 1 },
 			],
 			options: {
-				duration: 200,
-				iterations: 2,
-				easing: 'ease-in-out',
+				duration: 500,
+				iterations: 1,
+				easing: 'linear',
 			}
 		},
 		slide: {

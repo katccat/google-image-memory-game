@@ -69,12 +69,14 @@ export function getLines(element, text) {
 		element.textContent = test;
 
 		if (element.offsetHeight > baselineHeight && currentLine !== '') {
-			// this word caused a new line
 			lines.push(currentLine);
 			currentLine = word;
+			element.textContent = currentLine;
+			baselineHeight = element.offsetHeight; // recalibrate if this word is itself oversized
 		}
 		else {
 			currentLine = test;
+			baselineHeight = element.offsetHeight; // track current height as new baseline
 		}
 	}
 

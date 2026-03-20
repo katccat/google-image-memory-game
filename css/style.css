@@ -6,14 +6,8 @@
 }
 
 /* Typography */
-* {
+body {
 	font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-.coral-pixels-regular {
-	font-family: "Coral Pixels", serif;
-	font-weight: 400;
-	font-style: normal;
 }
 
 li {
@@ -93,6 +87,10 @@ body.dark {
 	text-align: right;
 	font-family: "Tiny5";
 	/*font-family: monospace;*/
+	transition: transform 0.3s linear;
+}
+#score-counter.enlarge {
+	transform: scale(1.4);
 }
 
 #life-counter {
@@ -167,7 +165,42 @@ body.dark {
 #tooltip.active {
 	opacity: 1 !important;
 }
+#continue-prompt {
+	z-index: 4;
+	position: absolute;
+	top: 57%;
+	left: 50%;
+	transform: translate(-50%, -50%) rotate(-3deg);
+	text-align: center;
+	opacity: 0;
+	will-change: transform, opacity;
+	pointer-events: none;
+	font-family: "Tiny5";
+	font-size: min(18vw, 7rem);
+	color: white;
+	line-height: 120%;
+	transition: 
+		transform 1s,
+		opacity 0.5s linear;
+}
+#continue-prompt.fade-in {
+	opacity: 0.8 !important;
+}
+#continue-prompt.breathing {
+	animation: breathe 2s ease-in-out infinite;
+}
 
+@keyframes breathe {
+	0%,
+	100% {
+		opacity: 0.8;
+		transform: translate(-50%, -50%) scale(1) rotate(-3deg);
+	}
+	50% {
+		opacity: 0.9;
+		transform: translate(-50%, -50%) scale(1.05) rotate(-3deg);
+	}
+}
 #splash-container {
 	position: absolute;
 	top: 50%;
@@ -180,13 +213,14 @@ body.dark {
 	will-change: transform, opacity;
 	transition:
 		transform 1.6s cubic-bezier(0.25, 1, 0.5, 1),
-		opacity 1.6s ease-out;
+		opacity 1.7s linear;
 	pointer-events: none;
 }
 
 #splash-text {
 	display: inline-block;
 	text-align: center;
+	font-family: "Coral Pixels";
 }
 
 #splash-container.expand {
