@@ -201,7 +201,8 @@ Graphics.PercentScorer = function (denominator) {
 		intervalId = setInterval(() => {
 			current += step;
 			displayScore(current.toFixed(rounding));
-			if (parseFloat(current.toFixed(rounding)) >= displayEnd) {
+			const isComplete = step > 0 ? parseFloat(current.toFixed(rounding)) >= displayEnd : parseFloat(current.toFixed(rounding)) <= displayEnd;
+			if (isComplete) {
 				clearInterval(intervalId);
 				intervalId = null;
 				scoreDisplay.classList.remove('enlarge');
