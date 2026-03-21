@@ -31,19 +31,6 @@ export function waitForFlag(flagRef, state) {
 	});
 }
 
-export function fitText(element) {
-	const parent = element.parentElement;
-	let size = 10;
-	element.style.fontSize = size + 'px';
-	while (element.scrollWidth <= parent.clientWidth &&
-		element.scrollHeight <= parent.clientHeight &&
-		size < 200) {
-		size++;
-		element.style.fontSize = size + 'px';
-	}
-	element.style.fontSize = (size - 1) + 'px';
-}
-
 export function isPhone() {
 	const phoneQuery = window.matchMedia('(max-width: 600px)');
 	return phoneQuery.matches;
@@ -84,6 +71,15 @@ export function getLines(element, text) {
 	element.textContent = oldText;
 	return lines;
 }
+export function fitFontSize(element, text, maxHeight) {
+	let size = parseFloat(getComputedStyle(element).fontSize);
+	element.textContent = text;
+	while (element.offsetHeight > maxHeight) {
+		size--;
+		element.style.fontSize = size + 'px';
+	}
+	return size + 'px';
+};
 export function truncate(str, maxLength) {
 	if (str.length <= maxLength) return str;
 	return str.slice(0, maxLength - 3) + '...';

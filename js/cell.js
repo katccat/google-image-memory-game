@@ -3,7 +3,7 @@ import { Graphics } from './graphics.js';
 import { getLines } from './utils.js';
 import { truncate } from './utils.js';
 import { awaitTransition } from './utils.js';
-import { waitForFlag } from './utils.js';
+import { fitFontSize } from './utils.js';
 
 export class Cell {
 	static State = {
@@ -33,7 +33,7 @@ export class Cell {
 			image: document.createElement('div'),
 			labelBg: document.createElement('div'),
 			label: document.createElement('div'),
-			labelBuffer: document.createElement('div'),
+			labelBuffer: null,
 			number: document.createElement('div'),
 			front: document.createElement('div'),
 		};
@@ -51,9 +51,6 @@ export class Cell {
 		this.elements.label.className = 'cell-label';
 		this.elements.labelBg.appendChild(this.elements.label);
 
-		this.elements.labelBuffer.className = 'cell-label-buffer';
-		this.elements.image.appendChild(this.elements.labelBuffer);
-
 		this.elements.number.className = 'cell-number';
 		this.elements.labelBg.appendChild(this.elements.number);
 
@@ -65,6 +62,18 @@ export class Cell {
 	getElement() {
 		return this.elements.parent;
 	}
+	createLabelBuffer() {
+		this.elements.labelBuffer = document.createElement('div');
+		this.elements.labelBuffer.className = 'cell-label-buffer';
+		this.elements.labelBuffer.style.width = this.elements.label.offsetWidth + 'px';
+		//this.elements.labelBuffer.style.height = this.elements.label.offsetHeight + 'px';
+		this.elements.labelBuffer.style.fontSize = getComputedStyle(this.elements.label).fontSize;
+		document.body.appendChild(this.elements.labelBuffer);
+		return this.elements.labelBuffer;
+	}
+	destroyLabelBuffer() {
+		if (this.elements.labelBuffer) this.elements.labelBuffer.remove();
+	}
 	getName() {
 		return this.id;
 	}
@@ -74,7 +83,6 @@ export class Cell {
 	activate(word, src, src2) {
 		this.id = word;
 		this.displayName = truncate(word.toLowerCase(), 42);
-		this.elements.labelBuffer.innerText = this.displayName;
 		this.elements.image.style.backgroundImage = `url(${src})`;
 		if (this.img) {
 			this.setFrontGlyph(this.img);
@@ -82,7 +90,7 @@ export class Cell {
 	}
 	setRank(rank) {
 		this.rank = rank;
-		if (rank <= 7) this.bespoke = true;
+		if (rank <= 11) this.bespoke = true;
 		this.elements.number.textContent = rank;
 	}
 	reveal() {
@@ -92,12 +100,15 @@ export class Cell {
 	deactivate() {
 		this.state = Cell.State.INACTIVE;
 		this.elements.parent.classList.toggle('fade-in', false);
+		this.destroyLabelBuffer();
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
+		this.elements.card.classList.toggle('scale', false);
 		this.elements.card.classList.toggle('unhide', false);
 	}
 	async shake() {
+		this.elements.card.classList.toggle('scale', false);
 		const animation = this.elements.parent.animate(Config.animation.shake.keyframes, Config.animation.shake.options);
 		this.transitioning = Promise.all([
 			animation.finished,
@@ -109,6 +120,7 @@ export class Cell {
 		this.game.state.cellsFading = false;
 		this.state = Cell.State.REVEALED;
 		this.game.state.revealedCells.push(this);
+		this.elements.card.classList.toggle('scale', true);
 		this.elements.card.classList.toggle('unhide', true);
 		this.transitioning = Promise.all([
 			awaitTransition(this.elements.card),
@@ -117,7 +129,7 @@ export class Cell {
 	}
 	solve() {
 		this.state = Cell.State.SOLVED;
-		this.elements.card.classList.add('solved');
+		this.elements.card.classList.toggle('scale', false);
 	}
 	setFrontGlyph(src) {
 		this.elements.front.style.backgroundImage = `url(${src})`;
@@ -166,9 +178,11 @@ export class CellSolvedLoop {
 		});
 
 		const text = cells[0].getDisplayName();
-		const testElement = cells[0].elements.labelBuffer;
+		const testElement = cells[0].createLabelBuffer();
+		const fontSize = fitFontSize(testElement, text, labelElements[0].offsetHeight);
 		const lines = getLines(testElement, text);
-
+		cells[0].destroyLabelBuffer();
+		labelElements.forEach(e => e.style.fontSize = fontSize);
 		bgElements.forEach(e => e.classList.add('fade-in'));
 		const animation = Config.animation.slide.right;
 		
@@ -177,28 +191,6 @@ export class CellSolvedLoop {
 			await Graphics.typeText(lines, ...labelElements);
 			await new Promise(r => setTimeout(r, 1000));
 			typingResolver();
-			/*while (true) {
-				if (game.state.lost) {
-					typingResolver()
-					endResolver();
-					return;
-				}
-
-				await Graphics.typeText(lines, ...labelElements);
-				typingResolver()
-
-				if (game.state.won) return;
-
-				await new Promise(r => setTimeout(r, 2000));
-				await Graphics.deleteText(...labelElements);
-				await new Promise(r => setTimeout(r, 500));
-
-				for (let i = cells.length - 1; i >= 0; i--) {
-					if (cells[i].state === Cell.State.INACTIVE) cells.splice(i, 1);
-				}
-				if (cells.length === 0) return;
-				console.log('running');
-			}*/
 		};
 	}
 }
@@ -220,7 +212,7 @@ const setBespoke = function(element) {
 		{ backgroundColor: orderedColors[3] },
 		{ backgroundColor: orderedColors[0] },
 	], {
-		duration: 4000,
+		duration: 8000,
 		iterations: Infinity,
 		easing: 'linear',
 	});

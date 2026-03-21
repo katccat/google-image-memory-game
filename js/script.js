@@ -22,7 +22,7 @@ class Game {
 				this.usedGlyphs = [];
 				this.unsolvedCells = 0;
 				this.remainingMistakes = 0;
-				this.avoidableMistakesMade = 0;
+				this.avoidableMistakes = 0;
 				this.pendingTrends = new Set();
 				this.won = false;
 				this.lost = false;
@@ -132,7 +132,12 @@ class Game {
 		}
 	};
 	deleteCells = async function (victory) {
-		const cells = victory ? this.state.solvedCells : this.state.cells;
+		let cells;
+		if (victory) {
+			cells = [...this.state.solvedCells];
+			cells.reverse();
+		}
+		else cells = this.state.cells;
 		const numCells = cells.length;
 
 		let totalDuration; // ms — tune this one variable
@@ -190,7 +195,8 @@ class Game {
 				const promises = [];
 
 				if (this.state.viewedCells.includes(cell1) || this.state.viewedCells.includes(cell2)) {
-					this.state.avoidableMistakesMade++;
+					this.state.avoidableMistakes++;
+					this.faceChanger.changeFace(this.state.remainingMistakes);
 					await Promise.all([cell1.transitioning, cell2.transitioning]);
 					cell1.shake();
 					cell2.shake();
@@ -201,10 +207,13 @@ class Game {
 					// if the player turned over the first cell which they have previously seen a match to but didn't make the match
 					const word1 = cell1.getName();
 					for (const cell of this.state.viewedCells) {
-						if (cell.getName() == word1) this.state.avoidableMistakesMade++;
+						if (cell.getName() == word1) {
+							this.state.avoidableMistakes++;
+							this.faceChanger.changeFace(this.state.remainingMistakes);
+							break;
+						}
 					}
 				}
-				if (this.state.avoidableMistakesMade > 0) this.faceChanger.changeFace(this.state.remainingMistakes);
 				if (this.state.remainingMistakes < 0) {
 					this.loseGame();
 					return;
@@ -230,7 +239,7 @@ class Game {
 		this.state.won = true;
 		this.state.coolDown = true;
 		if (this.board.giveLife) this.addLife();
-		this.faceChanger.resetFace(false);
+		this.faceChanger.resetFace(true);
 		this.trendSelector.addTrends(this.state.pendingTrends, true);
 		this.state.level++;
 		await Promise.all(this.state.solvedCells.map(cell => cell.typingDone));
@@ -258,7 +267,7 @@ class Game {
 		if (victory) {
 			if (this.state.level <= 1) return Config.messages.intro;
 			if (this.state.announceMilestone) return [`${this.memory.score.num} trends collected!`];
-			if (this.state.avoidableMistakesMade === 0) return Config.messages.perfect;
+			if (this.state.avoidableMistakes === 0) return Config.messages.perfect;
 			if (this.state.remainingMistakes === 0) return Config.messages.nearmiss;
 			return Config.messages.victory;
 		}
@@ -284,7 +293,6 @@ class Game {
 		const newCellCount = this.board.cellCount !== this.state.cells.length;
 		// ── Begin teardown ───────────────────────────────────────────
 		//this.state.coolDown = true;
-		if (!victory) await this.deleteCells(victory);
 
 		// Fade out grid and tooltip simultaneously, reset tooltip once faded
 		Elements.grid.classList.remove('active');
@@ -294,7 +302,7 @@ class Game {
 		}, { once: true });
 		await new Promise(r => setTimeout(r, 320));
 		// Wait for cells to finish fading out before removing them
-		if (victory) await this.deleteCells(victory);
+		await this.deleteCells(victory);
 		// ── Splash message (blocks until animation completes) ────────
 		if (messageList) await Graphics.splashText(randomItem(messageList));
 		
@@ -467,7 +475,7 @@ async function init() {
 	globalThis.game = game;
 	game.newGame(true);
 	window.addEventListener('resize', () => game.gridLayout.resizeGrid());
-	Elements.grid.addEventListener('click', () => game.handleClick());
+	window.addEventListener('click', () => game.handleClick());
 	Elements.faceDisplay.addEventListener('click', () => {
 		game.loseGame();
 	});

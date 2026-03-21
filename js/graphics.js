@@ -65,7 +65,7 @@ Graphics.faceChanger = function(game) {
 	this.changeFace = function () {
 		if (dead) return;
 		if (this.game.state.remainingMistakes < 0) {
-			if (this.game.state.avoidableMistakesMade == 1) {
+			if (this.game.state.avoidableMistakes == 1) {
 				faceDisplay.src = faceImages.diedImmediately;
 			}
 			else if (!doSequence2) {
@@ -78,7 +78,7 @@ Graphics.faceChanger = function(game) {
 			return;
 		}
 		let length;
-		if (this.game.state.avoidableMistakesMade > 1 && !(faceDisplay.src == faceImages.default || faceDisplay.src == faceImages.special || faceDisplay.src == faceImages.special2)) {
+		if (this.game.state.avoidableMistakes > 1 && !(faceDisplay.src == faceImages.default || faceDisplay.src == faceImages.special || faceDisplay.src == faceImages.special2)) {
 			doSequence2 = true;
 			length = faceImages.mistake2.length;
 		}

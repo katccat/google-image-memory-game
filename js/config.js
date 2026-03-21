@@ -85,20 +85,6 @@ export const Config = {
 					{ transform: 'translateX(0)', offset: 1 },
 				],
 				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
-			},
-			up: {
-				keyframes: [
-					{ transform: 'translateY(-100%)', offset: 0 },
-					{ transform: 'translateY(0)', offset: 1 },
-				],
-				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
-			},*/
-			/*down: {
-				keyframes: [
-					{ transform: 'translateY(100%)', offset: 0 },
-					{ transform: 'translateY(0)', offset: 1 },
-				],
-				options: { duration: 700, easing: 'ease-out', fill: 'forwards' },
 			},*/
 		},
 	}
