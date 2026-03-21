@@ -196,12 +196,12 @@ class Game {
 
 				if (this.state.viewedCells.includes(cell1) || this.state.viewedCells.includes(cell2)) {
 					this.state.avoidableMistakes++;
-					this.faceChanger.changeFace(this.state.remainingMistakes);
-					await Promise.all([cell1.transitioning, cell2.transitioning]);
-					cell1.shake();
-					cell2.shake();
-					if (cell1.transitioning) promises.push(cell1.transitioning);
-					if (cell2.transitioning) promises.push(cell2.transitioning);
+					const shakePromise = Promise.all([cell1.transitioning, cell2.transitioning]).then(() => {
+						cell1.shake();
+						cell2.shake();
+						return Promise.all([cell1.transitioning, cell2.transitioning]);
+					});
+					promises.push(shakePromise);
 				}
 				else {
 					// if the player turned over the first cell which they have previously seen a match to but didn't make the match
@@ -209,11 +209,11 @@ class Game {
 					for (const cell of this.state.viewedCells) {
 						if (cell.getName() == word1) {
 							this.state.avoidableMistakes++;
-							this.faceChanger.changeFace(this.state.remainingMistakes);
 							break;
 						}
 					}
 				}
+				if (this.state.avoidableMistakes > 0) this.faceChanger.changeFace(this.state.remainingMistakes);
 				if (this.state.remainingMistakes < 0) {
 					this.loseGame();
 					return;
@@ -246,7 +246,7 @@ class Game {
 		await Promise.all(this.state.solvedCells.map(cell => cell.solvedLoop.end()));
 		this.state.awaitPlayer = true;
 		await new Promise(r => setTimeout(r, 800));
-		Graphics.showPrompt();
+		if (this.state.awaitPlayer) Graphics.showPrompt();
 		//this.newGame(true);
 	};
 	loseGame = async function() {
