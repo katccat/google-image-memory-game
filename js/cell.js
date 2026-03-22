@@ -22,7 +22,7 @@ export class Cell {
 		this.sibling;
 		this.labelLines;
 		this.recycled;
-		this.rank;
+		this.views;
 		this.bespoke = false;
 		this.solvedLoop;
 		this.transitioning;
@@ -88,10 +88,10 @@ export class Cell {
 			this.setFrontGlyph(this.img);
 		}
 	}
-	setRank(rank) {
-		this.rank = rank;
-		//if (rank <= 11) this.bespoke = true;
-		this.elements.number.textContent = rank;
+	setViews(views) {
+		this.views = views;
+		//if (views <= 11) this.bespoke = true;
+		this.elements.number.textContent = views;
 	}
 	reveal() {
 		this.state = Cell.State.DEFAULT;
@@ -161,17 +161,17 @@ export class CellSolvedLoop {
 			if (ended) return;
 			ended = true;
 			if (specialAnimation) bgElements.forEach(e => setBespoke(e));
-			rankElements.forEach(e => e.classList.add('fade-in'));
+			viewsElements.forEach(e => e.classList.add('fade-in'));
 			labelElements.forEach(e => e.classList.add('fade-out'));
 			endResolver();
 			if (!isPhone()) return;
 			while (!stopped) {
 				await new Promise(r => setTimeout(r, 3000));
-				rankElements.forEach(e => e.classList.remove('fade-in'));
+				viewsElements.forEach(e => e.classList.remove('fade-in'));
 				labelElements.forEach(e => e.classList.remove('fade-out'));
 				if (stopped) break;
 				await new Promise(r => setTimeout(r, 3000));
-				rankElements.forEach(e => e.classList.add('fade-in'));
+				viewsElements.forEach(e => e.classList.add('fade-in'));
 				labelElements.forEach(e => e.classList.add('fade-out'));
 			}
 		};
@@ -180,14 +180,14 @@ export class CellSolvedLoop {
 		}
 
 		const labelElements = [];
-		const rankElements = [];
+		const viewsElements = [];
 		const bgElements = [];
 		
 		cells.forEach(cell => {
 			cell.typingDone = typingDone;
 			cell.endPromise = endPromise;
 			labelElements.push(cell.elements.label);
-			rankElements.push(cell.elements.number);
+			viewsElements.push(cell.elements.number);
 			bgElements.push(cell.elements.labelBg);
 		});
 

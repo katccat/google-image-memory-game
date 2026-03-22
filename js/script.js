@@ -75,7 +75,7 @@ class Game {
 		for (let i = 0; i < this.state.cells.length / 2; i++) {
 			let tries = 0;
 			let imageValid = false;
-			let word, imageURL, rank, recycled;
+			let word, imageURL, views, recycled;
 
 			while (tries < 5) {
 				tries++;
@@ -83,7 +83,7 @@ class Game {
 				({key: word, recycled} = this.trendSelector.getRandomTrendKey());
 
 				imageURL = Config.trendData.trends[word].url;
-				rank = Config.trendData.trends[word].rank;
+				views = Config.trendData.trends[word].views;
 				if (usedImages.includes(imageURL)) continue;
 
 				imageValid = true;
@@ -101,7 +101,7 @@ class Game {
 				const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
 				const cell = cellsCopy[randomCellIndex];
 				cell.activate(word, imageURL);
-				if (rank) cell.setRank(rank);
+				if (views) cell.setViews(views);
 				cell.recycled = recycled;
 				activeCellCount++;
 				cellsCopy.splice(randomCellIndex, 1);
