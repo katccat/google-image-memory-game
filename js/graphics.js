@@ -93,10 +93,10 @@ Graphics.faceChanger = function(game) {
 		else faceDisplay.src = faceImages.mistake1[index];
 	}
 	this.resetFace = function (victory = false) {
-		if (victory && game.state.level >= Config.difficulty.hard) {
+		if (victory && game.state.level >= Config.difficulty.hard && game.state.lives > 1) {
 			faceDisplay.src = faceImages.special2;
 		}
-		else if (victory && game.state.level >= Config.difficulty.medium) {
+		else if (victory && game.state.level >= Config.difficulty.medium && game.state.lives > 1) {
 			faceDisplay.src = faceImages.special;
 		}
 		else {
@@ -191,7 +191,7 @@ Graphics.PercentScorer = function (denominator) {
 		const displayStart = percentScore(lastScore);
 		const displayEnd = percentScore(newScore);
 		lastScore = newScore;
-
+		if (displayStart === displayEnd) return;
 		// Cancel any in-progress interpolation
 		if (intervalId) clearInterval(intervalId);
 

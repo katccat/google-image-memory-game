@@ -357,7 +357,7 @@ class Game {
 
 const TrendSelector = function (trendData, game) {
 	const trends = trendData.trends;
-	const newDate = trendData.fetchedDate;
+	const fetchedDate = trendData.fetchedDate;
 	const keys = {
 		unused: Object.keys(trends),
 		used: [],
@@ -383,14 +383,15 @@ const TrendSelector = function (trendData, game) {
 	};
 
 	this.markUsed = function (key) {
-		if (moveKey(key, keys.unused, keys.used)) return;
-		moveKey(key, keys.deferred, keys.used); // in case it was recycled
+		if (!(moveKey(key, keys.unused, keys.used)))
+			moveKey(key, keys.deferred, keys.used); // in case it was recycled
 	};
 	this.markViewed = function(key) {
 		moveKey(key, keys.unused, keys.deferred);
 	};
 
 	this.addTrends = function (trendSet, victory) {
+		if (trendSet.size < 1) return;
 		if (victory) {
 			for (const trend of trendSet) {
 				this.markUsed(trend);
@@ -418,6 +419,9 @@ const TrendSelector = function (trendData, game) {
 		const key = pool[Math.floor(Math.random() * pool.length)];
 		return { key, recycled };
 	};
+	this.getScore = function() {
+		return keys.used.length;
+	}
 
 	this.saveData = function () {
 		const data = {
@@ -426,7 +430,7 @@ const TrendSelector = function (trendData, game) {
 			deferred: [...keys.deferred],
 		};
 		localStorage.setItem('trendKeys', JSON.stringify(data));
-		localStorage.setItem('fetchedDate', newDate);
+		localStorage.setItem('fetchedDate', fetchedDate);
 	};
 };
 
@@ -447,7 +451,7 @@ async function init() {
 	//
 	const localDate = localStorage.getItem('fetchedDate');
 	const newDate = Config.trendData.fetchedDate;
-	const dateMatch = newDate && (localDate === newDate || !localDate);
+	const dateMatch = newDate && (localDate === newDate);
 	
 	let restoredScore = 0;
 	if (newDate) {
@@ -467,10 +471,9 @@ async function init() {
 			localStorage.removeItem('score');
 		}
 	} else game.memory.saveProgress = false;
-	game.initScore(restoredScore, Config.trendData.length);
+	game.initScore(game.trendSelector.getScore(), Config.trendData.length);
 	Graphics.resetToolTip(game, false);
 	//
-	
 	
 	globalThis.game = game;
 	game.newGame(true);

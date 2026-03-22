@@ -1,6 +1,6 @@
 import { Config } from './config.js';
 import { Graphics } from './graphics.js';
-import { getLines } from './utils.js';
+import { getLines, isPhone } from './utils.js';
 import { truncate } from './utils.js';
 import { awaitTransition } from './utils.js';
 import { fitFontSize } from './utils.js';
@@ -90,7 +90,7 @@ export class Cell {
 	}
 	setRank(rank) {
 		this.rank = rank;
-		if (rank <= 11) this.bespoke = true;
+		//if (rank <= 11) this.bespoke = true;
 		this.elements.number.textContent = rank;
 	}
 	reveal() {
@@ -101,6 +101,7 @@ export class Cell {
 		this.state = Cell.State.INACTIVE;
 		this.elements.parent.classList.toggle('fade-in', false);
 		this.destroyLabelBuffer();
+		if (this.solvedLoop) this.solvedLoop.stop();
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
@@ -154,6 +155,7 @@ export class CellSolvedLoop {
 		const endPromise = new Promise(r => endResolver = r);
 		const specialAnimation = cells[0].bespoke;
 		let ended = false;
+		let stopped = false;
 		
 		this.end = async function () {
 			if (ended) return;
@@ -161,9 +163,21 @@ export class CellSolvedLoop {
 			if (specialAnimation) bgElements.forEach(e => setBespoke(e));
 			rankElements.forEach(e => e.classList.add('fade-in'));
 			labelElements.forEach(e => e.classList.add('fade-out'));
-			//await new Promise(r => setTimeout(r, 1000));
 			endResolver();
+			if (!isPhone()) return;
+			while (!stopped) {
+				await new Promise(r => setTimeout(r, 3000));
+				rankElements.forEach(e => e.classList.remove('fade-in'));
+				labelElements.forEach(e => e.classList.remove('fade-out'));
+				if (stopped) break;
+				await new Promise(r => setTimeout(r, 3000));
+				rankElements.forEach(e => e.classList.add('fade-in'));
+				labelElements.forEach(e => e.classList.add('fade-out'));
+			}
 		};
+		this.stop = function() {
+			stopped = true;
+		}
 
 		const labelElements = [];
 		const rankElements = [];

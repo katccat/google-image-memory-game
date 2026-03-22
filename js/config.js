@@ -5,7 +5,7 @@ export const Config = {
 	funColorChance: 0,
 	funGlyphChance: 0.1,
 	maxLives: 3,
-	milestones: [10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+	milestones: [10, 25, 50, 75, 100, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000],
 	scoreRounding: 1,
 	colors: [
 		'#ed6a5e', // red
@@ -18,7 +18,6 @@ export const Config = {
 		'rgba(234, 67, 53, 0.7)',
 		'rgba(251, 188, 5, 0.7)',
 		'rgba(52, 168, 83, 0.7)',
-		/*'#00000066',*/
 	],
 	messages: {
 		intro: ["I'm feeling lucky"],
