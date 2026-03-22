@@ -38,7 +38,7 @@ class Game {
 		this.memory = {
 			previousLevel: -1,
 			score: {},
-			saveScore: true,
+			saveProgress: true,
 		};
 
 		this.boards = boards;
@@ -83,7 +83,6 @@ class Game {
 				({key: word, recycled} = this.trendSelector.getRandomTrendKey());
 
 				imageURL = Config.trendData.trends[word].url;
-				views = Config.trendData.trends[word].views;
 				if (usedImages.includes(imageURL)) continue;
 
 				imageValid = true;
@@ -100,8 +99,7 @@ class Game {
 			for (let j = 0; j < 2; j++) {
 				const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
 				const cell = cellsCopy[randomCellIndex];
-				cell.activate(word, imageURL);
-				if (views) cell.setViews(views);
+				cell.activate(word, Config.trendData.trends[word]);
 				cell.recycled = recycled;
 				activeCellCount++;
 				cellsCopy.splice(randomCellIndex, 1);
@@ -266,6 +264,7 @@ class Game {
 		if (this.state.firstRun) return null;
 		if (victory) {
 			if (this.state.level <= 1) return Config.messages.intro;
+			if (this.memory.score.won && this.state.announceMilestone) return Config.messages.end;
 			if (this.state.announceMilestone) return [`${this.memory.score.num} trends collected!`];
 			if (this.state.avoidableMistakes === 0) return Config.messages.perfect;
 			if (this.state.remainingMistakes === 0) return Config.messages.nearmiss;
@@ -342,10 +341,16 @@ class Game {
 		this.memory.score.num = score;
 		this.memory.score.denominator = denominator;
 	};
-	incrementScore = function(num) {
+	updateScore = function(score, animate) {
 		const prev = this.memory.score.num;
-		this.memory.score.num += num;
-		const crossed = Config.milestones.find(m => prev < m && this.memory.score.num >= m);
+		this.memory.score.num = score;
+		if (animate) game.percentScorer.interpolateScore(game.memory.score.num);
+		let crossed = false;
+		if (this.memory.score.num >= this.memory.score.denominator) {
+			this.memory.score.won = true;
+			crossed = prev < this.memory.score.num;
+		}
+		else crossed = Config.milestones.find(m => prev < m && this.memory.score.num >= m);
 		this.state.announceMilestone = crossed;
 		if (this.memory.saveProgress) localStorage.setItem('score', JSON.stringify(this.memory.score));
 	};
@@ -396,8 +401,7 @@ const TrendSelector = function (trendData, game) {
 			for (const trend of trendSet) {
 				this.markUsed(trend);
 			}
-			game.incrementScore(trendSet.size);
-			game.percentScorer.interpolateScore(game.memory.score.num);
+			game.updateScore(this.getScore(), true);
 		}
 		else {
 			for (const trend of trendSet) {

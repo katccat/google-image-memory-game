@@ -26,6 +26,7 @@ export const Config = {
 		nearmiss: ["Phew!", "Close!"],
 		failure: ["Aw, snap!", "That's an error.", "Please try again", "Only human!"],
 		gameover: ["Game over!"],
+		end: ["All trends found!", "OMG 100%!", "You ARE a robot!"],
 	},
 	glyphs: [
 		"images/download_arrow.png",

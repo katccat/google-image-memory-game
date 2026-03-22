@@ -18,7 +18,6 @@ export class Cell {
 		this.state = Cell.State.INACTIVE;
 		this.id;
 		this.displayName;
-		this.img;
 		this.sibling;
 		this.labelLines;
 		this.recycled;
@@ -80,18 +79,16 @@ export class Cell {
 	getDisplayName() {
 		return this.displayName;
 	}
-	activate(word, src, src2) {
+	activate(word, trendObject) {
 		this.id = word;
-		this.displayName = truncate(word.toLowerCase(), 42);
-		this.elements.image.style.backgroundImage = `url(${src})`;
-		if (this.img) {
-			this.setFrontGlyph(this.img);
+		//this.displayName = truncate(word.toLowerCase(), 42);
+		this.displayName = word.toLowerCase();
+		this.elements.image.style.backgroundImage = `url(${trendObject.url})`;
+		if (trendObject.views) {
+			this.views = trendObject.views;
+			this.elements.number.textContent = trendObject.views;
 		}
-	}
-	setViews(views) {
-		this.views = views;
-		//if (views <= 11) this.bespoke = true;
-		this.elements.number.textContent = views;
+		if (trendObject.special) this.bespoke = true;
 	}
 	reveal() {
 		this.state = Cell.State.DEFAULT;
