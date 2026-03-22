@@ -164,16 +164,19 @@ export class CellSolvedLoop {
 			viewsElements.forEach(e => e.classList.add('fade-in'));
 			labelElements.forEach(e => e.classList.add('fade-out'));
 			endResolver();
-			if (!isPhone()) return;
-			while (!stopped) {
-				await new Promise(r => setTimeout(r, 3000));
-				viewsElements.forEach(e => e.classList.remove('fade-in'));
-				labelElements.forEach(e => e.classList.remove('fade-out'));
-				if (stopped) break;
-				await new Promise(r => setTimeout(r, 3000));
-				viewsElements.forEach(e => e.classList.add('fade-in'));
-				labelElements.forEach(e => e.classList.add('fade-out'));
-			}
+			/*if (isPhone()) {
+				(async () => {
+					while (!stopped) {
+						await new Promise(r => setTimeout(r, 4000));
+						viewsElements.forEach(e => e.classList.remove('fade-in'));
+						labelElements.forEach(e => e.classList.remove('fade-out'));
+						if (stopped) break;
+						await new Promise(r => setTimeout(r, 4000));
+						viewsElements.forEach(e => e.classList.add('fade-in'));
+						labelElements.forEach(e => e.classList.add('fade-out'));
+					}
+				})();
+			}*/
 		};
 		this.stop = function() {
 			stopped = true;
