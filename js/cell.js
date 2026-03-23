@@ -1,7 +1,6 @@
 import { Config } from './config.js';
 import { Graphics } from './graphics.js';
 import { getLines, isPhone } from './utils.js';
-import { truncate } from './utils.js';
 import { awaitTransition } from './utils.js';
 import { fitFontSize } from './utils.js';
 
@@ -18,9 +17,8 @@ export class Cell {
 		this.state = Cell.State.INACTIVE;
 		this.id;
 		this.displayName;
-		this.sibling;
 		this.labelLines;
-		this.recycled;
+		this.usedTrend;
 		this.views;
 		this.bespoke = false;
 		this.solvedLoop;
@@ -61,6 +59,15 @@ export class Cell {
 	getElement() {
 		return this.elements.parent;
 	}
+	stopLoop() {
+		if (this.solvedLoop) this.solvedLoop.stop();
+	}
+	remove() {
+		this.state = Cell.State.INACTIVE;
+		this.elements.parent.remove();
+		this.destroyLabelBuffer();
+		this.stopLoop();
+	}
 	createLabelBuffer() {
 		this.elements.labelBuffer = document.createElement('div');
 		this.elements.labelBuffer.className = 'cell-label-buffer';
@@ -94,11 +101,10 @@ export class Cell {
 		this.state = Cell.State.DEFAULT;
 		this.elements.parent.classList.toggle('fade-in', true);
 	}
-	deactivate() {
+	fade() {
 		this.state = Cell.State.INACTIVE;
 		this.elements.parent.classList.toggle('fade-in', false);
-		this.destroyLabelBuffer();
-		if (this.solvedLoop) this.solvedLoop.stop();
+		
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
@@ -161,19 +167,20 @@ export class CellSolvedLoop {
 			viewsElements.forEach(e => e.classList.add('fade-in'));
 			labelElements.forEach(e => e.classList.add('fade-out'));
 			endResolver();
-			/*if (isPhone()) {
+			if (isPhone()) {
 				(async () => {
 					while (!stopped) {
 						await new Promise(r => setTimeout(r, 4000));
+						if (stopped) break;
 						viewsElements.forEach(e => e.classList.remove('fade-in'));
 						labelElements.forEach(e => e.classList.remove('fade-out'));
-						if (stopped) break;
 						await new Promise(r => setTimeout(r, 4000));
+						if (stopped) break;
 						viewsElements.forEach(e => e.classList.add('fade-in'));
 						labelElements.forEach(e => e.classList.add('fade-out'));
 					}
 				})();
-			}*/
+			}
 		};
 		this.stop = function() {
 			stopped = true;

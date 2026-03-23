@@ -5,7 +5,7 @@ import { GridLayout } from './gridlayout.js';
 import { Cell, CellSolvedLoop } from './cell.js';
 import { Board } from './board.js';
 import { BoardCreator } from './board.js';
-import { randomItem } from './utils.js';
+import { randomItem, validateImage } from './utils.js';
 import { waitForFlag } from './utils.js';
 
 class Game {
@@ -69,60 +69,35 @@ class Game {
 	};
 	activateCells = async function (board) {
 		let cellsCopy = [...this.state.cells];
-		const usedImages = [];
 		let activeCellCount = 0;
-
-		for (let i = 0; i < this.state.cells.length / 2; i++) {
-			let tries = 0;
-			let imageValid = false;
-			let word, imageURL, views, recycled;
-
-			while (tries < 5) {
-				tries++;
-
-				({key: word, recycled} = this.trendSelector.getRandomTrendKey());
-
-				imageURL = Config.trendData.trends[word].url;
-				if (usedImages.includes(imageURL)) continue;
-
-				imageValid = true;
-				usedImages.push(imageURL);
-				break;
-			}
-
-			if (!imageValid) {
-				console.log("No word with picture found.");
-				continue;
-			}
-
-			let sibling1, sibling2;
+		// pick all of the pictures that will be given to cells
+		const randomTrendKeys = await this.trendSelector.getRandomTrendKeys(this.state.cells.length / 2);
+		// assign images to cells
+		for (let i = 0; i < randomTrendKeys.length; i++) {
+			const {key, usedTrend} = randomTrendKeys[i];
+			const cellPair = [];
 			for (let j = 0; j < 2; j++) {
-				const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
-				const cell = cellsCopy[randomCellIndex];
-				cell.activate(word, Config.trendData.trends[word]);
-				cell.recycled = recycled;
+				const index = Math.floor(Math.random() * cellsCopy.length);
+				const cell = cellsCopy.splice(index, 1)[0];
+				cell.activate(key, Config.trendData.trends[key]);
+				cell.usedTrend = usedTrend;
+				cellPair.push(cell);
 				activeCellCount++;
-				cellsCopy.splice(randomCellIndex, 1);
-				if (!sibling1) sibling1 = cell;
-				else sibling2 = cell;
 			}
-			sibling1.sibling = sibling2;
-			sibling2.sibling = sibling1;
 			const color = this.colorSequencerDark.nextColor();
-			sibling1.setBackColor(color);
-			sibling2.setBackColor(color);
+			cellPair[0].setBackColor(color);
+			cellPair[1].setBackColor(color);
 		}
-
+		//
 		this.state.unsolvedCells = activeCellCount;
 		this.state.remainingMistakes = activeCellCount / 2 - 1 + board.additionalMistakes;
-
+		// reveals the cells in random order
 		cellsCopy = [...this.state.cells];
 		let delay = 300;
 		for (let i = 0; i < activeCellCount; i++) {
-			const randomCellIndex = Math.floor(Math.random() * cellsCopy.length);
-			const cell = cellsCopy[randomCellIndex];
+			const index = Math.floor(Math.random() * cellsCopy.length);
+			const cell = cellsCopy.splice(index, 1)[0];
 			cell.reveal();
-			cellsCopy.splice(randomCellIndex, 1);
 			if (delay > 0) {
 				await new Promise(resolve => setTimeout(resolve, delay));
 				delay = Math.floor(delay * 0.8);
@@ -136,6 +111,9 @@ class Game {
 			cells.reverse();
 		}
 		else cells = this.state.cells;
+
+		for (const cell of cells) cell.stopLoop();
+		
 		const numCells = cells.length;
 
 		let totalDuration; // ms — tune this one variable
@@ -147,17 +125,14 @@ class Game {
 
 		// Solve for initialDelay so the sequence sums to totalDuration
 		const initialDelay = totalDuration * (delayStep - 1) / (Math.pow(delayStep, numCells) - 1);
-
 		let currentDelay = initialDelay;
 		for (const cell of cells) {
-			cell.deactivate();
+			cell.fade();
 			await new Promise(resolve => setTimeout(resolve, currentDelay));
 			currentDelay *= delayStep;
 		}
 		await new Promise(resolve => setTimeout(resolve, 500));
-		for (const cell of this.state.cells) {
-			cell.getElement().remove();
-		}
+		for (const cell of this.state.cells) cell.remove();
 		this.state.cells.length = 0;
 	};
 	handleClick = async function () {
@@ -169,8 +144,8 @@ class Game {
 		}
 		if (this.state.revealedCells.length > 1) {
 			const [cell1, cell2] = this.state.revealedCells;
-			if (!cell1.recycled) this.state.pendingTrends.add(cell1.getName());
-			if (!cell2.recycled) this.state.pendingTrends.add(cell2.getName());
+			if (!cell1.usedTrend) this.state.pendingTrends.add(cell1.getName());
+			if (!cell2.usedTrend) this.state.pendingTrends.add(cell2.getName());
 			this.state.revealedCells.length = 0;
 
 			if (cell1.getName() === cell2.getName()) {
@@ -364,69 +339,100 @@ const TrendSelector = function (trendData, game) {
 	const trends = trendData.trends;
 	const fetchedDate = trendData.fetchedDate;
 	const keys = {
-		unused: Object.keys(trends),
-		used: [],
-		deferred: [],
+		unused: new Set(Object.keys(trends)),
+		used: new Set(),
+		deferred: new Set(),
 	};
+	let validatedImages = new Set();
 	this.restoreKeys = function(restoredKeys) {
 		if (restoredKeys) {
-			keys.unused = restoredKeys.unused.filter(k => trends[k]);
-			keys.deferred = restoredKeys.deferred.filter(k => trends[k]);
-			keys.used = restoredKeys.used.filter(k => trends[k]);
+			keys.unused = new Set(restoredKeys.unused.filter(k => trends[k]));
+			keys.deferred = new Set(restoredKeys.deferred.filter(k => trends[k]));
+			keys.used = new Set(restoredKeys.used.filter(k => trends[k]));
 		}
 	};
+	this.restoreValidated = function(saved) {
+		if (saved) validatedImages = new Set(saved.filter(url => {
+			// only keep validated URLs that still exist in current trend data
+			return Object.values(trends).some(t => t.url === url);
+		}));
+	};
+	async function isImageValid(url) {
+		if (validatedImages.has(url)) return true;
+		const valid = await validateImage(url);
+		if (valid) validatedImages.add(url);
+		return valid;
+	}
+
 	function moveKey(key, from, to) {
-		const index = from.indexOf(key);
-		if (index === -1) return false;
-		from.splice(index, 1);
-		to.push(key);
+		if (!from.has(key)) return false;
+		from.delete(key);
+		to.add(key);
 		return true;
 	}
 	this.deferUsed = function () {
-		keys.deferred.push(...keys.used);
-		keys.used = [];
+		keys.used.forEach(k => keys.deferred.add(k));
+		keys.used.clear();
 	};
-
 	this.markUsed = function (key) {
-		if (!(moveKey(key, keys.unused, keys.used)))
-			moveKey(key, keys.deferred, keys.used); // in case it was recycled
+		if (!moveKey(key, keys.unused, keys.used))
+			moveKey(key, keys.deferred, keys.used);
 	};
 	this.markViewed = function(key) {
 		moveKey(key, keys.unused, keys.deferred);
 	};
-
 	this.addTrends = function (trendSet, victory) {
 		if (trendSet.size < 1) return;
 		if (victory) {
-			for (const trend of trendSet) {
-				this.markUsed(trend);
-			}
+			for (const trend of trendSet) this.markUsed(trend);
 			game.updateScore(this.getScore(), true);
 		}
 		else {
-			for (const trend of trendSet) {
-				this.markViewed(trend);
-			}
+			for (const trend of trendSet) this.markViewed(trend);
 		}
 		if (game.memory.saveProgress) this.saveData();
 	};
+	this.getRandomTrendKeys = async function(amount) {
+		const MAX_TRIES = 10;
+		const usedImages = [];
+		const randomTrendKeys = [];
 
-	this.getRandomTrendKey = function () {
-		let pool, recycled;
-		if (keys.unused.length > 0) {
-			pool = keys.unused; recycled = false;
-		} else if (keys.deferred.length > 0) {
-			pool = keys.deferred; recycled = false;
-		} else {
-			pool = keys.used; recycled = true;
+		const unusedKeys = [...keys.unused];
+		const deferredKeys = [...keys.deferred];
+		const usedKeys = [...keys.used];
+		for (let i = 0; i < amount; i++) {
+			let key;
+			let usedTrend = false;
+
+			let tries = 0;
+			let imageValid = false;
+			while (!imageValid && tries < MAX_TRIES) {
+				tries++;
+
+				let pool;
+				if (unusedKeys.length > 0) pool = unusedKeys;
+				else if (deferredKeys.length > 0) pool = deferredKeys;
+				else { pool = usedKeys; usedTrend = true; }
+				if (pool.length === 0) break;
+
+				const index = Math.floor(Math.random() * pool.length);
+				key = pool.splice(index, 1)[0];
+				const image = trends[key]?.url;
+				if (!image) continue;
+				imageValid = (!usedImages.includes(image) && await isImageValid(image));
+				usedImages.push(image);	
+			}
+			if (!imageValid) {
+				console.error("No word with picture found.");
+				continue;
+			}
+			randomTrendKeys.push({key, usedTrend});
 		}
-		const key = pool[Math.floor(Math.random() * pool.length)];
-		return { key, recycled };
+		return randomTrendKeys;
 	};
 	this.getScore = function() {
-		return keys.used.length;
-	}
-
+		return keys.used.size;
+	};
 	this.saveData = function () {
 		const data = {
 			unused: [...keys.unused],
@@ -434,6 +440,7 @@ const TrendSelector = function (trendData, game) {
 			deferred: [...keys.deferred],
 		};
 		localStorage.setItem('trendKeys', JSON.stringify(data));
+		localStorage.setItem('validatedImages', JSON.stringify([...validatedImages]));
 		localStorage.setItem('fetchedDate', fetchedDate);
 	};
 };
@@ -462,8 +469,12 @@ async function init() {
 		game.memory.saveProgress = true;
 		if (dateMatch) {
 			try {
-				const savedKeys = JSON.parse(localStorage.getItem('trendKeys')); 
+				const savedKeys = JSON.parse(localStorage.getItem('trendKeys'));
 				game.trendSelector.restoreKeys(savedKeys);
+			} catch {}
+			try {
+				const saved = JSON.parse(localStorage.getItem('validatedImages'));
+				if (saved) game.trendSelector.restoreValidated(saved);
 			} catch {}
 			try {
 				const saved = JSON.parse(localStorage.getItem('score'));
