@@ -3,6 +3,7 @@ export function randomItem(list) {
 }
 
 export async function validateImage(url) {
+	if (!url) return false;
 	return new Promise((resolve) => {
 		const img = new Image();
 		img.src = url;

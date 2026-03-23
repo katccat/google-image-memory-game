@@ -113,7 +113,7 @@ class Game {
 		else cells = this.state.cells;
 
 		for (const cell of cells) cell.stopLoop();
-		
+
 		const numCells = cells.length;
 
 		let totalDuration; // ms — tune this one variable
@@ -214,6 +214,7 @@ class Game {
 		if (this.board.giveLife) this.addLife();
 		this.faceChanger.resetFace(true);
 		this.trendSelector.addTrends(this.state.pendingTrends, true);
+		this.updateScore(this.trendSelector.getScore(), true);
 		this.state.level++;
 		await Promise.all(this.state.solvedCells.map(cell => cell.typingDone));
 		await Promise.all(this.state.solvedCells.map(cell => cell.solvedLoop.end()));
@@ -238,8 +239,8 @@ class Game {
 	selectMessage = function (victory) {
 		if (this.state.firstRun) return null;
 		if (victory) {
-			if (this.state.level <= 1) return Config.messages.intro;
 			if (this.memory.score.won && this.state.announceMilestone) return Config.messages.end;
+			if (this.state.level <= 1) return Config.messages.intro;
 			if (this.state.announceMilestone) return [`${this.memory.score.num} trends collected!`];
 			if (this.state.avoidableMistakes === 0) return Config.messages.perfect;
 			if (this.state.remainingMistakes === 0) return Config.messages.nearmiss;
@@ -312,13 +313,14 @@ class Game {
 		this.state.lives = Math.min(this.state.lives + 1, Config.maxLives);
 		Graphics.lifeDisplay.addLife(this.state.lives);
 	};
-	initScore = function (score, denominator) {
-		this.memory.score.num = score;
-		this.memory.score.denominator = denominator;
+	initScore = function (score) {
+		this.memory.score.num = score.num;
+		this.memory.score.denominator = score.denominator;
 	};
 	updateScore = function(score, animate) {
 		const prev = this.memory.score.num;
-		this.memory.score.num = score;
+		this.memory.score.num = score.num;
+		this.memory.score.denominator = score.denominator;
 		if (animate) game.percentScorer.interpolateScore(game.memory.score.num);
 		let crossed = false;
 		if (this.memory.score.num >= this.memory.score.denominator) {
@@ -342,13 +344,15 @@ const TrendSelector = function (trendData, game) {
 		unused: new Set(Object.keys(trends)),
 		used: new Set(),
 		deferred: new Set(),
+		unusable: new Set(),
 	};
 	let validatedImages = new Set();
 	this.restoreKeys = function(restoredKeys) {
 		if (restoredKeys) {
-			keys.unused = new Set(restoredKeys.unused.filter(k => trends[k]));
-			keys.deferred = new Set(restoredKeys.deferred.filter(k => trends[k]));
-			keys.used = new Set(restoredKeys.used.filter(k => trends[k]));
+			keys.unused   = new Set((restoredKeys.unused   ?? []).filter(k => trends[k]));
+			keys.deferred = new Set((restoredKeys.deferred ?? []).filter(k => trends[k]));
+			keys.used     = new Set((restoredKeys.used     ?? []).filter(k => trends[k]));
+			keys.unusable = new Set((restoredKeys.unusable ?? []).filter(k => trends[k]));
 		}
 	};
 	this.restoreValidated = function(saved) {
@@ -378,6 +382,11 @@ const TrendSelector = function (trendData, game) {
 		if (!moveKey(key, keys.unused, keys.used))
 			moveKey(key, keys.deferred, keys.used);
 	};
+	function markUnusable (key) {
+		if (!moveKey(key, keys.unused, keys.unusable))
+			if (!moveKey(key, keys.deferred, keys.unusable))
+				moveKey(key, keys.used, keys.unusable);
+	};
 	this.markViewed = function(key) {
 		moveKey(key, keys.unused, keys.deferred);
 	};
@@ -385,7 +394,6 @@ const TrendSelector = function (trendData, game) {
 		if (trendSet.size < 1) return;
 		if (victory) {
 			for (const trend of trendSet) this.markUsed(trend);
-			game.updateScore(this.getScore(), true);
 		}
 		else {
 			for (const trend of trendSet) this.markViewed(trend);
@@ -418,8 +426,9 @@ const TrendSelector = function (trendData, game) {
 				const index = Math.floor(Math.random() * pool.length);
 				key = pool.splice(index, 1)[0];
 				const image = trends[key]?.url;
-				if (!image) continue;
-				imageValid = (!usedImages.includes(image) && await isImageValid(image));
+				if (usedImages.includes(image)) continue;
+				imageValid = (await isImageValid(image));
+				if (!imageValid) markUnusable(key);
 				usedImages.push(image);	
 			}
 			if (!imageValid) {
@@ -431,13 +440,14 @@ const TrendSelector = function (trendData, game) {
 		return randomTrendKeys;
 	};
 	this.getScore = function() {
-		return keys.used.size;
+		return {num: keys.used.size, denominator: trends.length - keys.unusable.length};
 	};
 	this.saveData = function () {
 		const data = {
 			unused: [...keys.unused],
 			used: [...keys.used],
 			deferred: [...keys.deferred],
+			unusable: [...keys.unusable],
 		};
 		localStorage.setItem('trendKeys', JSON.stringify(data));
 		localStorage.setItem('validatedImages', JSON.stringify([...validatedImages]));
@@ -486,7 +496,7 @@ async function init() {
 			localStorage.removeItem('score');
 		}
 	} else game.memory.saveProgress = false;
-	game.initScore(game.trendSelector.getScore(), Config.trendData.length);
+	game.initScore(game.trendSelector.getScore());
 	Graphics.resetToolTip(game, false);
 	//
 	
