@@ -79,7 +79,7 @@ body.dark {
 	width: 100%;
 	padding-right: 10px;
 	text-align: right;
-	font-family: "Tiny5";
+	font-family: "Tiny5" monospace;
 	transition: transform 0.3s linear;
 }
 #score-counter.enlarge {
@@ -222,6 +222,7 @@ body.dark {
 	visibility: visible;
 	opacity: 0;
 	transform: translate(-50%, -50%) scale(5);
+	will-change: transform, opacity;
 }
 
 @media (max-width: 600px) {

@@ -440,7 +440,7 @@ const TrendSelector = function (trendData, game) {
 		return randomTrendKeys;
 	};
 	this.getScore = function() {
-		return {num: keys.used.size, denominator: trends.length - keys.unusable.length};
+		return {num: keys.used.size, denominator: trends.count - keys.unusable.length};
 	};
 	this.saveData = function () {
 		const data = {
@@ -465,7 +465,7 @@ async function init() {
 	game.gridLayout = new GridLayout(Elements);
 	game.faceChanger = new Graphics.faceChanger(game);
 	game.trendSelector = new TrendSelector(Config.trendData, game);
-	game.percentScorer = new Graphics.PercentScorer(Config.trendData.length);
+	game.percentScorer = new Graphics.PercentScorer(Config.trendData.count);
 	game.colorSequencerDark = new Graphics.colorSequencer(Config.darkColors);
 	game.colorSequencerLight = new Graphics.colorSequencer(Config.colors);
 	
