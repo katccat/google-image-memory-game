@@ -190,7 +190,6 @@ Graphics.PercentScorer = function (score) {
 	this.interpolateScore = function (newScore) {
 		const displayStart = percentScore(lastScore);
 		const displayEnd = percentScore(newScore);
-		console.log(`${displayStart} -> ${displayEnd}`);
 		lastScore = newScore;
 		if (displayStart === displayEnd) return;
 		// Cancel any in-progress interpolation

@@ -88,8 +88,7 @@ export class Cell {
 	}
 	activate(word, trendObject) {
 		this.id = word;
-		//this.displayName = truncate(word.toLowerCase(), 42);
-		this.displayName = trendObject.nickname;
+		this.displayName = trendObject.nickname || word;
 		this.elements.image.style.backgroundImage = `url(${trendObject.url})`;
 		if (trendObject.views) {
 			this.views = trendObject.views;
