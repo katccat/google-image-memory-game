@@ -9,3 +9,4 @@ google-key.txt
 .DS_Store
 ._*
 .localized
+*.code-workspace

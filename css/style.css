@@ -227,11 +227,11 @@ body.dark {
 
 @media (max-width: 600px) {
 	#splash-container {
-		width: 6em;
+		/*width: 6em;*/
 	}
 
 	#splash-container.expand {
-		transform: translate(-50%, -50%) scale(3.6);
+		transform: translate(-50%, -50%) scale(3.4);
 	}
 }
 

@@ -171,25 +171,26 @@ Graphics.resetToolTip = function(game, victory) {
 	Elements.levelDisplay.textContent = `Level ${game.state.level}`;
 	this.lifeDisplay.stageLives(game.state.lives);
 	game.faceChanger.resetFace(victory);
-	game.percentScorer.updateScore(game.memory.score.num);
+	game.percentScorer.updateScore(game.memory.score);
 }
-Graphics.PercentScorer = function (denominator) {
+Graphics.PercentScorer = function (score) {
 	const scoreDisplay = Elements.scoreDisplay;
 	const rounding = Config.scoreRounding;
 	const delay = 80;
-	let lastScore = 0;
+	let lastScore = score;
 	let intervalId = null;
 
 	const percentScore = function (score) {
-		return parseFloat((score / denominator * 100).toFixed(rounding));
+		return parseFloat((score.num / score.denominator * 100).toFixed(rounding));
 	};
-	const displayScore = function (score) {
-		scoreDisplay.textContent = score + "%";
+	const displayScore = function (formattedScore) {
+		scoreDisplay.textContent = formattedScore + "%";
 	};
 
 	this.interpolateScore = function (newScore) {
 		const displayStart = percentScore(lastScore);
 		const displayEnd = percentScore(newScore);
+		console.log(`${displayStart} -> ${displayEnd}`);
 		lastScore = newScore;
 		if (displayStart === displayEnd) return;
 		// Cancel any in-progress interpolation

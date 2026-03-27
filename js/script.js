@@ -37,7 +37,7 @@ class Game {
 		this.state.reset();
 		this.memory = {
 			previousLevel: -1,
-			score: {},
+			score: {num: 0, denominator: 1},
 			saveProgress: true,
 		};
 
@@ -319,9 +319,8 @@ class Game {
 	};
 	updateScore = function(score, animate) {
 		const prev = this.memory.score.num;
-		this.memory.score.num = score.num;
-		this.memory.score.denominator = score.denominator;
-		if (animate) game.percentScorer.interpolateScore(game.memory.score.num);
+		this.memory.score = score;
+		if (animate) game.percentScorer.interpolateScore(game.memory.score);
 		let crossed = false;
 		if (this.memory.score.num >= this.memory.score.denominator) {
 			this.memory.score.won = true;
@@ -347,12 +346,17 @@ const TrendSelector = function (trendData, game) {
 		unusable: new Set(),
 	};
 	let validatedImages = new Set();
-	this.restoreKeys = function(restoredKeys) {
+	this.restoreKeys = function (restoredKeys) {
 		if (restoredKeys) {
-			keys.unused   = new Set((restoredKeys.unused   ?? []).filter(k => trends[k]));
+			keys.unused = new Set((restoredKeys.unused ?? []).filter(k => trends[k]));
 			keys.deferred = new Set((restoredKeys.deferred ?? []).filter(k => trends[k]));
-			keys.used     = new Set((restoredKeys.used     ?? []).filter(k => trends[k]));
+			keys.used = new Set((restoredKeys.used ?? []).filter(k => trends[k]));
 			keys.unusable = new Set((restoredKeys.unusable ?? []).filter(k => trends[k]));
+
+			if (!Config.deferViewedTrends) {
+				keys.deferred.forEach(k => keys.unused.add(k));
+				keys.deferred.clear();
+			}
 		}
 	};
 	this.restoreValidated = function(saved) {
@@ -388,7 +392,9 @@ const TrendSelector = function (trendData, game) {
 				moveKey(key, keys.used, keys.unusable);
 	};
 	this.markViewed = function(key) {
-		moveKey(key, keys.unused, keys.deferred);
+		if (Config.deferViewedTrends) {
+			moveKey(key, keys.unused, keys.deferred);
+		}
 	};
 	this.addTrends = function (trendSet, victory) {
 		if (trendSet.size < 1) return;
@@ -440,7 +446,7 @@ const TrendSelector = function (trendData, game) {
 		return randomTrendKeys;
 	};
 	this.getScore = function() {
-		return {num: keys.used.size, denominator: trends.count - keys.unusable.length};
+		return { num: keys.used.size, denominator: trendData.count - keys.unusable.size};
 	};
 	this.saveData = function () {
 		const data = {
@@ -465,7 +471,7 @@ async function init() {
 	game.gridLayout = new GridLayout(Elements);
 	game.faceChanger = new Graphics.faceChanger(game);
 	game.trendSelector = new TrendSelector(Config.trendData, game);
-	game.percentScorer = new Graphics.PercentScorer(Config.trendData.count);
+	game.percentScorer = new Graphics.PercentScorer(game.memory.score);
 	game.colorSequencerDark = new Graphics.colorSequencer(Config.darkColors);
 	game.colorSequencerLight = new Graphics.colorSequencer(Config.colors);
 	

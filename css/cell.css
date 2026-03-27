@@ -138,14 +138,14 @@
 	pointer-events: none;
 	transition: opacity 0.8s linear;
 }
-@media (min-width: 600px) {
+/*@media (min-width: 600px) {
 	.cell-label-bg:hover .cell-label.fade-out {
 		opacity: 1 !important;
 	}
 	.cell-label-bg:hover .cell-number.fade-in {
 		opacity: 0 !important;
 	}
-}
+}*/
 .cell-label-buffer {
 	font-family: "Google Sans";
 	position: fixed;
