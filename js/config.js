@@ -110,12 +110,18 @@ Config.getCategories = async function() {
 		this.trendData = await fetch(Config.BACKEND).then(res => {
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			return res.json();
+		}).then(trendData => {
+			if (trendData.count < 1) throw new Error(`No trends found in ${Config.BACKEND}`);
+			return trendData;
 		});
 	} catch (err) {
 		try {
 			this.trendData = await fetch(Config.FALLBACK).then(res => {
 				if (!res.ok) throw new Error(`HTTP ${res.status}`);
 				return res.json();
+			}).then(trendData => {
+				if (trendData.count < 1) throw new Error(`No trends found in ${Config.FALLBACK}`);
+				return trendData;
 			});
 		} catch (err) {
 			console.warn('Failed to fetch remote index, falling back to local:', err.message);

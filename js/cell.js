@@ -155,7 +155,7 @@ export class CellSolvedLoop {
 		let typingResolver, endResolver;
 		const typingDone = new Promise(r => typingResolver = r);
 		const endPromise = new Promise(r => endResolver = r);
-		const specialAnimation = cells[0].bespoke;
+		const specialAnimation = true;//cells[0].bespoke;
 		let ended = false;
 		let stopped = false;
 		
