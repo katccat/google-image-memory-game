@@ -89,7 +89,7 @@ export class Cell {
 	activate(word, trendObject) {
 		this.id = word;
 		this.displayName = trendObject.nickname || word;
-		this.elements.image.style.backgroundImage = `url(${trendObject.url})`;
+		this.elements.image.style.backgroundImage = `url(${trendObject.url?.[0]})`;
 		if (trendObject.views) {
 			this.views = trendObject.views;
 			this.elements.number.textContent = trendObject.views;
@@ -218,9 +218,7 @@ const setBespoke = function(element) {
 	let currentIndex = 0;
 	for (let i = 0; i < colors.length; i ++) {
 		if (colors[i] === current) currentIndex = i;
-		console.log(`${colors[i]} : ${current}`);
 	}
-	console.log(currentIndex);
 	const orderedColors = colors.splice(currentIndex);
 	orderedColors.push(...colors);
 	element.animate([

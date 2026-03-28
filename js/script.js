@@ -70,6 +70,7 @@ class Game {
 	activateCells = async function (board) {
 		let cellsCopy = [...this.state.cells];
 		let activeCellCount = 0;
+		let activatedCells = [];
 		// pick all of the pictures that will be given to cells
 		const randomTrendKeys = await this.trendSelector.getRandomTrendKeys(this.state.cells.length / 2);
 		// assign images to cells
@@ -82,21 +83,21 @@ class Game {
 				cell.activate(key, Config.trendData.trends[key]);
 				cell.usedTrend = usedTrend;
 				cellPair.push(cell);
-				activeCellCount++;
+				activatedCells.push(cell);
 			}
 			const color = this.colorSequencerDark.nextColor();
 			cellPair[0].setBackColor(color);
 			cellPair[1].setBackColor(color);
 		}
 		//
-		this.state.unsolvedCells = activeCellCount;
-		this.state.remainingMistakes = activeCellCount / 2 - 1 + board.additionalMistakes;
+		this.state.unsolvedCells = activatedCells.length;
+		this.state.remainingMistakes = activatedCells.length / 2 - 1 + board.additionalMistakes;
 		// reveals the cells in random order
 		cellsCopy = [...this.state.cells];
 		let delay = 300;
-		for (let i = 0; i < activeCellCount; i++) {
-			const index = Math.floor(Math.random() * cellsCopy.length);
-			const cell = cellsCopy.splice(index, 1)[0];
+		while (activatedCells.length > 0) {
+			const index = Math.floor(Math.random() * activatedCells.length);
+			const cell = activatedCells.splice(index, 1)[0];
 			cell.reveal();
 			if (delay > 0) {
 				await new Promise(resolve => setTimeout(resolve, delay));
@@ -353,6 +354,14 @@ const TrendSelector = function (trendData, game) {
 			keys.used = new Set((restoredKeys.used ?? []).filter(k => trends[k]));
 			keys.unusable = new Set((restoredKeys.unusable ?? []).filter(k => trends[k]));
 
+			// add any new keys not seen in localStorage
+			const allRestored = [keys.unused, keys.deferred, keys.used, keys.unusable];
+			for (const key of Object.keys(trends)) {
+				if (!allRestored.some(set => set.has(key))) {
+					keys.unused.add(key);
+				}
+			}
+
 			if (!Config.deferViewedTrends) {
 				keys.deferred.forEach(k => keys.unused.add(k));
 				keys.deferred.clear();
@@ -428,10 +437,9 @@ const TrendSelector = function (trendData, game) {
 				else if (deferredKeys.length > 0) pool = deferredKeys;
 				else { pool = usedKeys; usedTrend = true; }
 				if (pool.length === 0) break;
-
 				const index = Math.floor(Math.random() * pool.length);
 				key = pool.splice(index, 1)[0];
-				const image = trends[key]?.url;
+				const image = trends[key]?.url?.[0];
 				if (usedImages.includes(image)) continue;
 				imageValid = (await isImageValid(image));
 				if (!imageValid) markUnusable(key);

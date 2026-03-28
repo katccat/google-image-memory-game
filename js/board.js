@@ -16,13 +16,13 @@ export class Board {
 export class BoardCreator {
 	static cellCounts = {
 		normal: {
-			easy: [8, 12, 18],
-			medium: [20, 24],
+			easy: [8, 12, 16],
+			medium: [18, 20, 24],
 			hard: [30, 36],
 		},
 		phone: {
 			easy: [8, 12, 12],
-			medium: [18, 20],
+			medium: [16, 18, 20],
 			hard: [24],
 		}
 	};
@@ -51,8 +51,7 @@ export class BoardCreator {
 		board.allowRecycleWords = allowRecycleWords;
 
 		if (cellCount > 16) {
-			if (level < BoardCreator.levels.hard) board.additionalMistakes = 2;
-			else board.additionalMistakes = 1;
+			board.additionalMistakes = 2;
 		}
 		else if (level < BoardCreator.levels.normal) board.additionalMistakes = 1;
 

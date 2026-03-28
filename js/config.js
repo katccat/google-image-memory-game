@@ -97,10 +97,12 @@ const IS_DEV = window.location.hostname !== 'clayrobot.net' &&
 
 if (IS_DEV) {
 	Config.BACKEND = 'https://backend.clayrobot.net/dev/memorygame';
+	Config.FALLBACK = 'https://backend.clayrobot.net/dev/memorygame/fallback';
 	Elements.title.textContent = "I'm not a robot (dev)";
 }
 else {
 	Config.BACKEND = 'https://backend.clayrobot.net/memorygame';
+	Config.FALLBACK = 'https://backend.clayrobot.net/memorygame/fallback';
 }
 
 Config.getCategories = async function() {
@@ -110,7 +112,14 @@ Config.getCategories = async function() {
 			return res.json();
 		});
 	} catch (err) {
-		console.warn('Failed to fetch remote index, falling back to local:', err.message);
-		this.trendData = await fetch('./words/fallback.json').then(res => res.json());
+		try {
+			this.trendData = await fetch(Config.FALLBACK).then(res => {
+				if (!res.ok) throw new Error(`HTTP ${res.status}`);
+				return res.json();
+			});
+		} catch (err) {
+			console.warn('Failed to fetch remote index, falling back to local:', err.message);
+			this.trendData = await fetch('./words/fallback.json').then(res => res.json());
+		}
 	}
 };
