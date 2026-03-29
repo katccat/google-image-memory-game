@@ -213,6 +213,7 @@ Graphics.PercentScorer = function (score) {
 	this.updateScore = function (score) {
 		if (intervalId) clearInterval(intervalId);
 		intervalId = null;
+		scoreDisplay.classList.remove('enlarge');
 		lastScore = score;
 		displayScore(percentScore(score).toFixed(rounding));
 	};
