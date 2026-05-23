@@ -1,6 +1,6 @@
 import { percentScoreFloat, fitFontSize, shuffle } from "./utils.js";
 import { soundEffects } from "./main.js";
-import { Graphics } from "./graphics.js";
+import { Graphics } from "./Graphics.js";
 
 const PREF_THEME = 'pref_theme';
 const PREF_CHALLENGE = 'pref_challenge';
