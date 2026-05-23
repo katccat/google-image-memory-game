@@ -211,7 +211,6 @@ Graphics.colorSequencer = function(sequence) {
 	}
 }
 Graphics.typeTextColored = async function (text, colors, delayMs, ...elements) {
-	console.log(text);
 	const words = text.split(' ');
 	elements.forEach(element => {
 		element.innerHTML = '';

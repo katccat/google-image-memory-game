@@ -1,4 +1,11 @@
 import { Config } from './config.js';
+
+export function hideBackground(active) {
+	document.body.classList.toggle('in-game', active);
+	const video = document.querySelector('#background video');
+	if (video) active ? video.pause() : video.play();
+}
+
 export function randomItem(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }

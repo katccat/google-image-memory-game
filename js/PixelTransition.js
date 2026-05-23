@@ -5,7 +5,7 @@ import { soundEffects } from './main.js';
 
 const SoundMode = { FAIL: 'fail', WIN: 'win', NONE: 'none' };
 
-const PIXEL_SIZE = isPhone() ? 32 : 36; // target square side length in CSS pixels
+const PIXEL_SIZE = isPhone() ? 28 : 36; // target square side length in CSS pixels
 const SNAP_MS = 120; // delay between opacity steps (1→0.5→0 or reverse)
 const buffer = 300;
 const TARGET_TRANSITION_MS = 2000;

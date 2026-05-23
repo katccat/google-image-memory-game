@@ -1,5 +1,7 @@
 /assets/
 /old/
+/dist/
+/node_modules/
 /anim/
 __pycache__/
 google-key.txt

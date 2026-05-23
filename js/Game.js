@@ -5,7 +5,7 @@ import { GridLayout } from './gridlayout.js';
 import { Cell } from './Cell.js';
 import { Board } from './board.js';
 import { BoardCreator } from './board.js';
-import { randomItem, shuffle } from './utils.js';
+import { randomItem, shuffle, hideBackground } from './utils.js';
 import { CellLoopScheduler } from './CellSolvedLoop.js';
 import { TrendSelector } from './TrendSelector.js';
 import { handleClick } from './handleClick.js';
@@ -118,9 +118,6 @@ export class Game {
 		const usedGlyphs = [];
 		for (let i = 0; i < numCells; i++) {
 			const cell = new Cell(this);
-			if (Math.random() < Config.funColorChance) {
-				cell.setFrontColor(randomItem(Config.colors));
-			}
 			if (this.state.level === 0 && numCells === 4) {
 				cell.writeOnFront(introMessage[i]);
 				cell.setFontColor(this.colorSequencerLight.nextColor());
@@ -131,6 +128,7 @@ export class Game {
 					glyph = randomItem(Config.glyphs);
 				} while (usedGlyphs.includes(glyph));
 				cell.setFrontGlyph(glyph);
+				// cell.setFrontColor(randomItem(Config.colors));
 				usedGlyphs.push(glyph);
 			}
 			fragment.appendChild(cell.getElement());
@@ -273,7 +271,6 @@ export class Game {
 		const typeSpeed = 90;
 		Elements.splashContainer.classList.add('fade-in');
 		if (showTrendHistogram) {
-			soundEffects.marimba();
 			await Promise.all([
 				Graphics.typeText(text, typeSpeed, true, Elements.splashText), 
 				this.trendHistogram.rescale()
@@ -331,6 +328,7 @@ export class Game {
 
 		// Fade out grid and tooltip simultaneously, reset tooltip once faded
 		if (!this.state.firstRun && !!victory) {
+			// document.body.classList.remove('active');
 			Elements.grid.classList.remove('active');
 			Elements.tooltip.classList.remove('active');
 			Elements.tooltip.addEventListener('transitionend', () => {
@@ -358,7 +356,7 @@ export class Game {
 		// ── Fade grid back in ────────────────────────────────────────
 		Elements.tooltip.classList.add('active');
 		Elements.grid.classList.add('active');
-		document.body.classList.add('active');
+		hideBackground(true);
 
 		// ── Activate cells (animates in one by one) ──────────────────
 		await this.activateCells(this.board, !!victory);
@@ -378,7 +376,9 @@ export class Game {
 		});
 	};
 	destroy = function () {
+		console.log('destroying game');
 		Elements.grid.classList.remove('active');
+		hideBackground(false);
 		Elements.tooltip.classList.remove('active');
 		window.removeEventListener('resize', this._resizeHandler);
 		Elements.grid.removeEventListener('click', this._gridClickHandler);

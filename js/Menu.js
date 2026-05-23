@@ -115,16 +115,17 @@ export class Menu {
 				<div class="menu-card" id="menu-card">
 
 				<!-- Search bar header -->
-				<div class="menu-title"><div class="menu-title-text"></div></div>
+				<div class="menu-title"><div class="menu-title-text"></div><img src='./images/menu-glyphs/shiver.gif' class="menu-title-logo">
+				</img></div>
 
 				<!-- Date cell — green (opens picker) -->
 				<div class="menu-cell menu-cell--green">
 					<div class="menu-cell-inner">
 						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-date-open">
-							<span class="material-icons-outlined">calendar_today</span>
+							<span class="material-symbols-sharp">calendar_today</span>
 							<span id="menu-date-label" class="menu-date-label"></span>
-							<span class="material-icons-outlined menu-date-chevron">chevron_right</span>
+							<span class="material-symbols-sharp menu-date-chevron">chevron_right</span>
 						</button>
 					</div>
 				</div>
@@ -135,11 +136,12 @@ export class Menu {
 						<div class="menu-cell-back"></div>
 						<div class="menu-cell-front menu-actions">
 							<button class="menu-btn menu-btn-primary" id="menu-continue">
-								<span class="material-icons-outlined">play_arrow</span>
+								<span class="material-symbols-sharp">play_arrow</span>
 								<span id="menu-continue-label">Play</span>
+								<img class="menu-play-pointer" src="./images/pointer.png">
 							</button>
 							<button class="menu-btn menu-btn-secondary menu-btn-icon" id="menu-restart">
-								<span class="material-icons-outlined">restart_alt</span>
+								<span class="material-symbols-sharp">replay</span>
 							</button>
 						</div>
 					</div>
@@ -150,7 +152,7 @@ export class Menu {
 					<div class="menu-cell-inner">
 						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-challenge">
-							<span class="material-icons-outlined">sports_esports</span>
+							<img class="icon-img" src="./images/menu-glyphs/gaming.png">
 							<span class="menu-toggle-label">Game mode</span>
 							<span class="menu-toggle-status"></span>
 						</button>
@@ -162,9 +164,9 @@ export class Menu {
 					<div class="menu-cell-inner">
 						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-options-open">
-							<span class="material-icons-outlined">settings</span>
+							<img class="icon-img" src="./images/menu-glyphs/hamburger.png">
 							<span class="menu-date-label">Options</span>
-							<span class="material-icons-outlined menu-date-chevron">chevron_right</span>
+							<span class="material-symbols-sharp menu-date-chevron">chevron_right</span>
 						</button>
 					</div>
 				</div>
@@ -179,7 +181,7 @@ export class Menu {
 					<div class="menu-cell-inner">
 						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-sound">
-							<span class="material-icons-outlined">volume_up</span>
+							<span class="material-symbols-sharp">volume_up</span>
 							<span class="menu-toggle-label">Sound</span>
 							<span class="menu-toggle-status"></span>
 						</button>
@@ -189,7 +191,7 @@ export class Menu {
 					<div class="menu-cell-inner">
 						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-theme">
-							<span class="material-icons-outlined">dark_mode</span>
+							<span class="material-symbols-sharp">dark_mode</span>
 							<span class="menu-toggle-label">Theme</span>
 							<span class="menu-toggle-status"></span>
 						</button>
@@ -206,11 +208,11 @@ export class Menu {
 			<div class="date-picker-panel" id="date-picker-panel">
 				<div class="date-picker-header menu-header">
 					<button class="menu-arrow-btn date-picker-nav-btn" id="picker-month-back">
-						<span class="material-icons-outlined">chevron_left</span>
+						<span class="material-symbols-sharp">chevron_left</span>
 					</button>
 					<span class="date-picker-month-label" id="picker-month-label"></span>
 					<button class="menu-arrow-btn date-picker-nav-btn" id="picker-month-fwd">
-						<span class="material-icons-outlined">chevron_right</span>
+						<span class="material-symbols-sharp">chevron_right</span>
 					</button>
 				</div>
 				<div class="date-picker-grid" id="date-picker-grid"></div>
@@ -449,14 +451,17 @@ export class Menu {
 		challengeBtn.classList.toggle('active', this.challengeMode);
 		challengeBtn.querySelector('.menu-toggle-status').textContent = this.challengeMode ? 'Challenge' : 'Normal';
 
+		const logo = this.container.querySelector('.menu-title-logo');
+		if (logo) logo.src = this.challengeMode ? './images/menu-glyphs/cool.gif' : './images/menu-glyphs/shiver.gif';
+
 		const soundBtn = this.container.querySelector('#menu-sound');
 		soundBtn.classList.toggle('active', !this.soundMuted);
-		soundBtn.querySelector('.material-icons-outlined').textContent = this.soundMuted ? 'volume_off' : 'volume_up';
+		soundBtn.querySelector('.material-symbols-sharp').textContent = this.soundMuted ? 'volume_off' : 'volume_up';
 		soundBtn.querySelector('.menu-toggle-status').textContent = this.soundMuted ? 'Off' : 'On';
 
 		const themeBtn = this.container.querySelector('#menu-theme');
 		// themeBtn.classList.toggle('active', this.darkMode);
-		themeBtn.querySelector('.material-icons-outlined').textContent = this.darkMode ? 'dark_mode' : 'light_mode';
+		themeBtn.querySelector('.material-symbols-sharp').textContent = this.darkMode ? 'dark_mode' : 'light_mode';
 		themeBtn.querySelector('.menu-toggle-status').textContent = this.darkMode ? 'Dark' : 'Light';
 
 		// action buttons also depend on challenge mode (different save slot)

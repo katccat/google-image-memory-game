@@ -152,7 +152,10 @@ export class Cell {
 		this.elements.card.classList.remove('scale');
 	}
 	setFrontGlyph(src) {
-		this.elements.front.style.backgroundImage = `url(${src})`;
+		const img = document.createElement('img');
+		img.className = 'cell-glyph';
+		img.src = src;
+		this.elements.front.appendChild(img);
 	}
 	writeOnFront(text) {
 		this.elements.front.textContent = text;

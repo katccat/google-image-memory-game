@@ -20,17 +20,17 @@ export const Config = {
 	removeAmountWhenLose: 0,
 	removeAmountWhenGameOver: 12,
 	trendData: {},
-	funColorChance: 0,
 	funGlyphChance: 0.1,
 	maxLives: 3,
 	milestones: [25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000],
 	scoreRounding: 1,
 	deferViewedTrends: false,
+	brightColors: [],
 	colors: [
-		'rgba(237, 106, 94, 1)',  // red
-		'rgba(134, 178, 249, 1)', // blue
-		'rgba(255, 214, 90, 1)',  // yellow
-		'rgba(118, 213, 144, 1)', // green
+		'#6ea3f8', // blue
+		'#ed6a5e',  // red
+		'#ffd65a',  // yellow
+		'#42cc67', // green
 	],
 	darkColors: [
 		'rgba(66, 133, 244, 0.65)',
@@ -51,14 +51,14 @@ export const Config = {
 		end: ["OMG 100%!", "You ARE a robot!", "All systems go!"],
 	},
 	glyphs: [
-		"images/download_arrow.png",
-		"images/mandarin.png",
-		"images/puzzle.png",
-		"images/share.png",
-		"images/office.png",
-		"images/cog.png",
-		"images/search.png",
-		"images/contact.png",
+		"images/glyphs/download_arrow.png",
+		"images/glyphs/mandarin.png",
+		"images/glyphs/puzzle.png",
+		"images/glyphs/share.png",
+		"images/glyphs/office.png",
+		"images/glyphs/cog.png",
+		"images/glyphs/search.png",
+		"images/glyphs/contact.png",
 	],
 	introMessage: [
 		{

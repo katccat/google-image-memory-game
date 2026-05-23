@@ -69,19 +69,10 @@ export function GridLayout(elements) {
 		tooltip.style.width = grid.getBoundingClientRect().width + 'px';
 		const cellWidth = grid.getBoundingClientRect().width / columns;
 		let cellPerspective;
-		//console.log(cellWidth);
-		if (cellWidth > 280) {
-			cellPerspective = 720;
-		} 
-		else if (cellWidth > 150) {
-			cellPerspective = 480;
-		} 
-		else if (cellWidth > 100) {
-			cellPerspective = 300;
-		} 
-		else {
-			cellPerspective = 200;
-		} 
+		if (cellWidth > 280) cellPerspective = 720;
+		else if (cellWidth > 150) cellPerspective = 480;
+		else if (cellWidth > 100) cellPerspective = 300;
+		else cellPerspective = 200;
 		root.style.setProperty('--cell-perspective', `${cellPerspective}px`);
 	}
 };
