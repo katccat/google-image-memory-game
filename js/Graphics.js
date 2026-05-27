@@ -16,7 +16,8 @@ export const Elements = {
 	faceDisplay: document.getElementById('face'),
 	faceOverlay: document.getElementById('glasses'),
 	continuePrompt: document.getElementById('continue-prompt'),
-	histogramContainer: document.getElementById('histogram-container'),
+	winSplashA: document.getElementById('win-splash-a'),
+	winSplashB: document.getElementById('win-splash-b'),
 };
 export class Graphics {};
 
@@ -147,13 +148,38 @@ Graphics.resetToolTip = function(game, victory) {
 }
 Graphics.PercentScorer = function () {
 	const scoreDisplay = Elements.scoreDisplay;
+	const scoreBar = document.getElementById('score-bar');
+	const scoreBarFill = document.getElementById('score-bar-fill');
 	const rounding = Config.scoreRounding;
 	const delay = 80;
 	let intervalId = null;
 
 	const displayScore = function (formattedScore) {
 		scoreDisplay.classList.add('visible');
+		scoreBar.classList.add('visible');
 		scoreDisplay.textContent = formattedScore + "%";
+	};
+
+	// Set bar fill height once; CSS transition handles the animation.
+	// Pass animate=false to skip the transition (e.g. on instant resets).
+	const setBarHeight = function (percent, animate) {
+		const clamped = Math.min(Math.max(percent, 0), 100);
+		// Barber-pole speed: linear from 8s at 0% to 0.6s at 100%.
+		const duration = 10 - (clamped / 100) * 6;
+		scoreBarFill.style.animationDuration = duration.toFixed(2) + 's';
+		if (!animate) {
+			scoreBarFill.style.transition = 'none';
+			scoreBarFill.style.height = clamped + '%';
+			scoreBarFill.offsetHeight; // flush layout so transition:none takes effect
+			scoreBarFill.style.transition = '';
+		} else {
+			// Always grow from the bottom: snap to 0, then transition up.
+			scoreBarFill.style.transition = 'none';
+			scoreBarFill.style.height = '0%';
+			scoreBarFill.offsetHeight; // commit the 0% before re-enabling transition
+			scoreBarFill.style.transition = '';
+			scoreBarFill.style.height = clamped + '%';
+		}
 	};
 
 	this.interpolateScore = async function (oldScore, newScore) {
@@ -166,7 +192,9 @@ Graphics.PercentScorer = function () {
 			}, 1500);
 			return;
 		}
-		else if (displayEnd < displayStart) scoreDisplay.classList.add('debit');
+		// Drive the bar to the target once — CSS handles the animation from 0.
+		setBarHeight(Math.abs(displayEnd), true);
+		if (displayEnd < displayStart) scoreDisplay.classList.add('debit');
 		scoreDisplay.classList.add('enlarge');
 		if (intervalId) clearInterval(intervalId);
 
@@ -197,6 +225,7 @@ Graphics.PercentScorer = function () {
 		if (intervalId) clearInterval(intervalId);
 		intervalId = null;
 		scoreDisplay.classList.remove('enlarge');
+		setBarHeight(percentScoreFloat(score), false);
 		displayScore(percentScoreString(score));
 	};
 };
@@ -276,6 +305,45 @@ Graphics.deleteText = async function (delayMs, ...elements) {
 
 	elements.forEach(element => { element.innerHTML = ''; });
 }
+Graphics.winSplash = async function(text) {
+	const layerA = Elements.winSplashA;
+	const layerB = Elements.winSplashB;
+
+	// Cancel any in-progress animations before starting fresh
+	layerA.getAnimations().forEach(a => a.cancel());
+	layerB.getAnimations().forEach(a => a.cancel());
+
+	layerA.textContent = text;
+	layerB.textContent = text;
+
+	const duration = 1600;
+	const easing = 'ease-out';
+
+	// Layer A: grows outward and fades — the "expanding" layer
+	const animA = layerA.animate([
+		{ transform: 'translate(-50%, -50%) scale(1)',    opacity: 1, offset: 0    },
+		{ transform: 'translate(-50%, -50%) scale(1)',    opacity: 1, offset: 0.05 },
+		{ transform: 'translate(-50%, -50%) scale(2.8)',  opacity: 0, offset: 1    },
+	], { duration, easing, fill: 'forwards' });
+
+	// Layer B: shrinks inward and fades — the "collapsing" layer
+	const animB = layerB.animate([
+		{ transform: 'translate(-50%, -50%) scale(1)',    opacity: 1, offset: 0    },
+		{ transform: 'translate(-50%, -50%) scale(1)',    opacity: 1, offset: 0.05 },
+		{ transform: 'translate(-50%, -50%) scale(0.5)', opacity: 0, offset: 1    },
+	], { duration, easing, fill: 'forwards' });
+
+	try {
+		await Promise.all([animA.finished, animB.finished]);
+	} catch {
+		// A subsequent call cancelled these animations — bail out so its cleanup wins
+		return;
+	}
+	animA.cancel();
+	animB.cancel();
+	layerA.textContent = '';
+	layerB.textContent = '';
+};
 Graphics.showPrompt = async function() {
 	Elements.continuePrompt.classList.add('fade-in');
 	//Elements.continuePrompt.classList.add('breathing');

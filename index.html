@@ -36,8 +36,10 @@
 
 	<div id="splash-container" class="center">
 		<div id="splash-text">I'm feeling lucky</div>
-		<div id="histogram-container"></div>
 	</div>
+
+	<div id="win-splash-a" class="center"></div>
+	<div id="win-splash-b" class="center"></div>
 	
 	<div id="menu-container"></div>
 
@@ -49,11 +51,16 @@
 			</span>
 			
 			<div id="tooltip-right">
-				<div class="face-container">
-					<img id="glasses">
-					<img src="images/faces/1.png" id="face">
+				<div id="score-bar">
+					<div id="score-bar-fill"></div>
 				</div>
-				<span id="score-counter">0.0%</span>
+				<div id="tooltip-right-inner">
+					<div class="face-container">
+						<img id="glasses">
+						<img src="images/faces/1.png" id="face">
+					</div>
+					<span id="score-counter">0.0%</span>
+				</div>
 			</div>
 		</div>
 		<div id="grid">

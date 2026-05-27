@@ -10,7 +10,6 @@ import { CellLoopScheduler } from './CellSolvedLoop.js';
 import { TrendSelector } from './TrendSelector.js';
 import { handleClick } from './handleClick.js';
 import { PixelTransition } from './PixelTransition.js';
-import { TrendHistogram } from './TrendHistogram.js';
 import { soundEffects } from './SoundEffects.js';
 
 export class Game {
@@ -54,7 +53,6 @@ export class Game {
 		this.gridLayout = new GridLayout(Elements);
 		this.faceChanger = new Graphics.faceChanger(this);
 		this.trendSelector = new TrendSelector(trendData, this);
-		this.trendHistogram = new TrendHistogram(trendData, Elements.histogramContainer);
 		this.percentScorer = new Graphics.PercentScorer(this.state.score);
 		this.cellLoopScheduler = new CellLoopScheduler();
 		this.pixelTransition = new PixelTransition();
@@ -67,6 +65,9 @@ export class Game {
 
 		window.addEventListener('resize', this._resizeHandler);
 		Elements.grid.addEventListener('click', this._gridClickHandler);
+
+		// // TEMP: click body to preview win splash
+		// document.body.addEventListener('click', () => Graphics.winSplash(randomItem(Config.messages.end)), { once: false });
 	}
 	restore = function() {
 		const date = this.gameDate;
@@ -108,8 +109,6 @@ export class Game {
 			} catch { }
 		}
 		this.updateScore(this.trendSelector.getScore(), false);
-		this.trendHistogram.updateTrends(this.trendSelector.getAllUsedTrends());
-		this.trendHistogram.rescale();
 		this.saveProgress = true;
 	}
 	createCells = function (numCells) {
@@ -221,11 +220,14 @@ export class Game {
 		this.state.victory = true;
 		this.state.coolDown = true;
 		if (this.board.giveLife) this.addLife();
-		
+
 		this.trendSelector.addTrends(this.state.pendingTrends, true);
-		this.trendHistogram.updateTrends(this.trendSelector.getAllUsedTrends());
+		const prevWon = this.state.score.won;
 		this.updateScore(this.trendSelector.getScore(), true);
 		this.faceChanger.resetFace(true, true);
+		if (!prevWon && this.state.score.won) {
+			Graphics.winSplash(randomItem(Config.messages.end));
+		}
 		this.state.level++;
 		this.saveData('session', {
 			board: null,
@@ -261,37 +263,30 @@ export class Game {
 				await this.updateScore(this.trendSelector.getScore(), true);
 			}
 		}
-		this.trendHistogram.updateTrends(this.trendSelector.getAllUsedTrends());
 		await new Promise(resolve => setTimeout(resolve, Config.delay.loseTransition));
 
 		if (gameOver) this.restartGame();
 		else this.newGame(false);
 	};
-	showPostGame = async function(text, showTrendHistogram = true) {
+	showPostGame = async function(text) {
 		const typeSpeed = 90;
 		Elements.splashContainer.classList.add('fade-in');
-		if (showTrendHistogram) {
-			await Promise.all([
-				Graphics.typeText(text, typeSpeed, true, Elements.splashText), 
-				this.trendHistogram.rescale()
-			]);
-		} else {
-			this.trendHistogram.hide();
-			await Graphics.typeText(text, typeSpeed, true, Elements.splashText);
-		}
+		const googleColors = ['var(--google-blue)', 'var(--google-red)', 'var(--google-green)', 'var(--google-yellow)'];
+		shuffle(googleColors);
+		await Graphics.typeTextColored(text, googleColors, typeSpeed, Elements.splashText);
 		Elements.splashContainer.classList.remove('fade-in');
 	};
 	selectMessage = function (victory) {
 		if (victory) {
-			if (this.state.score.won && this.state.announceMilestone) return Config.messages.end;
-			if (this.state.level <= 0) {
+			// if (this.state.score.won && this.state.announceMilestone) return Config.messages.end;
+			if (this.state.level <= 1) {
 				const messages = Config.messages.intro;
 				return this.challengeMode ? messages.challenge : messages.normal;
 			}
 			if (this.state.announceMilestone) return [`${this.state.score.num} trends collected!`];
 			if (this.state.avoidableMistakes === 0) return Config.messages.perfect;
 			if (this.state.remainingMistakes === 0) return Config.messages.nearmiss;
-			return Config.messages.victory;
+			return null;
 		}
 		if (this.state.level < this.state.previousLevel) return Config.messages.gameover;
 		return Config.messages.failure;
@@ -343,7 +338,7 @@ export class Game {
 		
 		// ── Splash message (blocks until animation completes) ────────
 
-		if (messageList) await this.showPostGame(randomItem(messageList), (!!victory && !this.state.firstRun));
+		if (messageList) await this.showPostGame(randomItem(messageList));
 		
 		// ── State reset ──────────────────────────────────────────────
 		if (newCellCount) await this.gridLayout.update(this.board.cellCount);

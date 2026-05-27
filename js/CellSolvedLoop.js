@@ -11,7 +11,7 @@ export function CellLoopScheduler() {
 		const loop = new CellSolvedLoop(...cells);
 		loop.start();
 		cellLoops.splice(loopIndex, 0, loop);
-		if (!playing && cellLoops.some(loop => loop.imageSlideAvailable)) this.start();
+		if (!playing && Config.slideImages && cellLoops.some(loop => loop.imageSlideAvailable)) this.start();
 	}
 	this.start = async function () {
 		playing = true;
@@ -82,7 +82,7 @@ export class CellSolvedLoop {
 			})
 		}
 		this.slideImages = async function () {
-			if (!this.imageSlideAvailable) return false;
+			if (!Config.slideImages || !this.imageSlideAvailable) return false;
 			await this.backgroundVisible;
 			await this.typingDone;
 			cells.forEach(cell => cell.slideImages());

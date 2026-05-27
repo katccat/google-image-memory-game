@@ -115,7 +115,7 @@ export class Menu {
 				<div class="menu-card" id="menu-card">
 
 				<!-- Search bar header -->
-				<div class="menu-title"><div class="menu-title-text"></div><img src='./images/menu-glyphs/shiver.gif' class="menu-title-logo">
+				<div class="menu-title"><div class="menu-title-text candy-text"></div><img src='./images/menu-glyphs/shiver.gif' class="menu-title-logo">
 				</img></div>
 
 				<!-- Date cell — green (opens picker) -->
@@ -449,7 +449,7 @@ export class Menu {
 	_refreshToggles() {
 		const challengeBtn = this.container.querySelector('#menu-challenge');
 		challengeBtn.classList.toggle('active', this.challengeMode);
-		challengeBtn.querySelector('.menu-toggle-status').textContent = this.challengeMode ? 'Challenge' : 'Normal';
+		challengeBtn.querySelector('.menu-toggle-status').textContent = this.challengeMode ? 'Memory · Mismatch' : 'Memory · Normal';
 
 		const logo = this.container.querySelector('.menu-title-logo');
 		if (logo) logo.src = this.challengeMode ? './images/menu-glyphs/cool.gif' : './images/menu-glyphs/shiver.gif';

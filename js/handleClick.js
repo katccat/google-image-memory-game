@@ -23,7 +23,8 @@ export async function handleClick (game) {
 				game.state.unsolvedCells -= 2;
 				game.state.solvedCells.push(cell1, cell2);
 				if (game.state.unsolvedCells <= 0) {
-					soundEffects.matchWin();
+					// soundEffects.matchWin();
+					soundEffects.match();
 					game.winGame();
 				}
 				else soundEffects.match();
