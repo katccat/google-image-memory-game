@@ -24,7 +24,6 @@ export class SoundEffects {
 			whistle: './sound/whistle.mp3',
 			chatter: './sound/chatter.mp3',
 			snap:    './sound/snap.mp3',
-			marimba: './sound/marimba.mp3',
 		}).map(async ([name, url]) => {
 			try {
 				const raw = await (await fetch(url)).arrayBuffer();
@@ -69,7 +68,6 @@ export class SoundEffects {
 	bells()    { this._playBuffer('bells'); }
 	whistle()  { this._playBuffer('whistle'); }
 	chatter()  { this._playBuffer('chatter'); }
-	marimba()  { this._playBuffer('marimba'); }
 	matchWin() { this._playBuffer('snap'); }
 
 	match() {
