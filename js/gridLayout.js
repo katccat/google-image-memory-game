@@ -1,78 +1,89 @@
-export function GridLayout(elements) {
-	const factors = [];
-	factors[4] = [2];
-	factors[8] = [2, 4];
-	factors[10] = [3, 4];
-	factors[14] = [3, 5];
-	factors[16] = [4];
-	factors[20] = [4, 5];
-	factors[24] = [3, 4, 6, 8];
-	factors[36] = [3, 4, 6, 9, 12];
-	let cellCount, suitableFactors;
-	const grid = elements.grid;
+export class GridLayout {
+	static #FACTORS = Object.freeze({
+		4:  [2],
+		8:  [2, 4],
+		10: [3, 4],
+		14: [3, 5],
+		16: [4],
+		20: [4, 5],
+		24: [3, 4, 6, 8],
+		36: [3, 4, 6, 9, 12],
+	});
 
-	this.update = async function (numCells) {
-		if (factors[numCells]) {
-			suitableFactors = factors[numCells];
-			cellCount = suitableFactors[0] * suitableFactors[suitableFactors.length - 1];
-		}
-		else {
-			cellCount = numCells;
-			suitableFactors = [];
-			for (let i = 2; i < cellCount; i++) {
-				if (cellCount % i == 0) suitableFactors.push(i);
+	#grid;
+	#elements;
+	#cellCount = 0;
+	#suitableFactors = [];
+
+	constructor(elements) {
+		this.#grid = elements.grid;
+		this.#elements = elements;
+	}
+
+	async update(numCells) {
+		const known = GridLayout.#FACTORS[numCells];
+		if (known) {
+			this.#suitableFactors = known;
+			this.#cellCount = known[0] * known[known.length - 1];
+		} else {
+			this.#cellCount = numCells;
+			this.#suitableFactors = [];
+			for (let i = 2; i < numCells; i++) {
+				if (numCells % i === 0) this.#suitableFactors.push(i);
 			}
-			if (suitableFactors.length > 2 && suitableFactors[0] == 2) {
-				suitableFactors.splice(0, 1);
-				suitableFactors.splice(-1, 1);
+			if (this.#suitableFactors.length > 2 && this.#suitableFactors[0] === 2) {
+				this.#suitableFactors.splice(0, 1);
+				this.#suitableFactors.splice(-1, 1);
 			}
 		}
 		this.resizeGrid();
 	}
-	this.findBestDimensions = function (viewportAspectRatio) {
-		const columnCountEstimate = Math.sqrt(cellCount * viewportAspectRatio);
-		let smallestDiffToFactor = Infinity;
-		let bestColumnCount = suitableFactors[0];
-		for (const factor of suitableFactors) {
-			let diff = Math.abs(factor - columnCountEstimate);
-			if (diff < smallestDiffToFactor) {
-				smallestDiffToFactor = diff;
-				bestColumnCount = factor;
-			}
+
+	#findBestDimensions(viewportAspectRatio) {
+		const estimate = Math.sqrt(this.#cellCount * viewportAspectRatio);
+		let bestDiff = Infinity;
+		let bestColumns = this.#suitableFactors[0];
+		for (const factor of this.#suitableFactors) {
+			const diff = Math.abs(factor - estimate);
+			if (diff < bestDiff) { bestDiff = diff; bestColumns = factor; }
 		}
-		let bestRowCount = cellCount / bestColumnCount;
-		return [bestColumnCount, bestRowCount];
+		return [bestColumns, this.#cellCount / bestColumns];
 	}
-	this.resizeGrid = () => {
-		const tooltip = elements.tooltip;
-		const gameContainer = elements.gameContainer;
+
+	resizeGrid() {
+		const { tooltip, gameContainer } = this.#elements;
 		const root = document.documentElement;
-		const viewportWidth = gameContainer.getBoundingClientRect().width;
-		const viewportHeight = window.innerHeight - tooltip.getBoundingClientRect().height;
-		const viewportAspectRatio = viewportWidth / viewportHeight;
-		const [columns, rows] = this.findBestDimensions(viewportWidth / viewportHeight);
+
+		// Batch the pre-write reads to avoid separate forced reflows.
+		const containerWidth  = gameContainer.getBoundingClientRect().width;
+		const tooltipHeight   = tooltip.getBoundingClientRect().height;
+
+		const viewportWidth  = containerWidth;
+		const viewportHeight = window.innerHeight - tooltipHeight;
+		const [columns, rows] = this.#findBestDimensions(viewportWidth / viewportHeight);
 		const gridAspectRatio = columns / rows;
+
 		root.style.setProperty('--columns', columns);
 		root.style.setProperty('--rows', rows);
-		grid.style.aspectRatio = `${columns} / ${rows}`;
+		this.#grid.style.aspectRatio = `${columns} / ${rows}`;
 
-		if (viewportAspectRatio > gridAspectRatio) {
-			// Viewport is wider than grid: set height to 100%, width auto
-			grid.style.height = "100%";
-			grid.style.width = "auto";
+		if (viewportWidth / viewportHeight > gridAspectRatio) {
+			this.#grid.style.height = '100%';
+			this.#grid.style.width  = 'auto';
+		} else {
+			this.#grid.style.width  = '100%';
+			this.#grid.style.height = 'auto';
 		}
-		else {
-			// Viewport is taller than grid: set width to 100%, height auto
-			grid.style.width = "100%";
-			grid.style.height = "auto";
-		}
-		tooltip.style.width = grid.getBoundingClientRect().width + 'px';
-		const cellWidth = grid.getBoundingClientRect().width / columns;
-		let cellPerspective;
-		if (cellWidth > 280) cellPerspective = 720;
-		else if (cellWidth > 150) cellPerspective = 480;
-		else if (cellWidth > 100) cellPerspective = 300;
-		else cellPerspective = 200;
+
+		// Single post-layout read — both tooltip width and cellPerspective share it.
+		const gridWidth = this.#grid.getBoundingClientRect().width;
+		tooltip.style.width = gridWidth + 'px';
+
+		const cellWidth = gridWidth / columns;
+		const cellPerspective =
+			cellWidth > 280 ? 720 :
+			cellWidth > 150 ? 480 :
+			cellWidth > 100 ? 300 : 200;
 		root.style.setProperty('--cell-perspective', `${cellPerspective}px`);
 	}
-};
+}

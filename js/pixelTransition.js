@@ -1,7 +1,7 @@
 import { shuffle } from './utils.js';
-import { Elements } from './Graphics.js';
+import { Elements } from './graphics.js';
 import { isPhone } from './utils.js';
-import { soundEffects } from './main.js';
+import { soundEffects } from './soundEffects.js';
 
 const SoundMode = { FAIL: 'fail', WIN: 'win', NONE: 'none' };
 
@@ -68,15 +68,15 @@ export class PixelTransition {
             let idx = 0;
             let pending = 0;
             const total = pixels.length;
-            if (soundMode === SoundMode.FAIL) soundEffects.resetFailTick();
-            else if (soundMode === SoundMode.WIN) soundEffects.resetWinTick();
+            // if (soundMode === SoundMode.FAIL) soundEffects.resetFailTick();
+            // else if (soundMode === SoundMode.WIN) soundEffects.resetWinTick();
 
             const tick = () => {
                 const end = Math.min(idx + pixelsPerFrame, total);
                 for (let i = idx; i < end; i++) {
                     if (i % 6 === 0) {
-                        if (soundMode === SoundMode.FAIL) soundEffects.failTick();
-                        else if (soundMode === SoundMode.WIN) soundEffects.winTick();
+                        // if (soundMode === SoundMode.FAIL) soundEffects.failTick();
+                        // else if (soundMode === SoundMode.WIN) soundEffects.winTick();
                     }
                     const pixel = pixels[i];
                     onStep1(pixel);

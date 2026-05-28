@@ -1,6 +1,6 @@
 import { percentScoreFloat, fitFontSize, shuffle } from "./utils.js";
-import { soundEffects } from "./main.js";
-import { Graphics } from "./Graphics.js";
+import { soundEffects } from "./soundEffects.js";
+import { Graphics, Elements } from "./graphics.js";
 
 const PREF_THEME = 'pref_theme';
 const PREF_CHALLENGE = 'pref_challenge';
@@ -493,7 +493,7 @@ export class Menu {
 		this._refreshToggles();
 		this._refreshDateUI();
 		// Hide the game container now so it doesn't show through while we wait.
-		document.getElementById('game-container').style.display = 'none';
+		if (Elements.gameContainer) Elements.gameContainer.style.display = 'none';
 
 		// Wait for all fonts (including Material Icons) to finish loading,
 		// then yield one animation frame so the browser can measure and lay out
@@ -512,7 +512,7 @@ export class Menu {
 		this._titleGen = (this._titleGen ?? 0) + 1;
 		// Reveal the game container immediately so the game can lay out
 		// while the flip animation plays on top.
-		document.getElementById('game-container').style.display = '';
+		if (Elements.gameContainer) Elements.gameContainer.style.display = '';
 		this.container.classList.remove('fade-in');
 		await new Promise(r => setTimeout(r, 250));
 		this.container.classList.remove('active');

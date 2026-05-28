@@ -1,16 +1,13 @@
 import { Config } from './config.js';
-import { Elements } from './Graphics.js';
-import { Graphics } from './Graphics.js';
-import { GridLayout } from './gridlayout.js';
-import { Cell } from './Cell.js';
-import { Board } from './board.js';
-import { BoardCreator } from './board.js';
-import { randomItem, shuffle, hideBackground } from './utils.js';
-import { CellLoopScheduler } from './CellSolvedLoop.js';
-import { TrendSelector } from './TrendSelector.js';
-import { handleClick } from './handleClick.js';
-import { PixelTransition } from './PixelTransition.js';
-import { soundEffects } from './SoundEffects.js';
+import { Elements, Graphics, FaceChanger, PercentScorer, ColorSequencer } from './graphics.js';
+import { GridLayout } from './gridLayout.js';
+import { Cell } from './cell.js';
+import { Board, BoardCreator } from './board.js';
+import { randomItem, shuffle, hideBackground, waitForFlag } from './utils.js';
+import { CellLoopScheduler } from './cellSolvedLoop.js';
+import { TrendSelector } from './trendSelector.js';
+import { PixelTransition } from './pixelTransition.js';
+import { soundEffects } from './soundEffects.js';
 
 export class Game {
 	constructor(trendData, challengeMode = false) {
@@ -18,8 +15,6 @@ export class Game {
 		this.gameDate = trendData.fetchedDate;
 		this.saveProgress = true;
 		this.challengeMode = challengeMode;
-		if (this.challengeMode) Elements.tooltip.classList.add('red');
-		else Elements.tooltip.classList.remove('red');
 		this.state = {
 			coolDown: false,
 			cellsFading: false,
@@ -30,7 +25,7 @@ export class Game {
 				this.cells = [];
 				this.solvedCells = [];
 				this.revealedCells = [];
-				this.viewedCells = []; // for keeping track of avoidable mistakes
+				this.viewedCells = [];
 				this.unsolvedCells = 0;
 				this.remainingMistakes = 0;
 				this.avoidableMistakes = 0;
@@ -41,108 +36,180 @@ export class Game {
 			reset() {
 				this.level = 0;
 				this.lives = 3;
+				this.totalAvoidableMistakes = 0;
+				this.totalLevelsCompleted   = 0;
+				this.perfectLevels          = 0;
 			}
 		};
 		this.state.refresh();
 		this.state.reset();
 		this.boards = [];
-		
+
 		if (this.challengeMode) this.boards.push(new Board(4, 1));
 		else this.boards.push(new Board(4, 0), new Board(8, 0));
-		
+
+		this._build();
+
 		this.gridLayout = new GridLayout(Elements);
-		this.faceChanger = new Graphics.faceChanger(this);
+		this.faceChanger = new FaceChanger(this);
 		this.trendSelector = new TrendSelector(trendData, this);
-		this.percentScorer = new Graphics.PercentScorer(this.state.score);
+		this.percentScorer = new PercentScorer();
 		this.cellLoopScheduler = new CellLoopScheduler();
 		this.pixelTransition = new PixelTransition();
-		this.colorSequencerDark = new Graphics.colorSequencer(Config.darkColors);
-		this.colorSequencerLight = new Graphics.colorSequencer(Config.colors);
+		this.colorSequencerDark = new ColorSequencer(Config.darkColors);
+		this.colorSequencerLight = new ColorSequencer(Config.colors);
 		this.restore();
 
 		this._resizeHandler = () => this.gridLayout.resizeGrid();
-		this._gridClickHandler = () => handleClick(this);
+		this._gridClickHandler = () => this.onCellClick();
 
 		window.addEventListener('resize', this._resizeHandler);
 		Elements.grid.addEventListener('click', this._gridClickHandler);
 
-		// // TEMP: click body to preview win splash
-		// document.body.addEventListener('click', () => Graphics.winSplash(randomItem(Config.messages.end)), { once: false });
+		if (Config.isDev) {
+			this._devKeyHandler = (e) => {
+				if (e.key !== 'W') return; // Shift+W
+				const stats = {
+					trendsCollected:   this.state.score.num            || 45,
+					levelsCompleted:   this.state.totalLevelsCompleted  || 8,
+					perfectLevels:     this.state.perfectLevels         || 5,
+					avoidableMistakes: this.state.totalAvoidableMistakes,
+				};
+				Graphics.showWinScreen(stats, () => console.log('[dev] win screen dismissed'));
+			};
+			window.addEventListener('keydown', this._devKeyHandler);
+		}
 	}
+
+	_build() {
+		const container = document.createElement('div');
+		container.id = 'game-container';
+		container.className = 'shadow';
+		container.innerHTML = `
+			<div id="pixels"></div>
+			<div id="tooltip">
+				<span class="tooltip-text">
+					<span id="title">I'm not a robot</span><h1><span id="level-counter">Level  </span></h1>
+				</span>
+				<div id="tooltip-right">
+					<div id="score-bar">
+						<div id="score-bar-fill"></div>
+					</div>
+					<div id="tooltip-right-inner">
+						<div class="face-container">
+							<img id="glasses">
+							<img src="images/faces/1.png" id="face">
+						</div>
+						<span id="score-counter">0.0%</span>
+					</div>
+				</div>
+			</div>
+			<div id="grid">
+				<div id="in-game-message" class="center">0</div>
+				<div id="continue-prompt" class="center">Tap to<br>Continue</div>
+				<img id="splash-image" class="center" src="images/faces/7a.png">
+			</div>
+		`;
+		document.body.appendChild(container);
+
+		Elements.gameContainer  = container;
+		Elements.grid           = container.querySelector('#grid');
+		Elements.tooltip        = container.querySelector('#tooltip');
+		Elements.title          = container.querySelector('#title');
+		Elements.levelDisplay   = container.querySelector('#level-counter');
+		Elements.scoreDisplay   = container.querySelector('#score-counter');
+		Elements.messageText    = container.querySelector('#in-game-message');
+		Elements.splashImage    = container.querySelector('#splash-image');
+		Elements.faceDisplay    = container.querySelector('#face');
+		Elements.faceOverlay    = container.querySelector('#glasses');
+		Elements.continuePrompt = container.querySelector('#continue-prompt');
+
+		if (Config.isDev) Elements.title.textContent = "I'm not a robot (dev)";
+		if (this.challengeMode) Elements.tooltip.classList.add('red');
+	}
+
+	_teardownDOM() {
+		Elements.gameContainer?.remove();
+		Elements.gameContainer  = null;
+		Elements.grid           = null;
+		Elements.tooltip        = null;
+		Elements.title          = null;
+		Elements.levelDisplay   = null;
+		Elements.scoreDisplay   = null;
+		Elements.messageText    = null;
+		Elements.splashImage    = null;
+		Elements.faceDisplay    = null;
+		Elements.faceOverlay    = null;
+		Elements.continuePrompt = null;
+	}
+
 	restore = function() {
 		const date = this.gameDate;
-		if (!date) {
-			this.saveProgress = false;
-			return;
-		}
+		if (!date) { this.saveProgress = false; return; }
 		const dateEntry = JSON.parse(localStorage.getItem(this.gameDate));
 		let savedData;
 		if (dateEntry) {
-			if (this.challengeMode) {
-				savedData = dateEntry.challenge;
-			} else {
-				// fall back to top-level dateEntry if normal sub-object doesn't exist (backward compat)
-				savedData = dateEntry.normal ?? dateEntry;
-			}
+			savedData = this.challengeMode
+				? dateEntry.challenge
+				: dateEntry.normal ?? dateEntry;
 		}
 		let trendKeysRestored;
 		if (savedData) {
 			try {
-				const saved = savedData.trendKeys;
-				this.trendSelector.restoreKeys(saved);
+				this.trendSelector.restoreKeys(savedData.trendKeys);
 				trendKeysRestored = true;
 			} catch {
 				trendKeysRestored = false;
 			}
 			try {
-				const saved = savedData.score;
-				if (saved) this.state.score = saved;
-			} catch { }
+				if (savedData.score) this.state.score = savedData.score;
+			} catch {}
 			if (!trendKeysRestored) return;
 			try {
-				const saved = savedData.session;
-				if (saved) {
-					this.board = saved.board
-					this.state.level = saved.level;
-					this.state.lives = saved.lives;
+				if (savedData.session) {
+					this.board = savedData.session.board;
+					this.state.level = savedData.session.level;
+					this.state.lives = savedData.session.lives;
 				}
-			} catch { }
+			} catch {}
 		}
 		this.updateScore(this.trendSelector.getScore(), false);
 		this.saveProgress = true;
 	}
-	createCells = function (numCells) {
+
+	_getIntroMessage() {
+		const entry = randomItem(Config.introMessage);
+		const words = randomItem(entry.words);
+		return entry.shuffle ? shuffle(words) : words;
+	}
+
+	createCells = function(numCells) {
 		const fragment = document.createDocumentFragment();
-		const introMessage = Config.getIntroMessage();
+		const introMessage = this._getIntroMessage();
 		const usedGlyphs = [];
 		for (let i = 0; i < numCells; i++) {
 			const cell = new Cell(this);
 			if (this.state.level === 0 && numCells === 4) {
 				cell.writeOnFront(introMessage[i]);
 				cell.setFontColor(this.colorSequencerLight.nextColor());
-			}
-			else if (Math.random() < Config.funGlyphChance && usedGlyphs.length < Config.glyphs.length) {
+			} else if (Math.random() < Config.funGlyphChance && usedGlyphs.length < Config.glyphs.length) {
 				let glyph;
-				do {
-					glyph = randomItem(Config.glyphs);
-				} while (usedGlyphs.includes(glyph));
+				do { glyph = randomItem(Config.glyphs); } while (usedGlyphs.includes(glyph));
 				cell.setFrontGlyph(glyph);
-				// cell.setFrontColor(randomItem(Config.colors));
 				usedGlyphs.push(glyph);
 			}
 			fragment.appendChild(cell.getElement());
 			this.state.cells.push(cell);
 		}
 		Elements.grid.appendChild(fragment);
-	};
-	activateCells = async function (board, animate = true) {
+	}
+
+	activateCells = async function(board, animate = true) {
 		let cellsCopy = [...this.state.cells];
 		let activatedCells = [];
-		// pick all of the pictures that will be given to cells
 		const randomTrendKeys = await this.trendSelector.getRandomTrendKeys(this.state.cells.length / 2);
-		// assign images to cells
 		for (let i = 0; i < randomTrendKeys.length; i++) {
-			const {key, usedTrend} = randomTrendKeys[i];
+			const { key, usedTrend } = randomTrendKeys[i];
 			const trendObject = this.trendData.trends[key];
 			if (!this.challengeMode) shuffle(trendObject.url);
 			const images = [...trendObject.url];
@@ -153,9 +220,10 @@ export class Game {
 				if (this.challengeMode && images.length > 0) {
 					const imageIndex = Math.floor(Math.random() * images.length);
 					const url = images.splice(imageIndex, 1);
-					cell.activate(key, {...trendObject, url: url});
+					cell.activate(key, { ...trendObject, url });
+				} else {
+					cell.activate(key, trendObject);
 				}
-				else cell.activate(key, trendObject);
 				cell.usedTrend = usedTrend;
 				cellPair.push(cell);
 				activatedCells.push(cell);
@@ -166,11 +234,9 @@ export class Game {
 				if (!animate) cell.reveal();
 			});
 		}
-		//
 		this.state.unsolvedCells = activatedCells.length;
 		this.state.remainingMistakes = activatedCells.length / 2 - 1 + board.additionalMistakes;
 		if (!animate) return;
-		// reveals the cells in random order
 		let delay = 300;
 		while (activatedCells.length > 0) {
 			const index = Math.floor(Math.random() * activatedCells.length);
@@ -181,28 +247,22 @@ export class Game {
 				delay = Math.floor(delay * 0.8);
 			}
 		}
-	};
-	deleteCells = async function (victory) {
+	}
+
+	deleteCells = async function(victory) {
 		let cells;
 		if (victory) {
 			cells = [...this.state.solvedCells];
 			cells.reverse();
+		} else {
+			cells = this.state.cells;
 		}
-		else cells = this.state.cells;
-
 		if (cells.length < 1) return;
 
 		if (victory) {
 			const numCells = cells.length;
-
-			let totalDuration; // ms — tune this one variable
-			let delayStep = 1.2;
-
-			if (numCells <= 8) totalDuration = 2000;
-			else if (numCells <= 12) totalDuration = 3000;
-			else totalDuration = 4000;
-
-			// Solve for initialDelay so the sequence sums to totalDuration
+			const delayStep = 1.2;
+			const totalDuration = numCells <= 8 ? 2000 : numCells <= 12 ? 3000 : 4000;
 			const initialDelay = totalDuration * (delayStep - 1) / (Math.pow(delayStep, numCells) - 1);
 			let currentDelay = initialDelay;
 			for (const cell of cells) {
@@ -214,37 +274,61 @@ export class Game {
 		}
 		for (const cell of this.state.cells) cell.remove();
 		this.state.cells.length = 0;
-	};
-	
-	winGame = async function () {
+	}
+
+	winGame = async function() {
 		this.state.victory = true;
 		this.state.coolDown = true;
 		if (this.board.giveLife) this.addLife();
 
 		this.trendSelector.addTrends(this.state.pendingTrends, true);
-		const prevWon = this.state.score.won;
-		this.updateScore(this.trendSelector.getScore(), true);
-		this.faceChanger.resetFace(true, true);
-		if (!prevWon && this.state.score.won) {
+
+		this.state.totalAvoidableMistakes += this.state.avoidableMistakes;
+		this.state.totalLevelsCompleted++;
+		if (this.state.avoidableMistakes === 0) this.state.perfectLevels++;
+
+		const prevWon  = this.state.score.won;
+		const newScore = this.trendSelector.getScore();
+		const justWon  = !prevWon && (newScore.num >= newScore.denominator);
+
+		this.updateScore(newScore, true);
+
+		if (justWon) {
 			Graphics.winSplash(randomItem(Config.messages.end));
+			this.faceChanger.resetFace(true, false);
+		} else {
+			this.faceChanger.resetFace(true, true);
 		}
+
 		this.state.level++;
-		this.saveData('session', {
-			board: null,
-			level: this.state.level,
-			lives: this.state.lives,
-		});
+		this.saveData('session', { board: null, level: this.state.level, lives: this.state.lives });
+
 		await this.cellLoopScheduler.endScreen();
-		this.state.awaitPlayer = true;
-		const showDelay = Config.delay.showContinuePrompt;
-		await new Promise(r => setTimeout(r, showDelay));
-		if (this.state.awaitPlayer) {
-			Graphics.showPrompt();
-			const fadeDelay = Config.delay.changeCellLabel - showDelay;
-			await new Promise(r => setTimeout(r, fadeDelay));
-			Graphics.hidePrompt();
+
+		if (justWon) {
+			const stats = {
+				trendsCollected:   newScore.num,
+				levelsCompleted:   this.state.totalLevelsCompleted,
+				perfectLevels:     this.state.perfectLevels,
+				avoidableMistakes: this.state.totalAvoidableMistakes,
+			};
+			Graphics.showWinScreen(stats, () => {
+				this.state.announceMilestone = false;
+				this.newGame(true);
+			});
+		} else {
+			this.state.awaitPlayer = true;
+			const showDelay = Config.delay.showContinuePrompt;
+			await new Promise(r => setTimeout(r, showDelay));
+			if (this.state.awaitPlayer) {
+				Graphics.showPrompt();
+				const fadeDelay = Config.delay.changeCellLabel - showDelay;
+				await new Promise(r => setTimeout(r, fadeDelay));
+				Graphics.hidePrompt();
+			}
 		}
-	};
+	}
+
 	loseGame = async function() {
 		this.state.victory = false;
 		this.state.coolDown = true;
@@ -264,10 +348,10 @@ export class Game {
 			}
 		}
 		await new Promise(resolve => setTimeout(resolve, Config.delay.loseTransition));
-
 		if (gameOver) this.restartGame();
 		else this.newGame(false);
-	};
+	}
+
 	showPostGame = async function(text) {
 		const typeSpeed = 90;
 		Elements.splashContainer.classList.add('fade-in');
@@ -275,10 +359,10 @@ export class Game {
 		shuffle(googleColors);
 		await Graphics.typeTextColored(text, googleColors, typeSpeed, Elements.splashText);
 		Elements.splashContainer.classList.remove('fade-in');
-	};
-	selectMessage = function (victory) {
+	}
+
+	selectMessage = function(victory) {
 		if (victory) {
-			// if (this.state.score.won && this.state.announceMilestone) return Config.messages.end;
 			if (this.state.level <= 1) {
 				const messages = Config.messages.intro;
 				return this.challengeMode ? messages.challenge : messages.normal;
@@ -290,77 +374,64 @@ export class Game {
 		}
 		if (this.state.level < this.state.previousLevel) return Config.messages.gameover;
 		return Config.messages.failure;
-	};
-	selectBoard = function () {
+	}
+
+	selectBoard = function() {
 		const board = this.state.level <= this.boards.length - 1
 			? this.boards[this.state.level]
 			: BoardCreator.createBoard(this.state.level, this.state.lives, this.challengeMode);
 		if (board.cellCount < 4 || board.cellCount % 2 !== 0) {
-			console.error("Please provide an even cell count greater than or equal to 4.");
+			console.error('Please provide an even cell count greater than or equal to 4.');
 			return;
 		}
 		return board;
-	};
-	newGame = async function (victory) {
+	}
+
+	newGame = async function(victory) {
 		this.cellLoopScheduler.stop();
-		// ── Message selection (before state resets) ──────────────────
 		let messageList;
 		if (!this.state.firstRun) {
 			messageList = this.selectMessage(!!victory || this.state.firstRun);
 		}
-		// ── Board selection ──────────────────────────────────────────
 		if (!(this.board && this.state.firstRun)) this.board = this.selectBoard();
 		if (!this.board) return;
 		const newCellCount = (this.board.cellCount !== this.state.cells.length) || this.state.firstRun;
-		// ── Begin teardown ───────────────────────────────────────────
-		//this.state.coolDown = true;
-		// On a loss, fill the pixel mosaic in simultaneously so it covers the grid as cells disappear
-		const useMosaic = (!victory && !this.state.firstRun);
+
+		const useMosaic = !victory && !this.state.firstRun;
 		if (useMosaic) {
 			Elements.gameContainer.classList.remove('shadow');
 			await this.pixelTransition.fillIn();
 		}
 
-		// Fade out grid and tooltip simultaneously, reset tooltip once faded
 		if (!this.state.firstRun && !!victory) {
-			// document.body.classList.remove('active');
 			Elements.grid.classList.remove('active');
 			Elements.tooltip.classList.remove('active');
 			Elements.tooltip.addEventListener('transitionend', () => {
 				Graphics.resetToolTip(this, !!victory);
 			}, { once: true });
+		} else {
+			Graphics.resetToolTip(this, this.state.firstRun);
 		}
-		else Graphics.resetToolTip(this, this.state.firstRun);
 		if (!useMosaic) await new Promise(r => setTimeout(r, 320));
-		// Wait for cells to finish fading out before removing them
-		
+
 		await this.deleteCells(!!victory);
-		
-		// ── Splash message (blocks until animation completes) ────────
 
 		if (messageList) await this.showPostGame(randomItem(messageList));
-		
-		// ── State reset ──────────────────────────────────────────────
+
 		if (newCellCount) await this.gridLayout.update(this.board.cellCount);
 		this.state.refresh();
 
-		// ── Build new board ──────────────────────────────────────────
-		
 		this.createCells(this.board.cellCount);
 
-		// ── Fade grid back in ────────────────────────────────────────
 		Elements.tooltip.classList.add('active');
 		Elements.grid.classList.add('active');
 		hideBackground(true);
 
-		// ── Activate cells (animates in one by one) ──────────────────
 		await this.activateCells(this.board, !!victory);
 
-		// ── Undo pixel mosaic, revealing the new cells ───────────────
 		if (useMosaic) await this.pixelTransition.fillOut();
 		Elements.gameContainer.classList.add('shadow');
 
-		// ── Finalise ─────────────────────────────────────────────────
 		this.state.coolDown = false;
 		this.state.firstRun = false;
 		this.state.previousLevel = this.state.level;
@@ -369,30 +440,31 @@ export class Game {
 			level: this.state.level,
 			lives: this.state.lives,
 		});
-	};
-	destroy = function () {
-		console.log('destroying game');
+	}
+
+	destroy = function() {
 		Elements.grid.classList.remove('active');
 		hideBackground(false);
 		Elements.tooltip.classList.remove('active');
 		window.removeEventListener('resize', this._resizeHandler);
 		Elements.grid.removeEventListener('click', this._gridClickHandler);
+		if (this._devKeyHandler) window.removeEventListener('keydown', this._devKeyHandler);
 		this.pixelTransition.destroy();
-
 		this.cellLoopScheduler.stop();
 		Graphics.hidePrompt();
 		for (const cell of this.state.cells) cell.remove();
 		this.state.cells.length = 0;
-
 		this.state.coolDown = true;
-	};
-	restartGame = function () {
+		this._teardownDOM();
+	}
+
+	restartGame = function() {
 		this.state.reset();
 		this.newGame(false);
-	};
-	
+	}
+
 	updateScore = async function(score, animate) {
-		const prev = {num: this.state.score.num, denominator: this.state.score.denominator};
+		const prev = { num: this.state.score.num, denominator: this.state.score.denominator };
 		this.state.score.num = score.num;
 		this.state.score.denominator = score.denominator;
 
@@ -404,12 +476,14 @@ export class Game {
 			let crossed = false;
 			if (this.state.score.won) {
 				crossed = prev.num < this.state.score.num;
+			} else {
+				crossed = Config.milestones.find(m => prev.num < m && this.state.score.num >= m);
 			}
-			else crossed = Config.milestones.find(m => prev.num < m && this.state.score.num >= m);
 			this.state.announceMilestone = crossed;
 		}
 		this.saveData('score', this.state.score);
-	};
+	}
+
 	saveData = function(property, data) {
 		if (!this.saveProgress) return;
 		const dateEntry = JSON.parse(localStorage.getItem(this.gameDate) || '{}');
@@ -418,10 +492,74 @@ export class Game {
 		dateEntry[modeKey][property] = data;
 		localStorage.setItem(this.gameDate, JSON.stringify(dateEntry));
 	}
-	addLife = function () {
+
+	addLife = function() {
 		this.state.lives = Math.min(this.state.lives + 1, Config.maxLives);
-	};
-	removeLife = function () {
+	}
+
+	removeLife = function() {
 		this.state.lives = Math.max(this.state.lives - 1, 0);
-	};
+	}
+
+	// Handles all card-click events. Moved here from the standalone handleClick module
+	// so that all state transitions stay within the Game class.
+	onCellClick = async function() {
+		if (this.state.awaitPlayer) {
+			this.state.awaitPlayer = false;
+			Graphics.hidePrompt();
+			this.newGame(this.state.victory);
+			return;
+		}
+		if (this.state.revealedCells.length > 1) {
+			const [cell1, cell2] = this.state.revealedCells;
+			if (!cell1.usedTrend) this.state.pendingTrends.add(cell1.getName());
+			if (!cell2.usedTrend) this.state.pendingTrends.add(cell2.getName());
+			this.state.revealedCells.length = 0;
+
+			if (cell1.getName() === cell2.getName()) {
+				cell1.solve();
+				cell2.solve();
+				this.cellLoopScheduler.newLoop(cell1, cell2);
+				this.state.unsolvedCells -= 2;
+				this.state.solvedCells.push(cell1, cell2);
+				soundEffects.match();
+				if (this.state.unsolvedCells <= 0) this.winGame();
+			} else {
+				this.state.remainingMistakes--;
+
+				const promises = [];
+				if (this.state.viewedCells.includes(cell1) || this.state.viewedCells.includes(cell2)) {
+					this.state.avoidableMistakes++;
+				} else {
+					const word1 = cell1.getName();
+					for (const cell of this.state.viewedCells) {
+						if (cell.getName() === word1) {
+							this.state.avoidableMistakes++;
+							break;
+						}
+					}
+				}
+
+				if (this.state.avoidableMistakes > 0) this.faceChanger.changeFace();
+
+				if (this.state.remainingMistakes < 0) {
+					this.loseGame();
+					return;
+				}
+				this.state.cellsFading = true;
+				promises.push(
+					new Promise(resolve => setTimeout(resolve, Config.delay.fade)),
+					waitForFlag(() => this.state.cellsFading, false)
+				);
+				await Promise.race(promises);
+				this.state.cellsFading = false;
+				cell1.hide();
+				cell2.hide();
+			}
+
+			for (const cell of [cell1, cell2]) {
+				if (!this.state.viewedCells.includes(cell)) this.state.viewedCells.push(cell);
+			}
+		}
+	}
 }

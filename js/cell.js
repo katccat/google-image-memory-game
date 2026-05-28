@@ -1,5 +1,5 @@
 import { Config } from './config.js';
-import { soundEffects } from './SoundEffects.js';
+import { soundEffects } from './soundEffects.js';
 
 export class Cell {
 	static State = {

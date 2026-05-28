@@ -1,5 +1,3 @@
-import { Elements } from './Graphics.js';
-import { randomItem, shuffle } from './utils.js';
 export const Config = {
 	BACKEND: 'https://backend.clayrobot.net/memorygame/',
 	ENDPOINT: {
@@ -8,6 +6,11 @@ export const Config = {
 		INDEX: 'index',
 	},
 	OFFLINE_FALLBACK: '/words/offline.json',
+	isDev: (
+		window.location.hostname !== 'clayrobot.net' &&
+		window.location.hostname !== 'www.clayrobot.net' &&
+		window.location.hostname !== 'clayrobot.netlify.app'
+	),
 	delay: {
 		fade: 700,
 		showContinuePrompt: 0,
@@ -19,13 +22,11 @@ export const Config = {
 	slideImages: false,
 	removeAmountWhenLose: 0,
 	removeAmountWhenGameOver: 12,
-	trendData: {},
 	funGlyphChance: 0.1,
 	maxLives: 3,
 	milestones: [25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000],
 	scoreRounding: 1,
 	deferViewedTrends: false,
-	brightColors: [],
 	colors: [
 		'#6ea3f8', // blue
 		'#ed6a5e',  // red
@@ -48,7 +49,7 @@ export const Config = {
 		nearmiss: ["Phew!", "Close!"],
 		failure: ["Aw, snap!", "That's an error.", "Please try again.", "Only human!"],
 		gameover: ["Game over!", "ERR_GAME_OVER"],
-		end: ["OMG 100%!", "You ARE a robot!", "All systems go!"],
+		end: ["All systems go!", "I'm feeling lucky!"],
 	},
 	glyphs: [
 		"images/glyphs/download_arrow.png",
@@ -63,8 +64,8 @@ export const Config = {
 	introMessage: [
 		{
 			words: [
-				["tap", "to", "find", "matches"], 
-				["tap", "squares", "to", "match"], 
+				["tap", "to", "find", "matches"],
+				["tap", "squares", "to", "match"],
 			],
 			shuffle: false,
 		},
@@ -136,25 +137,8 @@ export const Config = {
 			options: {
 				duration: 1000,
 				iterations: 1,
-				// easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
 				easing: 'ease-out',
 			}
 		}
 	}
 };
-
-const IS_DEV = 
-	window.location.hostname !== 'clayrobot.net' &&
-	window.location.hostname !== 'www.clayrobot.net' &&
-	window.location.hostname !== 'clayrobot.netlify.app';
-
-if (IS_DEV) Elements.title.textContent = "I'm not a robot (dev)";
-
-Config.getIntroMessage = function () {
-	const introMessage = randomItem(this.introMessage);
-	const words = randomItem(introMessage.words);
-	if (!introMessage.shuffle) return words;
-	else {
-		return shuffle(words);
-	}
-}

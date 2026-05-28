@@ -1,17 +1,11 @@
 import { Config } from './config.js';
-import { Game } from './Game.js';
-import { ImageValidator } from './utils.js';
-import { Menu } from './Menu.js';
-import { soundEffects } from './SoundEffects.js';
-
-export { soundEffects };
-export const imageValidator = new ImageValidator();
+import { Game } from './game.js';
+import { Menu } from './menu.js';
 
 async function init(skipMenu = false) {
 	if (skipMenu) {
 		const trendData = await fetchWithOfflineFallback(Config.ENDPOINT.TODAY);
 		const game = new Game(trendData, false);
-		globalThis.game = game;
 		game.newGame();
 		return;
 	}
@@ -30,14 +24,10 @@ async function init(skipMenu = false) {
 
 		const trendData = await fetchWithOfflineFallback(endpoint ?? Config.ENDPOINT.TODAY);
 
-		// Push a history entry so the back button returns to the menu.
 		history.pushState({ view: 'game' }, '');
 
-		await menu.hide();
-		// trendData = await fetch(Config.OFFLINE_FALLBACK).then(res => res.json());
-		// console.log(trendData);
 		currentGame = new Game(trendData, challengeMode);
-		globalThis.game = currentGame;
+		await menu.hide();
 		currentGame.newGame();
 	});
 
@@ -45,7 +35,6 @@ async function init(skipMenu = false) {
 		if (currentGame) {
 			currentGame.destroy();
 			currentGame = null;
-			globalThis.game = null;
 		}
 		menu.show();
 	});
@@ -59,7 +48,7 @@ function clearSavedProgress(date, challengeMode) {
 		delete entry.challenge;
 	} else {
 		delete entry.normal;
-		// also clear old flat-format keys for backward compat
+		// clear old flat-format keys for backward compat
 		delete entry.trendKeys;
 		delete entry.score;
 		delete entry.session;
@@ -85,19 +74,18 @@ async function getTrendSet(endpoint) {
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		return res.json();
 	}).then(data => {
-		if (data.count < 1) throw new Error(`No trends found`);
+		if (data.count < 1) throw new Error('No trends found');
 		return data;
 	});
 	return trendData;
 }
 
 async function getIndex() {
-	const index = await fetch(Config.BACKEND + Config.ENDPOINT.INDEX).then(res => {
+	return fetch(Config.BACKEND + Config.ENDPOINT.INDEX).then(res => {
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		return res.json();
 	}).then(index => {
-		if (Object.keys(index).length < 1) throw new Error(`No trends found in index`);
+		if (Object.keys(index).length < 1) throw new Error('No trends found in index');
 		return index;
 	});
-	return index;
 }
