@@ -1,6 +1,10 @@
 :root {
 	/* --theme-blue: #4d91ff; */
 	--theme-blue: dodgerblue;
+	--google-blue:   #4285F4;
+	--google-red:    #EA4335;
+	--google-yellow: #ffbf00;
+	--google-green:  #34A853;
 	--global-padding: 8px;
 	--gap: 8px;
 	--bg-color: rgb(250, 250, 250);

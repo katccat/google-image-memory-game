@@ -1,12 +1,3 @@
-/* === Google brand colors ================================================== */
-:root {
-	--google-blue:   #4285F4;
-	--google-red:    #EA4335;
-	/* --google-yellow: #FBBC05; */
-	--google-yellow: #ffbf00;
-	--google-green:  #34A853;
-}
-
 /* Cell color assignments */
 .menu-cell--blue   { --google-color: var(--google-blue); }
 .menu-cell--red    { --google-color: var(--google-red); }
