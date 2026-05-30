@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">I\'m Not A Robot</string>
+    <string name="title_activity_main">I\'m Not A Robot</string>
+    <string name="package_name">net.clayrobot.memorygame</string>
+    <string name="custom_url_scheme">net.clayrobot.memorygame</string>
+</resources>

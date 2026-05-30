@@ -7,6 +7,7 @@ export const Config = {
 	},
 	OFFLINE_FALLBACK: '/words/offline.json',
 	isDev: (
+		!window.Capacitor?.isNativePlatform() &&
 		window.location.hostname !== 'clayrobot.net' &&
 		window.location.hostname !== 'www.clayrobot.net' &&
 		window.location.hostname !== 'clayrobot.netlify.app'
