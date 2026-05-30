@@ -1,4 +1,4 @@
-![tabby-life](https://github.com/user-attachments/assets/b0e4755f-e6c4-4193-ba99-03d89da4f994)
+![Tabby](images/menu-glyphs/cool.gif)
 
 ---
 
@@ -10,6 +10,8 @@ npm run sync
 ```
 
 `npm run sync` builds the Vite bundle and copies it into the native Android/iOS projects. Run it again whenever you change web code before opening a native IDE.
+
+`npm run build` builds the Vite bundle only, without syncing to native projects. Good for deploying the web version.
 
 ---
 
@@ -41,5 +43,5 @@ In Xcode:
 - Select your target device or simulator from the scheme menu and press **Run**.
 - **Release build** — set the scheme to **Release**, then go to **Product → Archive** to produce an `.xcarchive` for App Store distribution.
 
-
+<br>
 © 2026 Khan. All Rights Reserved.

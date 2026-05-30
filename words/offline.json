@@ -1,21 +1,14 @@
 {
 	"fetchedDate": null,
-	"count": 18,
+	"count": 12,
 	"trends": {
-		"blueberries": {
-			"url": [
-				"./images/offline/blueberries.jpg"
-			],
-			"views": "13000 B.C.",
-			"special": false,
-			"rank": null
-		},
 		"civilization": {
 			"url": [
 				"./images/offline/boardroom.jpg",
 				"./images/offline/socrates.jpg",
 				"./images/offline/cuneiform.jpg"
 			],
+			"category": null,
 			"views": "4000 B.C.",
 			"special": false,
 			"rank": null
@@ -25,15 +18,16 @@
 				"./images/offline/candy.jpg",
 				"./images/offline/fruit-candy.jpg"
 			],
+			"category": null,
 			"views": "2000 B.C.",
 			"special": false,
 			"rank": null
 		},
 		"potential": {
 			"url": [
-				"./images/offline/caterpillar.jpg",
 				"./images/offline/egg.webp"
 			],
+			"category": null,
 			"views": "400 B.C.",
 			"special": false,
 			"rank": null
@@ -42,33 +36,17 @@
 			"url": [
 				"./images/offline/contact.jpg"
 			],
+			"category": null,
 			"views": "1850",
-			"special": false,
-			"rank": null
-		},
-		"custard": {
-			"url": [
-				"./images/offline/custard.jpg"
-			],
-			"views": "1500",
 			"special": false,
 			"rank": null
 		},
 		"free will": {
 			"url": [
-				"./images/offline/door.jpg",
-				"./images/offline/screens.jpg"
+				"./images/offline/door.jpg"
 			],
+			"category": null,
 			"views": "NaN",
-			"special": false,
-			"rank": null
-		},
-		"flower": {
-			"url": [
-				"./images/offline/flower.jpg",
-				"./images/offline/buttercup.jpg"
-			],
-			"views": "1.3E8 B.C.",
 			"special": false,
 			"rank": null
 		},
@@ -76,23 +54,8 @@
 			"url": [
 				"./images/offline/fridge.jpg"
 			],
+			"category": null,
 			"views": "10000 B.C.",
-			"special": false,
-			"rank": null
-		},
-		"friend": {
-			"url": [
-				"./images/offline/otter.jpg"
-			],
-			"views": "NaN",
-			"special": false,
-			"rank": null
-		},
-		"vitamins": {
-			"url": [
-				"./images/offline/pills.jpg"
-			],
-			"views": 1897,
 			"special": false,
 			"rank": null
 		},
@@ -100,24 +63,25 @@
 			"url": [
 				"./images/offline/robot.jpg"
 			],
+			"category": null,
 			"views": 1927,
 			"special": false,
 			"rank": null
 		},
 		"robotma ghandi": {
 			"url": [
-				"./images/offline/robotma-grass.png",
-				"./images/offline/robotma.png"
+				"./images/offline/robotma-grass.png"
 			],
+			"category": null,
 			"views": 2022,
 			"special": false,
 			"rank": null
 		},
 		"sandwich": {
 			"url": [
-				"./images/offline/sandwich.jpg",
 				"./images/offline/sloppy-joe.png"
 			],
+			"category": null,
 			"views": 1762,
 			"special": false,
 			"rank": null
@@ -126,6 +90,7 @@
 			"url": [
 				"./images/offline/taxi.jpg"
 			],
+			"category": null,
 			"views": "6000 B.C.",
 			"special": false,
 			"rank": null
@@ -134,6 +99,7 @@
 			"url": [
 				"./images/offline/turkish-delight.jpg"
 			],
+			"category": null,
 			"views": 1777,
 			"special": false,
 			"rank": null
@@ -142,15 +108,8 @@
 			"url": [
 				"./images/offline/watergate-salad.jpg"
 			],
+			"category": null,
 			"views": 1976,
-			"special": false,
-			"rank": null
-		},
-		"inurement": {
-			"url": [
-				"./images/offline/eyeball.jpg"
-			],
-			"views": "6800 B.C.",
 			"special": false,
 			"rank": null
 		}

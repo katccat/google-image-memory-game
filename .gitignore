@@ -1,9 +1,16 @@
-/assets/
-/old/
+/unused/
+/sound/backup/
 /dist/
 /node_modules/
+__pycache__/
+.DS_Store
+._*
+.localized
+*.code-workspace
+manifest.json
+Icon?
 
-# Capacitor — machine-specific and build artifacts
+# Capacitor build artifacts
 android/local.properties
 android/.gradle/
 android/app/build/
@@ -11,13 +18,3 @@ android/build/
 android/app/src/main/assets/public/
 ios/App/App/public/
 ios/.xcode.env.local
-/anim/
-__pycache__/
-google-key.txt
-.DS_Store
-._*
-*.pages
-.localized
-*.code-workspace
-manifest.json
-Icon?
