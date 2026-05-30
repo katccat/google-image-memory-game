@@ -44,4 +44,4 @@ In Xcode:
 - **Release build** — set the scheme to **Release**, then go to **Product → Archive** to produce an `.xcarchive` for App Store distribution.
 
 <br>
-© 2026 Khan. All Rights Reserved.
+© 2026 Khan
