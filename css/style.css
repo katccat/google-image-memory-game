@@ -15,6 +15,7 @@
 	--text-color: white;          /* text overlaid on images / dark surfaces */
 	--ui-text-color: #3c4043;     /* text on light UI surfaces */
 	--border-color: black;
+	--muted-color: #6c757d;
 	--card-shadow:
 		0 8px 17px 2px rgba(0, 0, 0, .14),
 		0 3px 14px 2px rgba(0, 0, 0, .12),
@@ -30,6 +31,7 @@
 	--text-color: white;
 	--ui-text-color: #e8eaed;
 	--border-color: rgba(255, 255, 255, 0.35);
+	--muted-color: #9aa0a6;
 	--card-shadow:
 		0 8px 17px 2px rgba(0, 0, 0, .4),
 		0 3px 14px 2px rgba(0, 0, 0, .3),
@@ -57,12 +59,6 @@ li {
 }
 
 /* Layout and Structure */
-html,
-body {
-	height: 100svh;
-	width: 100svw;
-	overflow: hidden;
-}
 
 body {
 	-webkit-font-smoothing: antialiased;
@@ -99,7 +95,6 @@ body.in-game #background, [data-theme="dark"] #background {
 }
 
 .candy-text {
-	font-family: "Noto Sans";
 	color: var(--google-blue);
 	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
@@ -126,7 +121,7 @@ img:not([src]) {
 
 .icon-img {
 	/* width: 20px; */
-	width: 25px;
+	width: 24px;
 	display: inline-block;
 	vertical-align: middle;
 	object-fit: contain;

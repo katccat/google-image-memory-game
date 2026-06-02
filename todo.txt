@@ -1,0 +1,28 @@
+I’m not a Robot app todo
+client
+rank 1 celebration (circle ballooning out of top ranked cell)
+Add glimmer effect to special faces
+Add sounds
+	⁃	monocle, sunglasses, shiny sunglasses, smoke, trophy
+	⁃	Change flip sound/ match sound
+	⁃	Sound effect for disappearing cells
+	⁃	Sound effect for revealing cells
+	⁃	normalize sound effects to have similar volumes
+
+	⁃	add win screen
+	⁃	Snowflake particles?
+	⁃	Monocle particles
+	⁃	add pixelated quiz game mode
+
+- category sweep effect
+	- trophy (trophy)
+	- news (newspaper)
+	- entertainment/media icon (theater comedy)
+	- game controller
+	- smiley face (mood)
+	- animal (dog, cat)
+	- shopping bag (shopping bag)
+	- sports ball (sports basketball)
+	- technology (laptop Chromebook)
+	- 
+- replace offline images with standard cards (ace, spade, heart, etc.)

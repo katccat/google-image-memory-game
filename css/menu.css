@@ -13,23 +13,7 @@
 /* Flip delays — options panel rows */
 #options-panel > .menu-cell:nth-child(2) { --flip-delay: 0ms; }
 #options-panel > .menu-cell:nth-child(3) { --flip-delay: 120ms; }
-
-/* Material Symbols Sharp base style */
-.material-symbols-sharp {
-	font-family: 'Material Symbols Sharp';
-	font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-	font-feature-settings: 'liga' 1;
-	font-size: 25px;
-	line-height: 1;
-	letter-spacing: normal;
-	text-transform: none;
-	display: inline-block;
-	white-space: nowrap;
-	word-wrap: normal;
-	direction: ltr;
-	flex-shrink: 0;
-	user-select: none;
-}
+#options-panel > .menu-cell:nth-child(4) { --flip-delay: 240ms; }
 
 /* === Overlay ============================================================== */
 #menu-container {
@@ -60,11 +44,6 @@
 	/* background-color: var(--bg-color); */
 	box-shadow: var(--card-shadow);
 	border: 1px solid black;
-}
-
-/* 3px divider between cells only — not between the search bar and first cell */
-.menu-card > .menu-cell {
-	/* border-top: 2px solid transparent; */
 }
 
 /* === Search bar inside the card =========================================== */
@@ -552,11 +531,7 @@
 	font-size: 0.875rem;
 	transition: background-color 0.15s;
 }
-#menu-date-open {
-	/* color: rgb(22, 61, 255); */
-	/* text-decoration: underline;
-	text-underline-offset: 2px; */
-}
+
 .menu-date-btn:hover,
 .menu-toggle:hover {
 	background-color: var(--cell-color);
@@ -590,7 +565,7 @@
 }
 
 .menu-toggle .material-symbols-sharp {
-	font-size: 25px;
+	font-size: 24px;
 	font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 .options-panel .menu-toggle,

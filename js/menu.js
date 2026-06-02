@@ -197,6 +197,16 @@ export class Menu {
 						</button>
 					</div>
 				</div>
+				<div class="menu-cell">
+					<div class="menu-cell-inner">
+						<div class="menu-cell-back"></div>
+						<button class="menu-cell-front menu-toggle" id="menu-privacy">
+							<span class="material-symbols-sharp">file_copy</span>
+							<span class="menu-toggle-label">Privacy Policy</span>
+							<span class="menu-toggle-status">View</span>
+						</button>
+					</div>
+				</div>
 				<div class="date-picker-footer">
 					<button class="menu-btn menu-btn-secondary" id="options-back">
 						Back
@@ -275,6 +285,9 @@ export class Menu {
 				document.documentElement.removeAttribute('data-theme');
 			}
 			this._refreshToggles();
+		});
+		this.container.querySelector('#menu-privacy').addEventListener('click', () => {
+			window.open('https://clayrobot.net/games/recaptcha/privacy', '_blank');
 		});
 	}
 

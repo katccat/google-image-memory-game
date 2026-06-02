@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>Privacy Policy</title>
+	<script>
+		(function () {
+			const theme = localStorage.getItem('pref_theme');
+			if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+		})();
+	</script>
+	<link rel="icon" type="image/png" href="../images/favicon.png">
+	<link rel="stylesheet" href="../css/style.css">
+	<link rel="stylesheet" href="../css/reset.css">
+	<link rel="stylesheet" href="../css/fonts.css">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		:root {
+			--border-color: rgba(0, 0, 0, 0.12);
+			--card-bg: white;
+		}
+
+		[data-theme="dark"] {
+			--border-color: rgba(255, 255, 255, 0.12);
+			--card-bg: #1e1e1e;
+		}
+
+		body {
+			font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+			background-color: var(--bg-color);
+			color: var(--ui-text-color);
+			margin: 0;
+			/* padding: 32px 16px 64px; */
+			line-height: 1.7;
+			transition: background-color 0.2s, color 0.2s;
+			overflow: unset;
+		}
+
+		.card {
+			background: var(--card-bg);
+			border: 1px solid var(--border-color);
+			/* border-radius: 12px; */
+			width: min(700px, 96%);
+			margin: 32px auto 32px auto;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 40px 48px;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+		}
+
+		h1 {
+			font-size: 1.75rem;
+			font-weight: 700;
+			margin: 0 0 4px;
+		}
+
+		.subtitle {
+			color: var(--muted-color);
+			font-size: 0.9rem;
+			margin: 0 0 36px;
+		}
+
+		h2 {
+			font-size: 1rem;
+			font-weight: 600;
+			margin: 28px 0 8px;
+		}
+
+		p {
+			margin: 0 0 12px;
+			font-size: 0.95rem;
+		}
+
+		a {
+			color: var(--theme-blue);
+			text-decoration: none;
+		}
+		[data-theme="dark"] a {
+			color: rgb(87, 185, 242) !important;
+		}
+
+		a:hover { text-decoration: underline; }
+
+		hr {
+			border: none;
+			border-top: 1px solid var(--border-color);
+			margin: 32px 0;
+		}
+
+		footer {
+			text-align: center;
+			margin-top: 32px;
+			margin-bottom: 32px;
+			font-size: 0.85rem;
+			color: var(--muted-color);
+		}
+
+		@media (max-width: 600px) {
+			.card { padding: 28px 20px; }
+			h1 { font-size: 1.4rem; }
+		}
+		#contact-email {
+			opacity: 0;
+			transition: opacity 0.6s ease;
+			user-select: none;
+		}
+		#contact-email.visible {
+			opacity: 1;
+			user-select: auto;
+		} 
+		#reveal-email {
+			display: inline-block;
+			color: inherit !important;
+			text-align: center;
+			text-decoration: none;
+			box-sizing: content-box;
+			font-size: min(15px, max(4.4vw, 12px));
+			padding: 10px 18px 10px 18px;
+			margin: 12px 5px 12px 5px;
+			width: 10ch;
+			color: inherit;
+			background-color: transparent;
+			outline: none;
+			border-radius: 8px;
+			border: 1.5px solid;
+			border-color: var(--ui-text-color);
+		}
+		#reveal-email:hover, #reveal-email:active, #reveal-email.active {
+			background-color: var(--theme-blue);
+			color: white !important;
+			text-decoration: none;
+			border-color: transparent;
+			cursor: pointer;
+		}
+		#reveal-email.active, input:focus {
+			opacity: 0.7;
+		}
+		#contact-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="card">
+		<h1>I'm Not A Robot Privacy Policy</h1>
+		<p class="subtitle">June 2, 2026</p>
+
+		<p>I'm Not A Robot is a memory match game developed by Khan and ClayRobot Games. This policy explains what information the app handles and how.</p>
+
+		<h2>Data We Collect</h2>
+		<p>We do not collect, store, or transmit any personal information. The app does not require an account and does not identify you in any way.</p>
+
+		<h2>Data Stored on Your Device</h2>
+		<p>The app saves game progress, preferences (theme, sound, difficulty), and image validation results to your device's local storage. This data never leaves your device and is only used to remember your game state between sessions.</p>
+
+		<h2>Network Requests</h2>
+		<p>The app fetches daily trending topic data and associated images from our backend server to populate the game cards. These requests do not include any user identifiers or personal data &mdash; the server has no way to associate a request with a specific person or device.</p>
+		<p>Images displayed on cards are loaded directly from their original sources (Wikipedia and other public web sources).</p>
+
+		<h2>Third-Party Services</h2>
+		<p>This app does not use any third-party analytics, advertising, or tracking services.</p>
+
+		<h2>Children's Privacy</h2>
+		<p>The app does not collect data from anyone, including children under 13.</p>
+
+		<h2>Changes to This Policy</h2>
+		<p>If this policy changes, the updated version will be posted here with a revised date.</p>
+		<hr>
+		<div id="contact-wrapper">
+			<button id="reveal-email">Contact Us</button>
+			<span id="contact-email">email@example.com</span>
+		</div>
+	</div>
+
+	<footer>&copy; 2026 Khan</footer>
+	<script>
+		document.getElementById('reveal-email').addEventListener('click', function () {
+			const email = atob('a2hhbmF0YWxhZ0BnbWFpbC5jb20=');
+			const span = document.getElementById('contact-email');
+			span.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
+			span.classList.add('visible');
+		});
+	</script>
+</body>
+
+</html>
