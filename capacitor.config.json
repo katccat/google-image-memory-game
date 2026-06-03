@@ -1,5 +1,5 @@
 {
-  "appId": "net.clayrobot.memorygame",
+  "appId": "net.clayrobot.recaptcha",
   "appName": "I'm Not A Robot",
   "webDir": "dist"
 }

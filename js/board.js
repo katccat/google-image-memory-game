@@ -18,20 +18,20 @@ export class BoardCreator {
 			hard: [20, 24, 30, 36],
 		},
 		phone: {
-			easy: [10, 12, 12],
-			medium: [14, 14, 18],
+			easy: [10, 12],
+			medium: [14, 18],
 			hard: [20, 20],
 		},
 		challenge: {
-			easy: [10, 12],
-			medium: [14, 14],
+			easy: [8, 10],
+			medium: [10, 12],
 			hard: [14],
 		}
 	};
 	static previous = { level: null, board: null };
 	static createBoard(level, lives, challengeMode = false) {
-		let cellCount, additionalMistakes;
-
+		let cellCount;
+		let additionalMistakes = 0;
 		{
 			const difficulty = Config.difficulty;
 			let availableCellCounts;
@@ -53,13 +53,13 @@ export class BoardCreator {
 			else cellCount = randomItem(cellCounts);
 		}
 
-		if (!challengeMode) {
-			// if (cellCount > 14) {
-			// 	additionalMistakes = -1;
-			// }
+		if (challengeMode) {
+			if (cellCount > 8) additionalMistakes = 1;
 		}
 		else {
-			if (cellCount > 8) additionalMistakes = 1;
+			if (cellCount > 14) {
+				additionalMistakes = 1;
+			}
 		}
 		
 		const board = new Board(cellCount, additionalMistakes);

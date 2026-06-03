@@ -100,7 +100,7 @@ All JS files use camelCase naming. Files exporting a single class are named afte
 
 The game is wrapped with [Capacitor](https://capacitorjs.com/) to produce native Android and iOS apps from the same web codebase.
 
-- **`capacitor.config.json`** — app ID (`net.clayrobot.memorygame`), app name, and web dir (`dist`)
+- **`capacitor.config.json`** — app ID (`net.clayrobot.recaptcha`), app name, and web dir (`dist`)
 - **`android/`** — Android Studio project; committed to the repo
 - **`ios/`** — Xcode project; committed to the repo
 - **`resources/icon-only.png`** — 1024×1024 source icon used by `@capacitor/assets` to generate all platform-specific icon sizes
