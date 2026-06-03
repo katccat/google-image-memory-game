@@ -1,4 +1,4 @@
-![Tabby](images/menu-glyphs/cool.gif)
+![Tabby](images/thumbnail.png)
 
 ---
 
