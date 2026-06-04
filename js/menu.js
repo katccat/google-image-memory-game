@@ -1,6 +1,7 @@
 import { percentScoreFloat, fitFontSize, shuffle } from "./utils.js";
 import { soundEffects } from "./soundEffects.js";
 import { Graphics, Elements } from "./graphics.js";
+import { applyStatusBarTheme } from "./statusBar.js";
 
 const PREF_THEME = 'pref_theme';
 const PREF_CHALLENGE = 'pref_challenge';
@@ -284,6 +285,7 @@ export class Menu {
 			} else {
 				document.documentElement.removeAttribute('data-theme');
 			}
+			applyStatusBarTheme(this.darkMode);
 			this._refreshToggles();
 		});
 		this.container.querySelector('#menu-privacy').addEventListener('click', () => {

@@ -9,10 +9,12 @@ Add sounds
 	⁃	Sound effect for revealing cells
 	⁃	normalize sound effects to have similar volumes
 
-	⁃	add win screen
-	⁃	Snowflake particles?
-	⁃	Monocle particles
-	⁃	add pixelated quiz game mode
+	⁃ improve win screen
+	- rebalance win stars
+	- make board transitions less laborious and more snappy like they used to be
+	⁃ Snowflake particles?
+	⁃ Monocle particles
+	⁃ add pixelated quiz game mode
 
 - category sweep effect
 	- trophy (trophy)

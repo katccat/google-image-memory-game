@@ -82,7 +82,7 @@ export class GridLayout {
 		const cellWidth = gridWidth / columns;
 		const cellPerspective =
 			cellWidth > 280 ? 720 :
-			cellWidth > 150 ? 480 :
+			cellWidth > 150 ? 500 :
 			cellWidth > 100 ? 300 : 200;
 		root.style.setProperty('--cell-perspective', `${cellPerspective}px`);
 	}

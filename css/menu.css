@@ -403,6 +403,7 @@
 	white-space: nowrap;
 	position: relative;
 	overflow: hidden;
+	line-height: 1;
 }
 
 .menu-btn:disabled {
@@ -418,9 +419,9 @@
 	background-color: var(--google-blue);
 	color: white;
 	/* MD1 raised button z-depth-2 */
-	background-color: #6891e7;
     border-color: #0053a6 #0053a6 #000;
-    text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+	font-size: 1rem;
+    /* text-shadow: 0 -1px 0 rgba(0,0,0,.5); */
     box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.20), inset 0 1px 0 rgba(256,256,256,.35);
     background-image: linear-gradient(to bottom,#5ba1e6 0,#1b83ea 100%);
 }

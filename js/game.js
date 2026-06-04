@@ -6,7 +6,6 @@ import { Board, BoardCreator } from './board.js';
 import { randomItem, shuffle, hideBackground, waitForFlag } from './utils.js';
 import { CellLoopScheduler } from './cellSolvedLoop.js';
 import { TrendSelector } from './trendSelector.js';
-import { PixelTransition } from './pixelTransition.js';
 import { soundEffects } from './soundEffects.js';
 
 export class Game {
@@ -55,7 +54,6 @@ export class Game {
 		this.trendSelector = new TrendSelector(trendData, this);
 		this.percentScorer = new PercentScorer();
 		this.cellLoopScheduler = new CellLoopScheduler();
-		this.pixelTransition = new PixelTransition();
 		this.colorSequencerDark = new ColorSequencer(Config.darkColors);
 		this.colorSequencerLight = new ColorSequencer(Config.colors);
 		this.restore();
@@ -86,7 +84,6 @@ export class Game {
 		container.id = 'game-container';
 		container.className = 'shadow';
 		container.innerHTML = `
-			<div id="pixels"></div>
 			<div id="tooltip">
 				<span class="tooltip-text">
 					<span id="title">I'm not a robot</span><h1><span id="level-counter">Level  </span></h1>
@@ -236,15 +233,16 @@ export class Game {
 		}
 		this.state.unsolvedCells = activatedCells.length;
 		this.state.remainingMistakes = activatedCells.length / 2 - 1 + board.additionalMistakes;
-		if (!animate) return;
-		let delay = 300;
-		while (activatedCells.length > 0) {
-			const index = Math.floor(Math.random() * activatedCells.length);
-			const cell = activatedCells.splice(index, 1)[0];
-			cell.reveal();
-			if (delay > 0) {
-				await new Promise(resolve => setTimeout(resolve, delay));
-				delay = Math.floor(delay * 0.8);
+		if (animate) {
+			let delay = 300;
+			while (activatedCells.length > 0) {
+				const index = Math.floor(Math.random() * activatedCells.length);
+				const cell = activatedCells.splice(index, 1)[0];
+				cell.reveal();
+				if (delay > 0) {
+					await new Promise(resolve => setTimeout(resolve, delay));
+					delay = Math.floor(delay * 0.9);
+				}
 			}
 		}
 	}
@@ -255,23 +253,27 @@ export class Game {
 			cells = [...this.state.solvedCells];
 			cells.reverse();
 		} else {
-			cells = this.state.cells;
+			cells = [...this.state.cells];
+			// shuffle(cells);
 		}
+
 		if (cells.length < 1) return;
 
-		if (victory) {
-			const numCells = cells.length;
-			const delayStep = 1.2;
-			const totalDuration = numCells <= 8 ? 2000 : numCells <= 12 ? 3000 : 4000;
-			const initialDelay = totalDuration * (delayStep - 1) / (Math.pow(delayStep, numCells) - 1);
-			let currentDelay = initialDelay;
-			for (const cell of cells) {
-				cell.fade();
-				await new Promise(resolve => setTimeout(resolve, currentDelay));
-				currentDelay *= delayStep;
-			}
-			await new Promise(resolve => setTimeout(resolve, 500));
+
+		const numCells = cells.length;
+		console.log(numCells);
+		const delayStep = 1.2;
+		// const totalDuration = numCells <= 8 ? 1500 : numCells <= 12 ? 2500 : 3500;
+		const totalDuration = 1000;
+		const initialDelay = totalDuration * (delayStep - 1) / (Math.pow(delayStep, numCells) - 1);
+		let currentDelay = initialDelay;
+		for (const cell of cells) {
+			cell.fade();
+			await new Promise(resolve => setTimeout(resolve, currentDelay));
+			currentDelay *= delayStep;
 		}
+		await new Promise(resolve => setTimeout(resolve, 300));
+
 		for (const cell of this.state.cells) cell.remove();
 		this.state.cells.length = 0;
 	}
@@ -397,13 +399,7 @@ export class Game {
 		if (!this.board) return;
 		const newCellCount = (this.board.cellCount !== this.state.cells.length) || this.state.firstRun;
 
-		const useMosaic = !victory && !this.state.firstRun;
-		if (useMosaic) {
-			Elements.gameContainer.classList.remove('shadow');
-			await this.pixelTransition.fillIn();
-		}
-
-		if (!this.state.firstRun && !!victory) {
+		if (!this.state.firstRun) {
 			Elements.grid.classList.remove('active');
 			Elements.tooltip.classList.remove('active');
 			Elements.tooltip.addEventListener('transitionend', () => {
@@ -412,7 +408,6 @@ export class Game {
 		} else {
 			Graphics.resetToolTip(this, this.state.firstRun);
 		}
-		if (!useMosaic) await new Promise(r => setTimeout(r, 320));
 
 		await this.deleteCells(!!victory);
 
@@ -427,9 +422,8 @@ export class Game {
 		Elements.grid.classList.add('active');
 		hideBackground(true);
 
-		await this.activateCells(this.board, !!victory);
+		await this.activateCells(this.board, true);
 
-		if (useMosaic) await this.pixelTransition.fillOut();
 		Elements.gameContainer.classList.add('shadow');
 
 		this.state.coolDown = false;
@@ -449,7 +443,6 @@ export class Game {
 		window.removeEventListener('resize', this._resizeHandler);
 		Elements.grid.removeEventListener('click', this._gridClickHandler);
 		if (this._devKeyHandler) window.removeEventListener('keydown', this._devKeyHandler);
-		this.pixelTransition.destroy();
 		this.cellLoopScheduler.stop();
 		Graphics.hidePrompt();
 		for (const cell of this.state.cells) cell.remove();

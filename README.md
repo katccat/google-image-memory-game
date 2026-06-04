@@ -13,6 +13,8 @@ npm run sync
 
 `npm run build` builds the Vite bundle only, without syncing to native projects. Good for deploying the web version.
 
+`npx vite` serves the website over a dev server which can be edited live.
+
 ---
 
 ## Building for Android

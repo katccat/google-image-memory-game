@@ -1,6 +1,11 @@
+import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { Config } from './config.js';
 import { Game } from './game.js';
 import { Menu } from './menu.js';
+import { applyStatusBarTheme } from './statusBar.js';
+
+applyStatusBarTheme(document.documentElement.getAttribute('data-theme') === 'dark');
 
 async function init(skipMenu = false) {
 	if (skipMenu) {
@@ -38,6 +43,16 @@ async function init(skipMenu = false) {
 		}
 		menu.show();
 	});
+
+	if (Capacitor.isNativePlatform()) {
+		App.addListener('backButton', ({ canGoBack }) => {
+			if (canGoBack) {
+				window.history.back();
+			} else {
+				App.exitApp();
+			}
+		});
+	}
 }
 init(false);
 

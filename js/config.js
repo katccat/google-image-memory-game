@@ -71,16 +71,18 @@ export const Config = {
 			shuffle: false,
 		},
 		{
-			words: [["hello", "hola", "你好", "привет", "bonjour", "olá", "ciao", "hallo", "안녕", "مرحبًا"]],
-			shuffle: true,
-		},
-		{
 			words: [["news", "sports", "earth", "now", "search", "results", "trends", "top", "media", "people"]],
 			shuffle: true,
 		},
 		{
 			words: [
 				["clay", "robot", "dot", "net"],
+			],
+			shuffle: false,
+		},
+		{
+			words: [
+				["I'm", "not", "a", "robot"],
 			],
 			shuffle: false,
 		},

@@ -112,11 +112,21 @@ export class Cell {
 	reveal() {
 		this.state = Cell.State.DEFAULT;
 		this.elements.parent.classList.toggle('fade-in', true);
+		this.elements.card.classList.add('back-hidden');
+		this.elements.card.classList.remove('back-hidden');
 	}
 	fade() {
+		this.elements.card.classList.remove('scale');
+		if (this.state === Cell.State.SOLVED || this.state === Cell.State.REVEALED) {
+			this.elements.card.classList.add('front-hidden');
+			this.elements.card.classList.remove('unhide');
+		}
+		else {
+			this.elements.card.classList.add('back-hidden');
+			this.elements.card.classList.add('unhide');
+		}
+		// this.elements.parent.classList.toggle('fade-in', false);
 		this.state = Cell.State.INACTIVE;
-		this.elements.parent.classList.toggle('fade-in', false);
-		
 	}
 	hide() {
 		this.state = Cell.State.DEFAULT;
