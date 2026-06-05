@@ -234,10 +234,13 @@ export class Game {
 		this.state.unsolvedCells = activatedCells.length;
 		this.state.remainingMistakes = activatedCells.length / 2 - 1 + board.additionalMistakes;
 		if (animate) {
-			let delay = 300;
-			while (activatedCells.length > 0) {
-				const index = Math.floor(Math.random() * activatedCells.length);
-				const cell = activatedCells.splice(index, 1)[0];
+			cellsCopy = [...this.state.cells];
+			let delay = 200;
+			while (cellsCopy.length > 0) {
+				// const index = Math.floor(Math.random() * activatedCells.length);
+				const index = 0;
+				const cell = cellsCopy.splice(index, 1)[0];
+				if (!activatedCells.includes(cell)) continue;
 				cell.reveal();
 				if (delay > 0) {
 					await new Promise(resolve => setTimeout(resolve, delay));
@@ -254,6 +257,7 @@ export class Game {
 			cells.reverse();
 		} else {
 			cells = [...this.state.cells];
+			cells.reverse();
 			// shuffle(cells);
 		}
 

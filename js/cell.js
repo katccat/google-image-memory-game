@@ -56,6 +56,9 @@ export class Cell {
 		card.append(cellBack, front, edges);
 		parent.appendChild(card);
 		parent.addEventListener('click', () => this.unhide());
+
+		this.elements.card.classList.add('back-hidden');
+		this.elements.card.classList.add('unhide');
 	}
 	getElement() {
 		return this.elements.parent;
@@ -111,9 +114,8 @@ export class Cell {
 	}
 	reveal() {
 		this.state = Cell.State.DEFAULT;
-		this.elements.parent.classList.toggle('fade-in', true);
-		this.elements.card.classList.add('back-hidden');
-		this.elements.card.classList.remove('back-hidden');
+		// this.elements.parent.classList.add('fade-in');
+		this.elements.card.classList.remove('unhide');
 	}
 	fade() {
 		this.elements.card.classList.remove('scale');
@@ -125,7 +127,6 @@ export class Cell {
 			this.elements.card.classList.add('back-hidden');
 			this.elements.card.classList.add('unhide');
 		}
-		// this.elements.parent.classList.toggle('fade-in', false);
 		this.state = Cell.State.INACTIVE;
 	}
 	hide() {
@@ -151,6 +152,7 @@ export class Cell {
 		this.game.state.cellsFading = false;
 		this.state = Cell.State.REVEALED;
 		this.game.state.revealedCells.push(this);
+		this.elements.card.classList.remove('back-hidden');
 		this.elements.card.classList.add('scale');
 		this.elements.card.classList.add('unhide');
 		this.transitioning = Promise.all([

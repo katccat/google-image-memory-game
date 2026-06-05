@@ -11,7 +11,6 @@ Add sounds
 
 	⁃ improve win screen
 	- rebalance win stars
-	- make board transitions less laborious and more snappy like they used to be
 	⁃ Snowflake particles?
 	⁃ Monocle particles
 	⁃ add pixelated quiz game mode
@@ -28,3 +27,9 @@ Add sounds
 	- technology (laptop Chromebook)
 	- 
 - replace offline images with standard cards (ace, spade, heart, etc.)
+
+for release:
+add new royalty free pipeline to backend
+- fuzzy search wikipedia either through wikimedia api or scraping google images
+- only add images that are licensed under creative commons
+add reporting infrastructure (groan)
