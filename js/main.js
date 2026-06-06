@@ -3,6 +3,7 @@ import { App } from '@capacitor/app';
 import { Config } from './config.js';
 import { Game } from './game.js';
 import { Menu } from './menu.js';
+import { ReportBuffer } from './reportBuffer.js';
 import { applyStatusBarTheme } from './statusBar.js';
 
 applyStatusBarTheme(document.documentElement.getAttribute('data-theme') === 'dark');
@@ -23,15 +24,23 @@ async function init(skipMenu = false) {
 	menu.show();
 
 	let currentGame = null;
+	let reportBuffer = new ReportBuffer();
+	let lastEndpoint = null;
 
 	menu.onStart(async ({ date, endpoint, challengeMode, restart }) => {
 		if (restart) clearSavedProgress(date, challengeMode);
 
-		const trendData = await fetchWithOfflineFallback(endpoint ?? Config.ENDPOINT.TODAY);
+		const resolvedEndpoint = endpoint ?? Config.ENDPOINT.TODAY;
+		if (resolvedEndpoint !== lastEndpoint) {
+			reportBuffer = new ReportBuffer();
+			lastEndpoint = resolvedEndpoint;
+		}
+
+		const trendData = await fetchWithOfflineFallback(resolvedEndpoint);
 
 		history.pushState({ view: 'game' }, '');
 
-		currentGame = new Game(trendData, challengeMode);
+		currentGame = new Game(trendData, challengeMode, reportBuffer);
 		await menu.hide();
 		currentGame.newGame();
 	});
@@ -41,6 +50,7 @@ async function init(skipMenu = false) {
 			currentGame.destroy();
 			currentGame = null;
 		}
+		menu.setReportBuffer(reportBuffer);
 		menu.show();
 	});
 

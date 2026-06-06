@@ -146,6 +146,10 @@ export class Cell {
 	}
 	async unhide() {
 		if (this.state !== Cell.State.DEFAULT || this.game.state.coolDown) return;
+		if (!this.game.state.viewedCells.includes(this)) {
+			const trendObject = this.game.trendData.trends[this.id];
+			if (this.game.reportBuffer && trendObject) this.game.reportBuffer.add(this.id, trendObject);
+		}
 		const firstRevealed = this.game.state.revealedCells[0];
 		const isWinningMatch = firstRevealed && firstRevealed.getName() === this.getName() && this.game.state.unsolvedCells === 2;
 		if (!isWinningMatch) soundEffects.flip();

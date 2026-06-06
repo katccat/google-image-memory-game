@@ -9,8 +9,9 @@ import { TrendSelector } from './trendSelector.js';
 import { soundEffects } from './soundEffects.js';
 
 export class Game {
-	constructor(trendData, challengeMode = false) {
+	constructor(trendData, challengeMode = false, reportBuffer = null) {
 		this.trendData = trendData;
+		this.reportBuffer = reportBuffer;
 		this.gameDate = trendData.fetchedDate;
 		this.saveProgress = true;
 		this.challengeMode = challengeMode;
@@ -60,9 +61,11 @@ export class Game {
 
 		this._resizeHandler = () => this.gridLayout.resizeGrid();
 		this._gridClickHandler = () => this.onCellClick();
+		this._faceClickHandler = () => window.history.back();
 
 		window.addEventListener('resize', this._resizeHandler);
 		Elements.grid.addEventListener('click', this._gridClickHandler);
+		Elements.faceContainer.addEventListener('click', this._faceClickHandler);
 
 		if (Config.isDev) {
 			this._devKeyHandler = (e) => {
@@ -119,6 +122,7 @@ export class Game {
 		Elements.splashImage    = container.querySelector('#splash-image');
 		Elements.faceDisplay    = container.querySelector('#face');
 		Elements.faceOverlay    = container.querySelector('#glasses');
+		Elements.faceContainer  = container.querySelector('.face-container');
 		Elements.continuePrompt = container.querySelector('#continue-prompt');
 
 		if (Config.isDev) Elements.title.textContent = "I'm not a robot (dev)";
@@ -137,6 +141,7 @@ export class Game {
 		Elements.splashImage    = null;
 		Elements.faceDisplay    = null;
 		Elements.faceOverlay    = null;
+		Elements.faceContainer  = null;
 		Elements.continuePrompt = null;
 	}
 
@@ -446,6 +451,7 @@ export class Game {
 		Elements.tooltip.classList.remove('active');
 		window.removeEventListener('resize', this._resizeHandler);
 		Elements.grid.removeEventListener('click', this._gridClickHandler);
+		Elements.faceContainer.removeEventListener('click', this._faceClickHandler);
 		if (this._devKeyHandler) window.removeEventListener('keydown', this._devKeyHandler);
 		this.cellLoopScheduler.stop();
 		Graphics.hidePrompt();

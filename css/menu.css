@@ -14,6 +14,7 @@
 #options-panel > .menu-cell:nth-child(2) { --flip-delay: 0ms; }
 #options-panel > .menu-cell:nth-child(3) { --flip-delay: 120ms; }
 #options-panel > .menu-cell:nth-child(4) { --flip-delay: 240ms; }
+#options-panel > .menu-cell:nth-child(5) { --flip-delay: 360ms; }
 
 /* === Overlay ============================================================== */
 #menu-container {

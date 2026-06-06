@@ -3,5 +3,5 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 
 export function applyStatusBarTheme(isDark) {
 	if (!Capacitor.isNativePlatform()) return;
-	StatusBar.setStyle({ style: isDark ? Style.Light : Style.Dark });
+	StatusBar.setStyle({ style: isDark ? Style.Dark : Style.Light });
 }
