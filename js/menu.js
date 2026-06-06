@@ -33,7 +33,9 @@ export class Menu {
 		const date = this.selectedDate;
 		return date ? this.index[date] : null;
 	}
-
+	setReportBuffer(reportBuffer) {
+		this._reportBuffer = reportBuffer;
+	}
 	_hasSave() {
 		const date = this.selectedDate;
 		if (!date) return { hasSave: false, percentScore: 0 };
