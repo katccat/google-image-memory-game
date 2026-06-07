@@ -203,16 +203,6 @@ export class Menu {
 				<div class="menu-cell">
 					<div class="menu-cell-inner">
 						<div class="menu-cell-back"></div>
-						<button class="menu-cell-front menu-toggle" id="menu-report">
-							<span class="material-symbols-sharp">flag</span>
-							<span class="menu-toggle-label">Report Content</span>
-							<span class="material-symbols-sharp menu-date-chevron">chevron_right</span>
-						</button>
-					</div>
-				</div>
-				<div class="menu-cell">
-					<div class="menu-cell-inner">
-						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-privacy">
 							<span class="material-symbols-sharp">file_copy</span>
 							<span class="menu-toggle-label">Privacy Policy</span>
