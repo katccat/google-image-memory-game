@@ -56,6 +56,7 @@ export class Cell {
 		card.append(cellBack, front, edges);
 		parent.appendChild(card);
 		parent.addEventListener('click', () => this.unhide());
+		this._bindContextMenu(parent);
 
 		this.elements.card.classList.add('back-hidden');
 		this.elements.card.classList.add('unhide');
@@ -148,7 +149,6 @@ export class Cell {
 		if (this.state !== Cell.State.DEFAULT || this.game.state.coolDown) return;
 		if (!this.game.state.viewedCells.includes(this)) {
 			const trendObject = this.game.trendData.trends[this.id];
-			if (this.game.reportBuffer && trendObject) this.game.reportBuffer.add(this.id, trendObject);
 		}
 		const firstRevealed = this.game.state.revealedCells[0];
 		const isWinningMatch = firstRevealed && firstRevealed.getName() === this.getName() && this.game.state.unsolvedCells === 2;
@@ -237,5 +237,51 @@ export class Cell {
 		const anim = this.elements.labelBg.animate(animation.keyframes, animation.options);
 		this.elements.labelBg.classList.add('fade-in');
 		return anim.finished;
+	}
+
+	_bindContextMenu(el) {
+		let timer = null;
+		let startX = 0;
+		let startY = 0;
+		let suppress = false;
+
+		const open = () => {
+			if (!this.id) return;
+			if (this.state === Cell.State.DEFAULT || this.state === Cell.State.INACTIVE) return;
+			suppress = true;
+			const bg = this.elements.imageA.style.backgroundImage;
+			const imageUrl = bg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+			window.dispatchEvent(new CustomEvent('cell-report', {
+				detail: { term: this.displayName || this.id, imageUrl },
+			}));
+		};
+
+		el.addEventListener('touchstart', (e) => {
+			const t = e.touches[0];
+			startX = t.clientX;
+			startY = t.clientY;
+			timer = setTimeout(() => { open(); timer = null; }, 500);
+		});
+
+		el.addEventListener('touchmove', (e) => {
+			if (!timer) return;
+			const t = e.touches[0];
+			if (Math.abs(t.clientX - startX) > 10 || Math.abs(t.clientY - startY) > 10) {
+				clearTimeout(timer);
+				timer = null;
+			}
+		}, { passive: true });
+
+		el.addEventListener('touchend', () => { clearTimeout(timer); timer = null; });
+		el.addEventListener('touchcancel', () => { clearTimeout(timer); timer = null; });
+
+		el.addEventListener('contextmenu', (e) => {
+			e.preventDefault();
+			open();
+		});
+
+		el.addEventListener('click', (e) => {
+			if (suppress) { suppress = false; e.stopImmediatePropagation(); }
+		}, true);
 	}
 }

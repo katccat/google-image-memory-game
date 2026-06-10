@@ -33,9 +33,6 @@ export class Menu {
 		const date = this.selectedDate;
 		return date ? this.index[date] : null;
 	}
-	setReportBuffer(reportBuffer) {
-		this._reportBuffer = reportBuffer;
-	}
 	_hasSave() {
 		const date = this.selectedDate;
 		if (!date) return { hasSave: false, percentScore: 0 };
@@ -205,7 +202,7 @@ export class Menu {
 						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-privacy">
 							<span class="material-symbols-sharp">file_copy</span>
-							<span class="menu-toggle-label">Privacy Policy</span>
+							<span class="menu-toggle-label">Privacy Policy & ToS</span>
 							<span class="menu-toggle-status">View</span>
 						</button>
 					</div>
@@ -291,7 +288,7 @@ export class Menu {
 			this._refreshToggles();
 		});
 		this.container.querySelector('#menu-privacy').addEventListener('click', () => {
-			window.open('https://clayrobot.net/games/recaptcha/privacy', '_blank');
+			window.open('https://clayrobot.net/games/recaptcha/legal', '_blank');
 		});
 	}
 

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>Privacy Policy</title>
+	<title>Legal</title>
 	<script>
 		(function () {
 			const theme = localStorage.getItem('pref_theme');
@@ -100,16 +100,19 @@
 			.card { padding: 28px 20px; }
 			h1 { font-size: 1.4rem; }
 		}
-		#contact-email {
+		#contact-email,
+		#contact-email-tos {
 			opacity: 0;
 			transition: opacity 0.6s ease;
 			user-select: none;
 		}
-		#contact-email.visible {
+		#contact-email.visible,
+		#contact-email-tos.visible {
 			opacity: 1;
 			user-select: auto;
 		} 
-		#reveal-email {
+		#reveal-email,
+		#reveal-email-tos {
 			display: inline-block;
 			color: inherit !important;
 			text-align: center;
@@ -126,17 +129,19 @@
 			border: 1.5px solid;
 			border-color: var(--ui-text-color);
 		}
-		#reveal-email:hover, #reveal-email:active, #reveal-email.active {
+		#reveal-email:hover, #reveal-email:active, #reveal-email.active,
+		#reveal-email-tos:hover, #reveal-email-tos:active, #reveal-email-tos.active {
 			background-color: var(--theme-blue);
 			color: white !important;
 			text-decoration: none;
 			border-color: transparent;
 			cursor: pointer;
 		}
-		#reveal-email.active, input:focus {
+		#reveal-email.active, #reveal-email-tos.active, input:focus {
 			opacity: 0.7;
 		}
-		#contact-wrapper {
+		#contact-wrapper,
+		#contact-wrapper-tos {
 			display: flex;
 			align-items: center;
 			gap: 12px;
@@ -145,6 +150,34 @@
 </head>
 
 <body>
+	<div class="card">
+		<h1>I'm Not A Robot Terms of Service</h1>
+		<p class="subtitle">June 10, 2026</p>
+
+		<p>By using I'm Not A Robot, you agree to these terms.</p>
+
+		<h2>Image Licensing</h2>
+		<p>The game displays images sourced from public search results filtered to Creative Commons licenses. We make a good-faith effort to ensure all displayed images are freely usable, but cannot independently verify every image's license. If you believe an image is displayed in violation of its license, please use the in-game report feature described below.</p>
+
+		<h2>Reporting Content</h2>
+		<p>Each game card can be reported by long-pressing it (or right-clicking on desktop). This opens a report dialog with three options:</p>
+		<p><strong>Title is inappropriate</strong> &mdash; Use this if the trend keyword itself is offensive, sexually explicit, violent, or otherwise unsuitable content.</p>
+		<p><strong>Image is inappropriate</strong> &mdash; Use this if the image displayed on the card is offensive, disturbing, sexually explicit, or otherwise unsuitable regardless of its license status.</p>
+		<p><strong>Image is not free use</strong> &mdash; Use this if you recognize the image as one that is not covered by a Creative Commons or equivalent license, or if you are the rights holder and have not granted permission for its use.</p>
+		<p>Reports are reviewed and acted upon by removing the offending content from the game's data. We aim to respond to reports promptly.</p>
+
+		<h2>Acceptable Use</h2>
+		<p>You may use the game for personal, non-commercial enjoyment. You may not attempt to scrape game data automatically or submit false reports.</p>
+
+		<h2>Changes to These Terms</h2>
+		<p>If these terms change, the updated version will be posted here with a revised date. Continued use of the game constitutes acceptance of the revised terms.</p>
+		<hr>
+		<div id="contact-wrapper-tos">
+			<button id="reveal-email-tos">Email</button>
+			<span id="contact-email-tos"></span>
+		</div>
+	</div>
+
 	<div class="card">
 		<h1>I'm Not A Robot Privacy Policy</h1>
 		<p class="subtitle">June 2, 2026</p>
@@ -178,12 +211,16 @@
 
 	<footer>&copy; 2026 Khan</footer>
 	<script>
-		document.getElementById('reveal-email').addEventListener('click', function () {
-			const email = atob('a2hhbmF0YWxhZ0BnbWFpbC5jb20=');
-			const span = document.getElementById('contact-email');
-			span.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
-			span.classList.add('visible');
-		});
+		function revealEmail(btnId, spanId) {
+			document.getElementById(btnId).addEventListener('click', function () {
+				const email = atob('a2hhbmF0YWxhZ0BnbWFpbC5jb20=');
+				const span = document.getElementById(spanId);
+				span.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
+				span.classList.add('visible');
+			});
+		}
+		revealEmail('reveal-email', 'contact-email');
+		revealEmail('reveal-email-tos', 'contact-email-tos');
 	</script>
 </body>
 

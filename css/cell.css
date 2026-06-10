@@ -22,7 +22,7 @@
 	perspective: var(--cell-perspective, 700px);
 	/* opacity: 0; */
 	z-index: 3;
-	transition: 
+	transition:
 		opacity 0.3s linear;
 }
 .cell-wrapper:hover {

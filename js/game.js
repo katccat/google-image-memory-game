@@ -9,9 +9,8 @@ import { TrendSelector } from './trendSelector.js';
 import { soundEffects } from './soundEffects.js';
 
 export class Game {
-	constructor(trendData, challengeMode = false, reportBuffer = null) {
+	constructor(trendData, challengeMode = false) {
 		this.trendData = trendData;
-		this.reportBuffer = reportBuffer;
 		this.gameDate = trendData.fetchedDate;
 		this.saveProgress = true;
 		this.challengeMode = challengeMode;

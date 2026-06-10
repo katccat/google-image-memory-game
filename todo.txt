@@ -6,8 +6,6 @@ Add sounds
 	⁃	monocle, sunglasses, shiny sunglasses, smoke, trophy
 	⁃	Change flip sound/ match sound
 	⁃	Sound effect for disappearing cells
-	⁃	Sound effect for revealing cells
-	⁃	normalize sound effects to have similar volumes
 
 	⁃ improve win screen
 	- rebalance win stars
@@ -30,6 +28,15 @@ Add sounds
 
 for release:
 add new royalty free pipeline to backend
-- fuzzy search wikipedia either through wikimedia api or scraping google images
-- only add images that are licensed under creative commons
-add reporting infrastructure (groan)
+- switch from scraping yandex to scraping google or wikimedia creative commons
+add reporting infrastructure to backend
+
+actually important:
+get royalty free images
+configure message system in backend for reports
+improve the win screen
+add ads
+React rewrite
+
+might be cool:
+pixel quiz mode

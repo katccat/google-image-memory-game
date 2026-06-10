@@ -1,9 +1,9 @@
 import { Capacitor } from '@capacitor/core';
+import './reportMenuHost.jsx';
 import { App } from '@capacitor/app';
 import { Config } from './config.js';
 import { Game } from './game.js';
 import { Menu } from './menu.js';
-import { ReportBuffer } from './reportBuffer.js';
 import { applyStatusBarTheme } from './statusBar.js';
 
 applyStatusBarTheme(document.documentElement.getAttribute('data-theme') === 'dark');
@@ -24,7 +24,6 @@ async function init(skipMenu = false) {
 	menu.show();
 
 	let currentGame = null;
-	let reportBuffer = new ReportBuffer();
 	let lastEndpoint = null;
 
 	menu.onStart(async ({ date, endpoint, challengeMode, restart }) => {
@@ -32,7 +31,6 @@ async function init(skipMenu = false) {
 
 		const resolvedEndpoint = endpoint ?? Config.ENDPOINT.TODAY;
 		if (resolvedEndpoint !== lastEndpoint) {
-			reportBuffer = new ReportBuffer();
 			lastEndpoint = resolvedEndpoint;
 		}
 
@@ -40,7 +38,7 @@ async function init(skipMenu = false) {
 
 		history.pushState({ view: 'game' }, '');
 
-		currentGame = new Game(trendData, challengeMode, reportBuffer);
+		currentGame = new Game(trendData, challengeMode);
 		await menu.hide();
 		currentGame.newGame();
 	});
@@ -50,7 +48,6 @@ async function init(skipMenu = false) {
 			currentGame.destroy();
 			currentGame = null;
 		}
-		menu.setReportBuffer(reportBuffer);
 		menu.show();
 	});
 

@@ -4,6 +4,7 @@ export const Config = {
 		TODAY: 'today',
 		FALLBACK: 'fallback',
 		INDEX: 'index',
+		REPORT: 'report',
 	},
 	OFFLINE_FALLBACK: '/words/offline.json',
 	isDev: (
