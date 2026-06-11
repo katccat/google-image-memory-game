@@ -5,9 +5,18 @@ import { applyStatusBarTheme } from "./statusBar.js";
 
 const PREF_THEME = 'pref_theme';
 const PREF_CHALLENGE = 'pref_challenge';
+const PREF_MODE = 'pref_mode';
 const PREF_SOUND = 'pref_sound';
 const PREF_DATE = 'pref_date';
 const TITLE_SPLASH_COUNT = 2;
+
+// Game-mode cycle order for the red "Game mode" cell.
+const MODES = ['normal', 'mismatch', 'pixel'];
+const MODE_META = {
+	normal:   { status: 'Memory · Normal',   logo: './images/menu-glyphs/shiver.gif', active: false },
+	mismatch: { status: 'Memory · Mismatch', logo: './images/menu-glyphs/cool.gif',   active: true },
+	pixel:    { status: 'Pixel Quiz',        logo: './images/menu-glyphs/cool.gif',   active: false },
+};
 
 export class Menu {
 	// index: { 'YYYY/MM/DD': 'image-index-filename.json', ... }
@@ -16,13 +25,25 @@ export class Menu {
 		this.availableDates = Object.keys(index).sort().reverse(); // newest first
 		this.dateIndex = 0;
 		this._restoreDatePref();
-		this.challengeMode = localStorage.getItem(PREF_CHALLENGE) === 'true';
+		this.gameMode = this._restoreMode();
 		this.soundMuted = localStorage.getItem(PREF_SOUND) === 'true';
 		this.darkMode = document.documentElement.getAttribute('data-theme') === 'dark';
 		this.container = document.getElementById('menu-container');
 		this._callback = null;
 		this._pickerMonthIndex = 0;
 		this._build();
+	}
+
+	// Memory-match logic only distinguishes normal vs. mismatch; pixel mode is handled in main.js.
+	get challengeMode() {
+		return this.gameMode === 'mismatch';
+	}
+
+	_restoreMode() {
+		const saved = localStorage.getItem(PREF_MODE);
+		if (MODES.includes(saved)) return saved;
+		// Backward compat with the old boolean challenge pref.
+		return localStorage.getItem(PREF_CHALLENGE) === 'true' ? 'mismatch' : 'normal';
 	}
 
 	get selectedDate() {
@@ -35,7 +56,7 @@ export class Menu {
 	}
 	_hasSave() {
 		const date = this.selectedDate;
-		if (!date) return { hasSave: false, percentScore: 0 };
+		if (!date || this.gameMode === 'pixel') return { hasSave: false, percentScore: 0 };
 		const entry = JSON.parse(localStorage.getItem(date) || '{}');
 		const modeKey = this.challengeMode ? 'challenge' : 'normal';
 		// check new-format slot, or old flat-format keys for backward compat
@@ -202,7 +223,7 @@ export class Menu {
 						<div class="menu-cell-back"></div>
 						<button class="menu-cell-front menu-toggle" id="menu-privacy">
 							<span class="material-symbols-sharp">file_copy</span>
-							<span class="menu-toggle-label">Privacy Policy & ToS</span>
+							<span class="menu-toggle-label">Legal</span>
 							<span class="menu-toggle-status">View</span>
 						</button>
 					</div>
@@ -265,8 +286,9 @@ export class Menu {
 			this._start(true);
 		});
 		this.container.querySelector('#menu-challenge').addEventListener('click', () => {
-			this.challengeMode = !this.challengeMode;
-			localStorage.setItem(PREF_CHALLENGE, this.challengeMode);
+			const idx = MODES.indexOf(this.gameMode);
+			this.gameMode = MODES[(idx + 1) % MODES.length];
+			localStorage.setItem(PREF_MODE, this.gameMode);
 			this._refreshToggles();
 			this._refreshDateUI(); // Continue enabled-state depends on mode
 		});
@@ -461,12 +483,13 @@ export class Menu {
 	}
 
 	_refreshToggles() {
+		const meta = MODE_META[this.gameMode];
 		const challengeBtn = this.container.querySelector('#menu-challenge');
-		challengeBtn.classList.toggle('active', this.challengeMode);
-		challengeBtn.querySelector('.menu-toggle-status').textContent = this.challengeMode ? 'Memory · Mismatch' : 'Memory · Normal';
+		challengeBtn.classList.toggle('active', meta.active);
+		challengeBtn.querySelector('.menu-toggle-status').textContent = meta.status;
 
 		const logo = this.container.querySelector('.menu-title-logo');
-		if (logo) logo.src = this.challengeMode ? './images/menu-glyphs/cool.gif' : './images/menu-glyphs/shiver.gif';
+		if (logo) logo.src = meta.logo;
 
 		const soundBtn = this.container.querySelector('#menu-sound');
 		soundBtn.classList.toggle('active', !this.soundMuted);
@@ -490,6 +513,7 @@ export class Menu {
 				date: this.selectedDate,
 				endpoint: this.selectedEndpoint,
 				challengeMode: this.challengeMode,
+				mode: this.gameMode,
 				restart,
 			});
 		}

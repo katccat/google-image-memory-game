@@ -4,6 +4,7 @@ import { App } from '@capacitor/app';
 import { Config } from './config.js';
 import { Game } from './game.js';
 import { Menu } from './menu.js';
+import { startPixelQuiz } from './pixelQuizHost.jsx';
 import { applyStatusBarTheme } from './statusBar.js';
 
 applyStatusBarTheme(document.documentElement.getAttribute('data-theme') === 'dark');
@@ -26,7 +27,7 @@ async function init(skipMenu = false) {
 	let currentGame = null;
 	let lastEndpoint = null;
 
-	menu.onStart(async ({ date, endpoint, challengeMode, restart }) => {
+	menu.onStart(async ({ date, endpoint, challengeMode, mode, restart }) => {
 		if (restart) clearSavedProgress(date, challengeMode);
 
 		const resolvedEndpoint = endpoint ?? Config.ENDPOINT.TODAY;
@@ -38,7 +39,11 @@ async function init(skipMenu = false) {
 
 		history.pushState({ view: 'game' }, '');
 
-		currentGame = new Game(trendData, challengeMode);
+		if (mode === 'pixel') {
+			currentGame = startPixelQuiz(trendData, () => window.history.back());
+		} else {
+			currentGame = new Game(trendData, challengeMode);
+		}
 		await menu.hide();
 		currentGame.newGame();
 	});

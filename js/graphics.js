@@ -1,6 +1,12 @@
+import { createElement } from 'react';
+import { createRoot } from 'react-dom/client';
 import { Config } from './config.js';
 import { percentScoreFloat, percentScoreString, randomItem } from './utils.js';
 import { soundEffects } from './soundEffects.js';
+import { WinScreen } from './winScreen.jsx';
+
+let _winScreenRoot = null;
+let _winScreenKey  = 0;
 
 export const Elements = {
 	// Shared chrome — always present in index.html, usable by any game mode.
@@ -8,11 +14,6 @@ export const Elements = {
 	splashText:        document.getElementById('splash-text'),
 	winSplashA:        document.getElementById('win-splash-a'),
 	winSplashB:        document.getElementById('win-splash-b'),
-	winScreen:         document.getElementById('win-screen'),
-	winScreenHeadline: document.getElementById('win-screen-headline'),
-	winStatTrends:     document.getElementById('win-stat-trends'),
-	winStatLevels:     document.getElementById('win-stat-levels'),
-	winStatPerfect:    document.getElementById('win-stat-perfect'),
 	// Memory-match game elements — null until Game._build(), cleared by Game._teardownDOM().
 	gameContainer:  null,
 	grid:           null,
@@ -358,61 +359,10 @@ export class Graphics {
 		Elements.continuePrompt.classList.remove('fade-in');
 	}
 
-	/**
-	 * Shows the full-screen 100%-win panel.
-	 * Star rating: 3★ = 0 avoidable mistakes, 2★ = 1–5, 1★ = 6+
-	 */
-	static async showWinScreen(stats, onDismiss) {
-		const { trendsCollected, levelsCompleted, perfectLevels, avoidableMistakes } = stats;
-		const stars = avoidableMistakes === 0 ? 3 : avoidableMistakes <= 5 ? 2 : 1;
-
-		Elements.winStatTrends.textContent  = trendsCollected;
-		Elements.winStatLevels.textContent  = levelsCompleted;
-		Elements.winStatPerfect.textContent = perfectLevels;
-
-		const starEls = Elements.winScreen.querySelectorAll('.win-star');
-		starEls.forEach((star, i) => {
-			star.className = 'win-star';
-			if (i < stars) star.classList.add('earned');
-		});
-
-		const statsEl  = document.getElementById('win-screen-stats');
-		const promptEl = document.getElementById('win-screen-prompt');
-		statsEl.classList.remove('visible');
-		promptEl.classList.remove('visible', 'pulsing');
-		Elements.winScreenHeadline.innerHTML = '';
-
-		Elements.winScreen.classList.add('active');
-		await new Promise(r => setTimeout(r, 280));
-
-		const googleColors = ['var(--google-blue)', 'var(--google-red)', 'var(--google-yellow)', 'var(--google-green)'];
-		const offset = Math.floor(Math.random() * googleColors.length);
-		const rotated = [...googleColors.slice(offset), ...googleColors.slice(0, offset)];
-		await Graphics.typeTextColored(randomItem(Config.messages.end), rotated, 72, Elements.winScreenHeadline);
-
-		await new Promise(r => setTimeout(r, 160));
-
-		for (let i = 0; i < starEls.length; i++) {
-			starEls[i].classList.add('popped');
-			if (i < stars) soundEffects.match();
-			await new Promise(r => setTimeout(r, 240));
+	static showWinScreen(stats, onDismiss) {
+		if (!_winScreenRoot) {
+			_winScreenRoot = createRoot(document.getElementById('win-screen-root'));
 		}
-		if (stars === 3) {
-			await new Promise(r => setTimeout(r, 80));
-			soundEffects.whistle();
-		}
-
-		await new Promise(r => setTimeout(r, 180));
-		statsEl.classList.add('visible');
-
-		await new Promise(r => setTimeout(r, 480));
-		promptEl.classList.add('pulsing');
-
-		Elements.winScreen.addEventListener('click', function handler() {
-			Elements.winScreen.removeEventListener('click', handler);
-			promptEl.classList.remove('pulsing');
-			Elements.winScreen.classList.remove('active');
-			if (onDismiss) setTimeout(onDismiss, 310);
-		}, { once: true });
+		_winScreenRoot.render(createElement(WinScreen, { key: ++_winScreenKey, stats, onDismiss }));
 	}
 }

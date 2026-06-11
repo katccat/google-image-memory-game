@@ -1,0 +1,162 @@
+#win-screen {
+	position: fixed;
+	inset: 0;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.35s ease;
+	background: rgba(0, 0, 0, 0.48);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+#win-screen.active {
+	opacity: 1;
+	pointer-events: all;
+}
+
+#win-screen-card {
+	position: relative;
+	background: var(--frame-color);
+	border: 2px solid black;
+	padding: 32px 0 28px;
+	width: min(90vw, 500px);
+	text-align: center;
+	box-shadow: var(--card-shadow);
+	transform: scale(0.88);
+	transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
+	overflow: hidden;
+}
+
+#win-screen.active #win-screen-card {
+	transform: scale(1);
+}
+
+/* Google-color stripe at the top — mirrors the menu card */
+#win-screen-card::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 10px;
+	background: linear-gradient(to right,
+		var(--google-blue)   0%,  var(--google-blue)   25%,
+		var(--google-red)    25%, var(--google-red)    50%,
+		var(--google-yellow) 50%, var(--google-yellow) 75%,
+		var(--google-green)  75%, var(--google-green)  100%
+	);
+}
+
+#win-screen-headline {
+	/* font-family: "Coral Pixels", "Tiny5", monospace; */
+	font-size: clamp(30px, 8.5vw, 52px);
+	line-height: 1.2;
+	margin-top: 12px;
+	margin-bottom: 20px;
+	min-height: 1.4em;
+	word-break: break-word;
+}
+
+/* Stars */
+#win-screen-stars {
+	image-rendering: pixelated;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 14px;
+	font-size: 60px;
+	line-height: 1;
+	margin-bottom: 22px;
+}
+
+.win-star {
+	display: inline-block;
+	color: #ccc;
+	opacity: 0;
+	transform: scale(0);
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .win-star {
+	color: #555;
+}
+
+.win-star.earned {
+	color: var(--google-yellow);
+	/* filter: drop-shadow(0 0 10px rgba(255, 191, 0, 0.5)); */
+}
+
+@keyframes win-star-pop {
+	0%   { transform: scale(0);    opacity: 0; }
+	55%  { transform: scale(1.38); opacity: 1; }
+	75%  { transform: scale(0.88); }
+	100% { transform: scale(1);    opacity: 1; }
+}
+
+.win-star.popped {
+	animation: win-star-pop 0.48s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Stats grid */
+#win-screen-stats {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	border-top: 1px solid var(--cell-edge-color);
+	border-bottom: 1px solid var(--cell-edge-color);
+	padding: 16px 0;
+	margin-bottom: 20px;
+	opacity: 0;
+	transition: opacity 0.45s ease;
+}
+
+#win-screen-stats.visible {
+	opacity: 1;
+}
+
+.win-stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+}
+
+/* .win-stat + .win-stat {
+	border-left: 1px solid var(--cell-edge-color);
+} */
+
+.win-stat-value {
+	font-family: "Tiny5", monospace;
+	font-size: 36px;
+	line-height: 1;
+}
+
+.win-stat--trends  .win-stat-value { color: var(--google-blue);   }
+.win-stat--levels  .win-stat-value { color: var(--google-green);  }
+.win-stat--perfect .win-stat-value { color: var(--google-yellow); }
+
+.win-stat-label {
+	font-size: 14px;
+	/* text-transform: uppercase; */
+	letter-spacing: 0.1em;
+	opacity: 0.5;
+	font-weight: 600;
+}
+
+/* Continue prompt */
+#win-screen-prompt {
+	font-family: "Tiny5", monospace;
+	font-size: 20px;
+	/* letter-spacing: 0.05em; */
+	opacity: 0;
+}
+
+@keyframes win-prompt-pulse {
+	0%, 100% { opacity: 0.42; scale: 1; }
+	50%       { opacity: 0.8; scale: 1.05; }
+}
+
+#win-screen-prompt.pulsing {
+	animation: win-prompt-pulse 2s ease-in-out infinite;
+}

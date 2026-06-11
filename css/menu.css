@@ -44,7 +44,7 @@
 	width: min(95vw, 540px);
 	/* background-color: var(--bg-color); */
 	box-shadow: var(--card-shadow);
-	border: 1px solid black;
+	border: 2px solid black;
 }
 
 /* === Search bar inside the card =========================================== */
