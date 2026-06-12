@@ -86,6 +86,59 @@ async function buildRound(trends, allKeys, used, unusable, roundIndex) {
 	return null;
 }
 
+// Long-press (touch) / right-click (desktop) on a revealed image to report it,
+// mirroring the card report gesture in cell.js. Dispatches the same `cell-report`
+// event consumed by the globally-mounted reportMenuHost. `enabled` gates the
+// gesture so it only fires once the image is fully de-pixelated.
+function useReportGesture(ref, { enabled, term, imageUrl }) {
+	useEffect(() => {
+		const el = ref.current;
+		if (!el || !enabled) return;
+
+		let timer = null;
+		let startX = 0;
+		let startY = 0;
+
+		const open = () => {
+			window.dispatchEvent(new CustomEvent('cell-report', {
+				detail: { term, imageUrl },
+			}));
+		};
+
+		const onTouchStart = (e) => {
+			const t = e.touches[0];
+			startX = t.clientX;
+			startY = t.clientY;
+			timer = setTimeout(() => { open(); timer = null; }, 500);
+		};
+		const onTouchMove = (e) => {
+			if (!timer) return;
+			const t = e.touches[0];
+			if (Math.abs(t.clientX - startX) > 10 || Math.abs(t.clientY - startY) > 10) {
+				clearTimeout(timer);
+				timer = null;
+			}
+		};
+		const onTouchEnd = () => { clearTimeout(timer); timer = null; };
+		const onContextMenu = (e) => { e.preventDefault(); open(); };
+
+		el.addEventListener('touchstart', onTouchStart);
+		el.addEventListener('touchmove', onTouchMove, { passive: true });
+		el.addEventListener('touchend', onTouchEnd);
+		el.addEventListener('touchcancel', onTouchEnd);
+		el.addEventListener('contextmenu', onContextMenu);
+
+		return () => {
+			clearTimeout(timer);
+			el.removeEventListener('touchstart', onTouchStart);
+			el.removeEventListener('touchmove', onTouchMove);
+			el.removeEventListener('touchend', onTouchEnd);
+			el.removeEventListener('touchcancel', onTouchEnd);
+			el.removeEventListener('contextmenu', onContextMenu);
+		};
+	}, [enabled, term, imageUrl]);
+}
+
 function useCanvasSize() {
 	const compute = () => Math.round(Math.min(window.innerWidth * 0.86, window.innerHeight * 0.5, 460));
 	const [size, setSize] = useState(compute);
@@ -99,8 +152,9 @@ function useCanvasSize() {
 
 // Draws a center-cropped square of `image`, pixelated to `samples` blocks per side.
 // When `reveal` flips true, animates samples up to full resolution, then onRevealed().
-function PixelCanvas({ image, baseSamples, reveal, size, onRevealed }) {
+function PixelCanvas({ image, baseSamples, reveal, size, onRevealed, reportEnabled, reportTerm }) {
 	const canvasRef = useRef(null);
+	const wrapRef = useRef(null);
 	const imgRef = useRef(null);
 	const revealed = useRef(false); // true once the reveal animation has reached its crisp frame
 	const [loaded, setLoaded] = useState(false);
@@ -188,8 +242,10 @@ function PixelCanvas({ image, baseSamples, reveal, size, onRevealed }) {
 		return () => cancelAnimationFrame(raf);
 	}, [loaded, reveal, baseSamples, drawPixelated, drawCrisp, onRevealed]);
 
+	useReportGesture(wrapRef, { enabled: reportEnabled, term: reportTerm, imageUrl: image });
+
 	return (
-		<div className="pq-canvas-wrap" style={{ width: size, height: size }}>
+		<div ref={wrapRef} className="pq-canvas-wrap" style={{ width: size, height: size }}>
 			<canvas
 				ref={canvasRef}
 				width={Math.round(size * dpr)}
@@ -309,6 +365,8 @@ export function PixelQuiz({ trendData, onExit }) {
 							reveal={revealing}
 							size={canvasSize}
 							onRevealed={onRevealed}
+							reportEnabled={phase === 'answered'}
+							reportTerm={round.answer}
 						/>
 						: <div className="pq-canvas-wrap" style={{ width: canvasSize, height: canvasSize }}>
 							<div className="pq-canvas-loading">Loading…</div>
