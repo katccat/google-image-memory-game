@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "net.clayrobot.recaptcha"
+    namespace = "net.clayrobot.memorygame"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "net.clayrobot.recaptcha"
+        applicationId "net.clayrobot.memorygame"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,4 +1,4 @@
-package net.clayrobot.recaptcha;
+package net.clayrobot.memorygame;
 
 import com.getcapacitor.BridgeActivity;
 
