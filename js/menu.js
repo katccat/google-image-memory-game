@@ -15,7 +15,7 @@ const MODES = ['normal', 'mismatch', 'pixel'];
 const MODE_META = {
 	normal:   { status: 'Memory · Normal',   logo: './images/menu-glyphs/shiver.gif', active: false },
 	mismatch: { status: 'Memory · Mismatch', logo: './images/menu-glyphs/cool.gif',   active: true },
-	pixel:    { status: 'Pixel Quiz',        logo: './images/menu-glyphs/cool.gif',   active: false },
+	pixel:    { status: 'Pixel Quiz (wip)',        logo: './images/menu-glyphs/cool.gif',   active: false },
 };
 
 export class Menu {

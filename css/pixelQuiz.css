@@ -15,11 +15,11 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 14px;
+	gap: 20px;
 	padding: 16px;
-	background: var(--frame-color);
-	border-radius: 18px;
-	box-shadow: var(--card-shadow);
+	/* background: var(--frame-color); */
+
+	/* box-shadow: var(--card-shadow); */
 }
 
 /* HUD */
@@ -39,7 +39,7 @@
 	width: 36px;
 	height: 36px;
 	border: none;
-	border-radius: 50%;
+
 	background: transparent;
 	color: var(--ui-text-color);
 	cursor: pointer;
@@ -70,7 +70,7 @@
 
 .pq-canvas-wrap {
 	position: relative;
-	border-radius: 12px;
+
 	overflow: hidden;
 	background: var(--cell-color);
 	box-shadow: var(--card-shadow);
@@ -92,6 +92,7 @@
 }
 
 .pq-tier {
+	display: none;
 	position: absolute;
 	top: 8px;
 	left: 8px;
@@ -116,15 +117,23 @@
 	gap: 10px;
 }
 
+@media (min-width: 720px) {
+	.pq-options {
+		flex-direction: row;
+		gap: 12px;
+	}
+}
+
 .pq-option {
 	width: 100%;
 	padding: 14px 16px;
-	border: 1.5px solid var(--border-color);
-	border-radius: 12px;
-	background: transparent;
+	border: 1px solid var(--border-color);
+
+	background: var(--bg-color);
 	color: var(--ui-text-color);
 	font-size: 16px;
-	font-weight: 600;
+	/* font-weight: 600; */
+	font-family: Noto Sans;
 	text-transform: capitalize;
 	cursor: pointer;
 	transition: background 0.18s, border-color 0.18s, color 0.18s, opacity 0.18s, transform 0.1s;
@@ -156,9 +165,11 @@
 	justify-content: space-between;
 	gap: 12px;
 }
-.pq-footer:empty { display: none; }
 
-.pq-verdict { font-size: 18px; font-weight: 800; }
+.pq-verdict { font-size: 30px;
+	font-family: Tiny5;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 .pq-verdict--win { color: var(--google-green); }
 .pq-verdict--lose { color: var(--google-red); }
 
@@ -178,17 +189,17 @@
 }
 .pq-next:active { transform: scale(0.98); }
 
-/* Wide layout: image left, options right */
+/* Wide layout: options below stage */
 @media (min-width: 720px) {
 	.pq-card {
+		gap: 40px;
 		display: grid;
-		grid-template-columns: auto 1fr;
+		grid-template-columns: 1fr;
 		grid-template-areas:
-			"hud hud"
-			"stage options"
-			"footer footer";
-		align-items: center;
-		column-gap: 22px;
+			"hud"
+			"stage"
+			"options"
+			"footer";
 		width: min(94vw, 820px);
 	}
 	.pq-hud { grid-area: hud; }
@@ -199,6 +210,15 @@
 
 /* Done screen */
 .pq-done { cursor: pointer; }
+/* The whole screen is the "play again" target, so pin the close button to the
+   corner instead of letting it sit in the centered flex flow. */
+.pq-done > .pq-back {
+	position: absolute;
+	top: var(--global-padding);
+	left: var(--global-padding);
+	justify-self: auto;
+	cursor: pointer;
+}
 .pq-done-card {
 	width: min(90vw, 420px);
 	text-align: center;

@@ -5,6 +5,32 @@ import '../css/pixelQuiz.css';
 
 const NUM_ROUNDS = 10;
 
+// Topics the player has already been quizzed on, persisted per trend date so
+// rounds don't repeat topics across games until the whole pool is exhausted.
+// Stored under its own top-level key (date lives inside the value), kept fully
+// separate from the memory-match game which stores per-date entries under the
+// raw date string.
+const USED_STORAGE_KEY = 'pixelQuiz_used';
+
+function loadUsed(date) {
+	try {
+		const all = JSON.parse(localStorage.getItem(USED_STORAGE_KEY) || '{}');
+		return new Set(all[date] || []);
+	} catch {
+		return new Set();
+	}
+}
+
+function saveUsed(date, used) {
+	try {
+		const all = JSON.parse(localStorage.getItem(USED_STORAGE_KEY) || '{}');
+		all[date] = [...used];
+		localStorage.setItem(USED_STORAGE_KEY, JSON.stringify(all));
+	} catch {
+		// localStorage unavailable / quota — exhausted tracking is best-effort.
+	}
+}
+
 // Sample resolution per tier: fewer samples = blockier = harder to guess.
 const TIERS = { easy: 22, medium: 12, hard: 7 };
 
@@ -24,8 +50,13 @@ function displayName(trends, key) {
 // Pick a target trend with a loadable image plus two distractor names.
 // Mutates `used`/`unusable` sets so rounds don't repeat answers or retry dead trends.
 async function buildRound(trends, allKeys, used, unusable, roundIndex) {
-	const fresh = shuffle(allKeys.filter(k => !unusable.has(k) && !used.has(k)));
-	const pool = fresh.length ? fresh : shuffle(allKeys.filter(k => !unusable.has(k)));
+	let pool = shuffle(allKeys.filter(k => !unusable.has(k) && !used.has(k)));
+	// Every usable topic has been played — clear the exhausted set and start a
+	// fresh cycle so topics can come around again.
+	if (!pool.length) {
+		used.clear();
+		pool = shuffle(allKeys.filter(k => !unusable.has(k)));
+	}
 
 	for (const key of pool) {
 		const raw = Array.isArray(trends[key].url) ? trends[key].url : [trends[key].url];
@@ -71,6 +102,7 @@ function useCanvasSize() {
 function PixelCanvas({ image, baseSamples, reveal, size, onRevealed }) {
 	const canvasRef = useRef(null);
 	const imgRef = useRef(null);
+	const revealed = useRef(false); // true once the reveal animation has reached its crisp frame
 	const [loaded, setLoaded] = useState(false);
 	const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -121,14 +153,21 @@ function PixelCanvas({ image, baseSamples, reveal, size, onRevealed }) {
 		ctx.drawImage(img, sx, sy, side, side, 0, 0, canvas.width, canvas.height);
 	}, []);
 
-	// Show the blocky base image whenever we're not mid-reveal.
+	// Draw the current frame, and redraw it after a viewport resize. A resize
+	// rewrites the canvas width/height attributes, which wipes the backing store
+	// and leaves it blank; this keeps the blocky base (asking) or the settled
+	// crisp image (answered) on screen. Mid-animation resizes self-correct on the
+	// next rAF tick, so they're intentionally skipped here.
 	useEffect(() => {
-		if (loaded && !reveal) drawPixelated(baseSamples);
-	}, [loaded, reveal, baseSamples, drawPixelated]);
+		if (!loaded) return;
+		if (!reveal) drawPixelated(baseSamples);
+		else if (revealed.current) drawCrisp();
+	}, [size, loaded, reveal, baseSamples, drawPixelated, drawCrisp]);
 
 	// Reveal: ramp samples from base → full, then a final crisp pass.
 	useEffect(() => {
 		if (!loaded || !reveal) return;
+		revealed.current = false;
 		const full = Math.min(canvasRef.current.width, 480);
 		const start = performance.now();
 		const duration = 1000;
@@ -141,6 +180,7 @@ function PixelCanvas({ image, baseSamples, reveal, size, onRevealed }) {
 				raf = requestAnimationFrame(step);
 			} else {
 				drawCrisp();
+				revealed.current = true;
 				onRevealed && onRevealed();
 			}
 		};
@@ -164,8 +204,10 @@ function PixelCanvas({ image, baseSamples, reveal, size, onRevealed }) {
 
 export function PixelQuiz({ trendData, onExit }) {
 	const trends = trendData.trends;
+	const date = trendData.fetchedDate;
 	const allKeys = useRef(Object.keys(trends));
-	const used = useRef(new Set());
+	const used = useRef(null);
+	if (used.current === null) used.current = loadUsed(date);
 	const unusable = useRef(new Set());
 	const alive = useRef(true);
 
@@ -191,6 +233,8 @@ export function PixelQuiz({ trendData, onExit }) {
 			setRound(null);
 			const next = await buildRound(trends, allKeys.current, used.current, unusable.current, roundIndex);
 			if (cancelled || !alive.current) return;
+			// Persist the exhausted set (buildRound may have added a key or reset the cycle).
+			saveUsed(date, used.current);
 			if (!next) { setPhase('done'); return; }
 			setRound(next);
 			setPhase('asking');
@@ -221,8 +265,19 @@ export function PixelQuiz({ trendData, onExit }) {
 		setRoundIndex(r => r + 1);
 	};
 
+	// Start a fresh quiz from the done screen. The exhausted-topics set (`used`)
+	// is intentionally preserved so the new game keeps cycling without repeating
+	// topics until the whole pool has been seen.
+	const restart = () => {
+		setScore(0);
+		setSelected(null);
+		setRound(null);
+		setPhase('loading');
+		setRoundIndex(0);
+	};
+
 	if (phase === 'done') {
-		return <DoneScreen score={score} total={NUM_ROUNDS} onExit={onExit} />;
+		return <DoneScreen score={score} total={NUM_ROUNDS} onRestart={restart} onExit={onExit} />;
 	}
 
 	const revealing = phase === 'revealing' || phase === 'answered';
@@ -243,7 +298,6 @@ export function PixelQuiz({ trendData, onExit }) {
 						<span className="material-symbols-sharp">close</span>
 					</button>
 					<span className="pq-round">Round {Math.min(roundIndex + 1, NUM_ROUNDS)} / {NUM_ROUNDS}</span>
-					<span className="pq-score">{score}<span className="pq-score-check"> ✓</span></span>
 				</div>
 
 				<div className="pq-stage">
@@ -296,7 +350,7 @@ export function PixelQuiz({ trendData, onExit }) {
 	);
 }
 
-function DoneScreen({ score, total, onExit }) {
+function DoneScreen({ score, total, onRestart, onExit }) {
 	const pct = Math.round((score / total) * 100);
 	const headline =
 		pct === 100 ? "Flawless!" :
@@ -304,7 +358,14 @@ function DoneScreen({ score, total, onExit }) {
 		pct >= 40 ? "Not bad!" :
 		"Only human!";
 	return (
-		<div id="pixel-quiz" className="pq-done" onClick={onExit}>
+		<div id="pixel-quiz" className="pq-done" onClick={onRestart}>
+			<button
+				className="pq-back"
+				onClick={(e) => { e.stopPropagation(); onExit(); }}
+				aria-label="Back to menu"
+			>
+				<span className="material-symbols-sharp">close</span>
+			</button>
 			<div className="pq-card pq-done-card">
 				<div className="pq-done-headline candy-text">{headline}</div>
 				<div className="pq-done-score">{score}<span className="pq-done-slash">/{total}</span></div>
