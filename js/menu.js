@@ -13,8 +13,8 @@ const TITLE_SPLASH_COUNT = 2;
 // Game-mode cycle order for the red "Game mode" cell.
 const MODES = ['normal', 'mismatch', 'pixel'];
 const MODE_META = {
-	normal:   { status: 'Memory · Normal',   logo: './images/menu-glyphs/shiver.gif', active: false },
-	mismatch: { status: 'Memory · Mismatch', logo: './images/menu-glyphs/cool.gif',   active: true },
+	normal:   { status: 'Match · Normal',   logo: './images/menu-glyphs/shiver.gif', active: false },
+	mismatch: { status: 'Match · Mismatch', logo: './images/menu-glyphs/cool.gif',   active: true },
 	pixel:    { status: 'Pixel Quiz (wip)',        logo: './images/menu-glyphs/cool.gif',   active: false },
 };
 
